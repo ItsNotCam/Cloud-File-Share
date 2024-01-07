@@ -1,8 +1,23 @@
+'use server '
+
 // import { useEffect, useState } from 'react'
 import axios from 'axios'
+import MyForm from './form';
 
 interface ok {
   tables: string[];
+}
+
+async function sendRequest(formData: any) {
+  "use server"
+  const resp = await axios.post(
+      `http://${process.env.API_HOST}:${process.env.API_PORT}/api/user`,
+      { body: formData }
+  )
+
+  console.log(resp.data)
+
+  // console.log(resp.data)
 }
 
 export default async function Home() {
@@ -17,6 +32,7 @@ export default async function Home() {
   return (
     <main>
       {data.tables.map((table, key) => <p key={key}>{table}</p>)}
+      <MyForm sendRequest={sendRequest}/>
     </main>
   )
 }
