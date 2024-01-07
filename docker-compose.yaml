@@ -6,26 +6,20 @@ services:
   #   build: ./api
   #   ports: '${API_PORT}:${API_PORT}'
   #   restart: always
-  #   env_file:
-  #     - ./config.env
       
   db:
     image: mysql
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
     ports: 
       - '${DB_PORT}:3306'
     volumes:
       - ./db/mysql_data:/var/lib/mysql:rw
       - ./db:/docker-entrypoint-initdb.d
-    env_file:
-      - ./config.env
+    # env_file:
+    #   - ./config.env
 
   # web:
   #   image: cam/gdrive_web
   #   build: ./web
   #   ports: '${WEB_PORT}:${WEB_PORT}'
   #   restart: always
-  #   env_file:
-  #     - ./config.env
