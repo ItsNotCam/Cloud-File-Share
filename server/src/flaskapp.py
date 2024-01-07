@@ -1,10 +1,10 @@
 from dotenv import load_dotenv
-from pathlib import Path
-import mysql.connector
 import os
 
 from flask import Flask
 from flask_restful import Api, Resource
+
+import mysql.connector
 
 load_dotenv()
 TABLES = []
@@ -21,6 +21,7 @@ try:
     res = cursor.execute("SHOW TABLES")
     for r in cursor.fetchall():
       TABLES.append(r[0])
+      print(r[0])
 
     cnx.close()
 except mysql.connector.Error as err:
@@ -29,15 +30,15 @@ except mysql.connector.Error as err:
 app = Flask(__name__)
 api = Api(app)
 
-class HelloWorld(Resource):
+class Tables(Resource):
   def get(self):
-    return { 'ok': TABLES }
+    return { 'tables': TABLES }
 
 class TestConnection(Resource):    
   def get(self):
-    return { "success": "nice its working"}
+    return { "success": "good its working"}
   
-api.add_resource(HelloWorld, '/api/hello')
+api.add_resource(Tables, '/api/db/tables')
 api.add_resource(TestConnection, '/api/test')
 
 if __name__ == '__main__':
