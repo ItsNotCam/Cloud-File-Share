@@ -7,10 +7,11 @@ dotenv_path=Path('/home/cam/gdrive/config.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 cnx = mysql.connector.connect(
-  user=os.getenv("MYSQL_USER"),
-  password=os.getenv("MYSQL_PASSWORD"),
+  user=os.getenv("DB_USER"),
+  password=os.getenv("DB_PASSWORD"),
   host=os.getenv("DB_HOST"),
-  database=os.getenv("MYSQL_DATABASE")
+  database=os.getenv("MYSQL_DATABASE"),
+  port=os.getenv("DB_PORT")
 )
 
 with cnx.cursor() as cursor:
