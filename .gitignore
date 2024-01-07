@@ -1,3 +1,40 @@
 **/.venv
 server/files
 db/mysql_data
+
+# NextJS Gitignore
+
+# dependencies
+web/node_modules
+web/.pnp
+web/.pnp.js
+web/.yarn/install-state.gz
+
+# testing
+web/coverage
+
+# next.js
+web/.next/
+web/out/
+
+# production
+web/build
+
+# misc
+web/.DS_Store
+web/*.pem
+
+# debug
+web/npm-debug.log*
+web/yarn-debug.log*
+web/yarn-error.log*
+
+# local env files
+web/.env*.local
+
+# vercel
+web/.vercel
+
+# typescript
+web/*.tsbuildinfo
+web/next-env.d.ts
