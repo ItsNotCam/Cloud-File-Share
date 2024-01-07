@@ -8,7 +8,7 @@ load_dotenv(dotenv_path=dotenv_path)
 
 cnx = mysql.connector.connect(
   user=os.getenv("DB_USER"),
-  password=os.getenv("DB_PASSWORD"),
+  password=os.getenv("DB_PASS"),
   host=os.getenv("DB_HOST"),
   database=os.getenv("MYSQL_DATABASE"),
   port=os.getenv("DB_PORT")
