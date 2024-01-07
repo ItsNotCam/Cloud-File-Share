@@ -1,11 +1,12 @@
-version: '3'
+version: '3.3'
 
 services:
   db:
-    image: mysql
+    image: mysql:8.0
     container_name: gdc_db
     restart: always
     env_file: ./.env
+    command: --default-authentication-plugin=caching_sha2_password
     ports: 
       - '${DB_PORT}:3306'
     volumes:
@@ -55,7 +56,6 @@ services:
       backend:
         ipv4_address: '${WEB_HOST}'
     volumes:
-      - ./web:/app
       - ./.env:/app/.env:ro
 
 networks:
