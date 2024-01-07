@@ -20,7 +20,6 @@ try:
   with cnx.cursor() as cursor:
     res = cursor.execute("SHOW TABLES")
     for r in cursor.fetchall():
-      print(r[0])
       TABLES.append(r[0])
 
     cnx.close()
@@ -33,8 +32,13 @@ api = Api(app)
 class HelloWorld(Resource):
   def get(self):
     return { 'ok': TABLES }
+
+class TestConnection(Resource):    
+  def get(self):
+    return { "success": "nice its working"}
   
-api.add_resource(HelloWorld, '/ok')
+api.add_resource(HelloWorld, '/api/hello')
+api.add_resource(TestConnection, '/api/test')
 
 if __name__ == '__main__':
   app.run(debug=True, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"))

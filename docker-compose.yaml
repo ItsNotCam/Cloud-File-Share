@@ -15,8 +15,8 @@ services:
     healthcheck:
       test: ['CMD','mysqladmin', '-u', '${DB_USER}', '-p${DB_PASS}', 'ping', '-h', '${DB_HOST}']
       interval: 1s
-      timeout: 5s
-      retries: 25
+      timeout: 2s
+      retries: 100
 
   api:
     image: cam/gdrive_api
