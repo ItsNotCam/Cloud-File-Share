@@ -3,7 +3,6 @@ import os
 
 from flask import Flask
 from flask_restful import Api, Resource
-from flask_cors import CORS
 
 import mysql.connector
 
@@ -23,14 +22,12 @@ try:
     res = cursor.execute("SHOW TABLES")
     for r in cursor.fetchall():
       TABLES.append(r[0])
-      print(r[0])
 
     cnx.close()
 except mysql.connector.Error as err:
   print("Something went wrong: {}".format(err))
 
 app = Flask(__name__)
-CORS(app)
 api = Api(app)
 
 class Tables(Resource):
@@ -40,9 +37,10 @@ class Tables(Resource):
 class TestConnection(Resource):    
   def get(self):
     return { "success": "good its working"}
-  
+
 api.add_resource(Tables, '/api/db/tables')
 api.add_resource(TestConnection, '/api/test')
 
+host = os.getenv("API_HOST")
 if __name__ == '__main__':
-  app.run(debug=True, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"))
+  app.run(debug=True, host=host, port=os.getenv("API_PORT"))
