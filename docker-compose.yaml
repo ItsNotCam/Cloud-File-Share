@@ -14,12 +14,11 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
-      MYSQL_DATABASE: '${MYSQL_DATABASE}'
     ports: 
       - '${DB_PORT}:3306'
     volumes:
       - ./db/mysql_data:/var/lib/mysql:rw
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./db:/docker-entrypoint-initdb.d
     env_file:
       - ./config.env
 
