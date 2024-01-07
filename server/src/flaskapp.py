@@ -3,8 +3,7 @@ from pathlib import Path
 import mysql.connector
 import os
 
-dotenv_path=Path('/home/cam/gdrive/.env')
-load_dotenv(dotenv_path=dotenv_path)
+load_dotenv()
 
 cnx = mysql.connector.connect(
   user=os.getenv("DB_USER"),
