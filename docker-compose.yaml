@@ -15,8 +15,6 @@ services:
     volumes:
       - ./db/mysql_data:/var/lib/mysql:rw
       - ./db:/docker-entrypoint-initdb.d
-    # env_file:
-    #   - ./config.env
 
   # web:
   #   image: cam/gdrive_web
