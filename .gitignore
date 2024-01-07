@@ -1,3 +1,3 @@
-**/.venv/
+**/.venv
 server/files/**
 db/mysql_data
