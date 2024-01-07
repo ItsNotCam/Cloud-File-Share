@@ -9,6 +9,7 @@ from flask_restful import Api, Resource
 load_dotenv()
 TABLES = []
 try:
+  print(os.getenv("MYSQL_ROOT_DATABASE"))
   cnx = mysql.connector.connect(
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASS"),
