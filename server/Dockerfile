@@ -16,5 +16,4 @@ COPY . /app
 RUN pip --no-cache-dir install -r requirements.txt --break-system-packages
 
 VOLUME [ "/app" ]
-
 CMD ["python3", "src/flaskapp.py"]
