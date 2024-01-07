@@ -13,7 +13,7 @@ try:
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASS"),
     host=os.getenv("DB_HOST"),
-    database=os.getenv("MYSQL_DATABASE"),
+    database=os.getenv("MYSQL_ROOT_DATABASE"),
     port=os.getenv("DB_PORT")
   )
 

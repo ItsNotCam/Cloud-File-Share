@@ -3,15 +3,14 @@ version: '3'
 services:
   db:
     image: mysql
+    container_name: gdc_db
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-      MYSQL_DATABASE: "${MYSQL_ROOT_DATABASE}"
+    env_file: ./.env
     ports: 
       - '${DB_PORT}:3306'
     volumes:
       - ./db/mysql_data:/var/lib/mysql:rw
-      - ./db:/docker-entrypoint-initdb.d
+      - ./db:/docker-entrypoint-initdb.d:ro
     networks:
       backend:
         ipv4_address: '${DB_HOST}'
@@ -23,10 +22,11 @@ services:
 
   api:
     image: cam/gdrive_api
+    container_name: gdc_api
+    restart: always
     build: ./server
     ports: 
       - '${API_PORT}:${API_PORT}'
-    restart: always
     volumes:
       - ./.env:/app/.env
     networks:

@@ -3,7 +3,6 @@ FROM alpine:latest
 RUN apk update
 RUN apk add py-pip
 RUN apk add --no-cache python3-dev
-RUN apk add curl
 
 RUN python3 -m venv venv
 RUN . venv/bin/activate
