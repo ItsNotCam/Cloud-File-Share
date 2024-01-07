@@ -21,7 +21,7 @@ services:
       retries: 100
 
   api:
-    image: 'cam/gdrive_api'
+    image: cam/gdrive_api
     container_name: gdc_api
     restart: always
     build: ./server
@@ -37,6 +37,25 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ['CMD','curl', '${API_HOST}:${API_PORT}/api/test']
+      interval: 1s
+      timeout: 2s
+      retries: 100
+  
+  web:
+    image: cam/gdrive_web
+    container_name: gdc_web
+    restart: always
+    env_file: ./.env
+    build: ./web
+    ports:
+      - '${WEB_PORT}:3000'
+    networks:
+      backend:
+        ipv4_address: '${WEB_HOST}'
+    volumes:
+      - ./web:/app
 
 networks:
   backend:
@@ -44,9 +63,3 @@ networks:
       driver: default
       config:
         - subnet: '${BACKEND_SUBNET}'
-
-  # web:
-  #   image: cam/gdrive_web
-  #   build: ./web
-  #   ports: '${WEB_PORT}:${WEB_PORT}'
-  #   restart: always
