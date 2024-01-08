@@ -1,6 +1,8 @@
 **/.venv
 server/files
 db/mysql_data
+**/__pycache__
+**.vscode
 
 # NextJS Gitignore
 
