@@ -1,10 +1,6 @@
 FROM node:latest
 
-# RUN apk update
-# RUN apk add nodejs npm
-
 WORKDIR /app
-# COPY . .
 
 COPY package*.json /app/
 RUN npm cache clean --force
@@ -15,3 +11,4 @@ COPY . .
 
 VOLUME ["/app"]
 CMD ["npm", "run", "dev"]
+# ENTRYPOINT npm run dev

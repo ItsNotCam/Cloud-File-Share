@@ -1,16 +1,26 @@
-FROM alpine:latest
+FROM ubuntu:latest
 
-RUN apk update
-RUN apk add py-pip
-RUN apk add --no-cache python3-dev
+# Set environment variables from docker-compose
+ENV API_HOST=$API_HOST
+ENV API_PORT=$API_PORT
+ENV API_START=$API_START
 
-RUN pip install --upgrade pip --break-system-packages
-
+# Copy files
 WORKDIR /app/files
 WORKDIR /app
 COPY . /app
 
-RUN pip --no-cache-dir install -r requirements.txt --break-system-packages
+# Install dependencies
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN apt update -y
+RUN apt install $(cat os_requirements.txt | tr '\n' ' ') -y
+RUN pip install --upgrade pip
+RUN pip3 install -r python_requirements.txt
+
+# we must reload the shell in order to see uvicorn in the path lol
+RUN source ~/.bashrc
 
 VOLUME [ "/app", "/app/files", "/app/src" ]
-CMD ["python3", "src/flaskapp.py"]
+
+WORKDIR /app/src
+ENTRYPOINT uvicorn $API_START --host $API_HOST --port $API_PORT --reload

@@ -2,7 +2,12 @@
 import { useState, FormEvent } from 'react';
 
 export interface FormProps {
-    sendRequest: (formData: any) => Promise<void>
+    sendRequest: (data: any) => Promise<void>
+}
+
+export interface UserProps {
+    email: string,
+    password: string
 }
 
 
