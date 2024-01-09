@@ -52,7 +52,6 @@ services:
       backend:
         ipv4_address: '${WEB_HOST}'
     volumes:
-      - ./web:/app
       - ./.env:/app/.env:ro
 
 networks:
