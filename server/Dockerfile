@@ -13,9 +13,9 @@ COPY . /app
 # Install dependencies
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN apt update -y
-RUN apt install $(cat os_requirements.txt | tr '\n' ' ') -y
+RUN apt install python3-pip python3-dev uvicorn -y
 RUN pip install --upgrade pip
-RUN pip3 install -r python_requirements.txt
+RUN pip3 install -r requirements.txt
 
 # we must reload the shell in order to see uvicorn in the path lol
 RUN source ~/.bashrc
