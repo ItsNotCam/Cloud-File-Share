@@ -29,7 +29,7 @@ def root():
     )
 
     with cnx.cursor() as cursor:
-      res = cursor.execute("SELECT * FROM USER")
+      res = cursor.execute("SELECT * FROM USER ORDER BY CREATED_AT")
       for r in cursor.fetchall():
         ok = []
         for a in r:
