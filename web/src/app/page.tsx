@@ -7,10 +7,19 @@ interface ok {
 
 async function sendRequest(data: UserProps) {
   "use server"
-  const resp = await axios.post(
-    `http://${process.env.API_HOST}:${process.env.API_PORT}/api/user`,
-    { body: data }
-  )
+
+  var formData = new FormData()
+  formData.append("email", data.email)
+  formData.append("password", data.password)
+
+  const resp = await axios({
+    method: "post",
+    url: `http://${process.env.API_HOST}:${process.env.API_PORT}/api/user`,
+    data: formData,
+    headers: {"Content-Type": "multipart/form-data"}
+  })
+
+  console.log(resp.data)
 }
 
 export default async function Home() {

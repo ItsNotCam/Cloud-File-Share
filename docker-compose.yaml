@@ -36,15 +36,10 @@ services:
     networks:
       backend:
         ipv4_address: '${API_HOST}'
-    depends_on:
-      db:
-        condition: service_healthy
-    healthcheck:
-      test: ['CMD','curl', '${API_HOST}:${API_PORT}/api/test']
-      interval: 1s
-      timeout: 2s
-      retries: 100
-  
+#    depends_on:
+#      db:
+#        condition: service_healthy
+
   web:
     image: cam/gdc_web
     container_name: gdc_web
