@@ -7,14 +7,27 @@ interface ok {
 
 async function sendRequest(data: UserProps) {
   "use server"
-
-  var formData = new FormData()
+  
+  var formData: FormData = new FormData()
   formData.append("email", data.email)
   formData.append("password", data.password)
 
   const resp = await axios({
     method: "post",
     url: `http://${process.env.API_HOST}:${process.env.API_PORT}/api/user`,
+    data: formData,
+    headers: {"Content-Type": "multipart/form-data"}
+  })
+  
+  console.log(resp.data)
+}
+
+async function sendFile(formData: FormData) {
+  "use server"
+
+  const resp = await axios({
+    method: "post",
+    url: `http://${process.env.API_HOST}:${process.env.API_PORT}/api/upload`,
     data: formData,
     headers: {"Content-Type": "multipart/form-data"}
   })
@@ -34,7 +47,7 @@ export default async function Home() {
   return (
     <main>
       {/* {data.tables.map((table, key) => <p key={key}>{table}</p>)} */}
-      <MyForm sendRequest={sendRequest}/>
+      <MyForm sendRequest={sendRequest} sendFile={sendFile}/>
     </main>
   )
 }
