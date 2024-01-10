@@ -1,42 +1,43 @@
 **/.venv
-server/files
+server/app/files
 db/mysql_data
 **/__pycache__
 **.vscode
+**.next
 
 # NextJS Gitignore
 
 # dependencies
-web/node_modules
-web/.pnp
-web/.pnp.js
-web/.yarn/install-state.gz
+web/app/node_modules
+web/app/.pnp
+web/app/.pnp.js
+web/app/.yarn/install-state.gz
 
 # testing
-web/coverage
+web/app/coverage
 
 # next.js
-web/.next/
-web/out/
+web/app/.next/
+web/app/out/
 
 # production
-web/build
+web/app/build
 
 # misc
-web/.DS_Store
-web/*.pem
+web/app/.DS_Store
+web/app/*.pem
 
 # debug
-web/npm-debug.log*
-web/yarn-debug.log*
-web/yarn-error.log*
+web/app/npm-debug.log*
+web/app/yarn-debug.log*
+web/app/yarn-error.log*
 
 # local env files
-web/.env*.local
+web/app/.env*.local
 
 # vercel
-web/.vercel
+web/app/.vercel
 
 # typescript
-web/*.tsbuildinfo
-web/next-env.d.ts
+web/app/*.tsbuildinfo
+web/app/next-env.d.ts
