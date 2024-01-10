@@ -30,8 +30,6 @@ async function sendRequest(data: UserProps) {
     data: formData,
     headers: {"Content-Type": "multipart/form-data"}
   })
-  
-  console.log(resp.data)
 }
 
 async function sendFile(formData: FormData) {
@@ -43,8 +41,6 @@ async function sendFile(formData: FormData) {
     data: formData,
     headers: {"Content-Type": "multipart/form-data"}
   })
-
-  console.log(resp.data)
 }
 
 async function updateFiles(): Promise<FileData[]> {
