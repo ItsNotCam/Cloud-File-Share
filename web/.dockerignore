@@ -1,4 +1,4 @@
-node_modules
-Dockerfile
-next.config.js
+app/node_modules
+app/Dockerfile
+app/next.config.js
 .env
