@@ -7,7 +7,7 @@ RUN npm cache clean --force
 RUN npm install -g npm@latest
 RUN npm i
 
-COPY app/* .
+COPY app/* /app/
 
 VOLUME ["/app"]
 CMD ["npm", "run", "dev"]

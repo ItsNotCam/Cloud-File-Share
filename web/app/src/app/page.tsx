@@ -57,7 +57,6 @@ async function updateFiles(): Promise<FileData[]> {
   all_files.forEach(f => {
     data.push({
       Name: f.NAME,
-      Filename: f.FILENAME,
       Extension: f.EXTENSION,
       Description: f.DESCRIPTION,
       Size_Bytes: f.SIZE_BYTES,
@@ -71,12 +70,12 @@ async function updateFiles(): Promise<FileData[]> {
   return data;
 }
 
-export default async function Home() {
+export default async function Home(): Promise<JSX.Element> {
   return (
-    <main>
+    <>
       <MyForm sendRequest={sendRequest} sendFile={sendFile}/>
       <br />
       <Files updateFiles={updateFiles}/>
-    </main>
+    </>
   )
 }
