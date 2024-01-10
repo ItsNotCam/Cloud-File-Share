@@ -11,7 +11,7 @@ api_host = os.getenv("API_HOST")
 api_port = os.getenv("API_PORT")
 
 for i in range(0, int(sys.argv[1])):
-    resp = requests.get('https://random-data-api.com/api/bank/random_bank?size=3')
+    resp = requests.get('https://random-data-api.com/api/bank/random_bank?size=1')
     
     passwd = resp.json()[0]['routing_number']
     bank_name = resp.json()[0]['bank_name']

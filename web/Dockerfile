@@ -1,8 +1,9 @@
 FROM node:latest
+RUN apt install curl
 
 WORKDIR /app
 
-COPY app/package*.json /app/
+COPY app/package*.json .
 RUN npm cache clean --force
 RUN npm install -g npm@latest
 RUN npm i
@@ -10,5 +11,4 @@ RUN npm i
 COPY app/* /app/
 
 VOLUME ["/app"]
-CMD ["npm", "run", "dev"]
-# ENTRYPOINT npm run dev
+ENTRYPOINT npm run dev

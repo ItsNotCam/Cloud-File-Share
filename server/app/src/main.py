@@ -31,7 +31,7 @@ def getFiles():
   )
 
   with cnx.cursor(dictionary=True) as cursor:
-    res = cursor.execute("SELECT * FROM FILE")
+    res = cursor.execute("SELECT * FROM FILE ORDER BY UPLOAD_TIME DESC")
     files.append(cursor.fetchall())
 
   cnx.close()
@@ -39,7 +39,7 @@ def getFiles():
   return {"files": files}
 
 @app.post("/api/upload")
-async def uploadFile(file: UploadFile):
+async def uploadFile(file: UploadFile, description: Annotated[str, Form()]):
   filename = file.filename
   file_path = os.path.join("/app/files", filename)
 
@@ -62,7 +62,7 @@ async def uploadFile(file: UploadFile):
         
         NAME = os.path.splitext(filename)[0]
         EXTENSION = os.path.splitext(str(file_path))[1]
-        DESCRIPTION = "a new file"
+        DESCRIPTION = description
         INTERNAL_FILE_PATH = file_path
         SIZE_BYES = len(fs)
         UPLOAD_TIME = "DEFAULT"
