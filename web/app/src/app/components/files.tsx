@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 
+// cool icons https://www.veryicon.com/icons/file-type/
+
 export interface FileData {
   Name: string,
-  Filename: string,
+  // Filename: string,
   Extension: string,
   Description: string | null,
   Size_Bytes: number,
@@ -25,10 +27,9 @@ export default function Files(props: {updateFiles: () => Promise<FileData[]>}) {
         <thead>
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">Filename</th>
             <th scope="col">Extension</th>
             <th scope="col">Description</th>
-            <th scope="col">Size (Bytes)</th>
+            <th scope="col">Size</th>
             <th scope="col">Upload Time</th>
             <th scope="col">Uploader</th>
           </tr>
@@ -43,13 +44,14 @@ export default function Files(props: {updateFiles: () => Promise<FileData[]>}) {
 
 function MyFile(props: {file: FileData}): JSX.Element {
   const {file} = props;
+  const mb = (file.Size_Bytes / (1*Math.pow(10, 6))).toFixed(2)
+
   return (
     <tr>
       <td>{file.Name}</td>
-      <td>{file.Filename}</td>
       <td>{file.Extension}</td>
       <td>{file.Description}</td>
-      <td>{file.Size_Bytes}</td>
+      <td>{mb} MB</td>
       <td>{file.Upload_Time}</td>
       <td>{file.Owner}</td>
     </tr>
