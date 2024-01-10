@@ -8,7 +8,9 @@ ENV API_START=$API_START
 # Copy files
 WORKDIR /app/files
 WORKDIR /app
-COPY . /app
+
+COPY app/* .
+COPY requirements.txt .
 
 # Install dependencies
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
