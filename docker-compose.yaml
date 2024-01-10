@@ -19,7 +19,7 @@ services:
       test: ['CMD','mysqladmin', '-u', '${DB_USER}', '-p${DB_PASS}', 'ping', '-h', '${DB_HOST}']
       interval: 1s
       timeout: 2s
-      retries: 100
+      retries: 20
 
   api:
     image: cam/gdc_api
@@ -31,29 +31,34 @@ services:
       - '${API_PORT}:${API_PORT}'
     volumes:
       - ./server/app/files:/app/files:rw  # saved files
-      - ./server/app/src:/app/src:ro      # live dev - works.. kinda?? - weird lol
-      - ./.env:/app/.env:ro           # env
+      - ./server/app/src:/app/src:ro      # live dev
+      - ./.env:/app/.env:ro               # env
     networks:
       backend:
         ipv4_address: '${API_HOST}'
-#    depends_on:
-#      db:
-#        condition: service_healthy
 
-  web:
-    image: cam/gdc_web
-    container_name: gdc_web
-    restart: always
-    env_file: ./.env
-    build: ./web
-    ports:
-      - '${WEB_PORT}:3000'
-    networks:
-      backend:
-        ipv4_address: '${WEB_HOST}'
-    volumes:
-      #- ./web:/app
-      - ./.env:/app/.env:ro
+  # web:
+  #   image: cam/gdc_web
+  #   container_name: gdc_web
+  #   restart: always
+  #   env_file: ./.env
+  #   build: ./web
+  #   ports:
+  #     - '${WEB_PORT}:3000'
+  #   networks:
+  #     backend:
+  #       ipv4_address: '${WEB_HOST}'
+  #   volumes:
+  #     - type: bind
+  #       source: ./web/app/src
+  #       target: /app/src
+  #     - type: bind
+  #       source: ./web/app/public
+  #       target: /app/public
+  #     # - ./app/node_modules
+  #     # - ./app/.next
+  #     # - ./web/app/src:/app/src:ro
+  #     - ./.env:/app/.env:ro
 
 networks:
   backend:
