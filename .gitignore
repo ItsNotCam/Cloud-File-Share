@@ -1,5 +1,4 @@
 **/.venv
-**/node_modules
 server/app/files
 db/mysql_data
 **/__pycache__
