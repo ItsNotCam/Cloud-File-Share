@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
 
+// TEMPORARY
+const dotenv = require('dotenv');
+dotenv.config({path: '../.env'})
+
+const nextConfig = { }
 module.exports = nextConfig
