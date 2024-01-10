@@ -41,11 +41,10 @@ def getFiles():
 @app.post("/api/upload")
 async def uploadFile(file: UploadFile):
   filename = file.filename
-  
   file_path = os.path.join("/app/files", filename)
-  print(file_path)
 
   try:
+    fs = await file.read()
     with open(file_path, "wb") as f:
       f.write(file.file.read())
 
@@ -58,26 +57,24 @@ async def uploadFile(file: UploadFile):
     )
 
     with cnx.cursor() as cursor:
-        res = cursor.execute("SELECT EMAIL FROM USER ORDER BY CREATED_AT LIMIT 1")
+        res = cursor.execute("SELECT EMAIL FROM USER ORDER BY RAND() LIMIT 1")
         email = cursor.fetchall()[0][0]
-        print(email)
         
-        EXTENSION = ".ok"
+        NAME = os.path.splitext(filename)[0]
+        EXTENSION = os.path.splitext(str(file_path))[1]
         DESCRIPTION = "a new file"
         INTERNAL_FILE_PATH = file_path
-        SIZE_BYES = 100
+        SIZE_BYES = len(fs)
         UPLOAD_TIME = "DEFAULT"
         ORIGINAL_OWNER_EMAIL = email
 
         sql = (
-            "INSERT INTO FILE VALUES ("
-            f" DEFAULT, \"{filename}\", \"{EXTENSION}\","
-            f" \"{DESCRIPTION}\", \"{file_path}\", {SIZE_BYES}, DEFAULT,"
-            f" \"{email}\", NULL, NULL"
-            ")"
+          "INSERT INTO FILE VALUES ("
+          f" DEFAULT, \"{NAME}\", \"{filename}\", \"{EXTENSION}\","
+          f" \"{DESCRIPTION}\", \"{file_path}\", {SIZE_BYES}, DEFAULT,"
+          f" \"{email}\", NULL, NULL"
+          ")"
         )
-
-        print(sql)
 
         cursor.execute(sql)
         cnx.commit()
@@ -93,23 +90,23 @@ async def uploadFile(file: UploadFile):
 def root():
     TABLES = []
     try:
-        cnx = mysql.connector.connect(
-            user=DB_USER,
-            password=DB_PASS,
-            host=DB_HOST,
-            database=MYSQL_ROOT_DATABASE,
-            port=DB_PORT
-        )
+      cnx = mysql.connector.connect(
+        user=DB_USER,
+        password=DB_PASS,
+        host=DB_HOST,
+        database=MYSQL_ROOT_DATABASE,
+        port=DB_PORT
+      )
 
-        with cnx.cursor() as cursor:
-            res = cursor.execute("SELECT * FROM USER ORDER BY CREATED_AT")
-            for r in cursor.fetchall():
-                ok = []
-                for a in r:
-                    ok.append(a)
-                    TABLES.append(ok)
+      with cnx.cursor() as cursor:
+        res = cursor.execute("SELECT * FROM USER ORDER BY CREATED_AT")
+        for r in cursor.fetchall():
+          ok = []
+          for a in r:
+            ok.append(a)
+          TABLES.append(ok)
 
-        cnx.close()
+      cnx.close()
     except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))
     
@@ -120,26 +117,26 @@ async def setUser(email: Annotated[str, Form()], password: Annotated[str, Form()
     print(f"{email} - {password}")
 
     try:
-        cnx = mysql.connector.connect(
-            user=DB_USER,
-            password=DB_PASS,
-            host=DB_HOST,
-            database=MYSQL_ROOT_DATABASE,
-            port=DB_PORT
+      cnx = mysql.connector.connect(
+        user=DB_USER,
+        password=DB_PASS,
+        host=DB_HOST,
+        database=MYSQL_ROOT_DATABASE,
+        port=DB_PORT
+      )
+
+      print("connected")
+
+      with cnx.cursor() as cursor:
+        sql = (
+          "INSERT INTO USER "
+          "(EMAIL, PASSWORD) "
+          f"VALUES (\"{email}\", \"{password}\")"
         )
 
-        print("connected")
-
-        with cnx.cursor() as cursor:
-            sql = (
-                "INSERT INTO USER "
-                "(EMAIL, PASSWORD) "
-                f"VALUES (\"{email}\", \"{password}\")"
-            )
-
-            cursor.execute(sql)
-            cnx.commit()
-        cnx.close()
+        cursor.execute(sql)
+        cnx.commit()
+      cnx.close()
     except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))
 

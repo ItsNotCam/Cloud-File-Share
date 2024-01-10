@@ -1,5 +1,4 @@
 'use client'
-import { Prosto_One } from 'next/font/google';
 import { useState, FormEvent } from 'react';
 
 export interface FormProps {
@@ -11,7 +10,6 @@ export interface UserProps {
     email: string,
     password: string
 }
-
 
 export default function MyForm(props: FormProps) {
     const [email, setEmail] = useState<string>("");
