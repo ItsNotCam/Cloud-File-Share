@@ -15,6 +15,7 @@ export default function MyForm(props: FormProps) {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [file, setFile] = useState("");
+    const [description, setDescription] = useState<string>("");
 
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -25,59 +26,54 @@ export default function MyForm(props: FormProps) {
         })
     }
 
-    async function sendFile(event: FormEvent<HTMLFormElement>) {
+    async function uploadFile(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
         let formData: FormData = new FormData()
         formData.append("file", file)
+        formData.append("description", description)
 
         props.sendFile(formData)
-        // const files = Array.from(event.target.files)
-        // console.log("files: ", files)
-        // let target = event.target
-        // if(target !== null) {
-        //     var formData: FormData = new FormData()
-        //     let files = (target as HTMLInputElement).files
-        //     console.log(files)
-        //     if(files !== null && files.length > 0) {
-        //         formData.append("file", files[0])
-        //         props.sendFile(formData)
-        //     }
-        // }
-    }
-
-    function handleFileChange(event: any) {
-        setFile(event.target.files[0])
     }
 
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <input 
+                <input
                     id="email"
                     name='email'
                     type="email"
-                    placeholder='email' 
-                    required 
-                    onChange={(event: any) => setEmail(event.target.value)} 
+                    placeholder='email'
+                    required
+                    onChange={(event: any) => setEmail(event.target.value)}
                     value={email}
                 /><br />
 
-                <input 
+                <input
                     type="password"
                     id="password"
                     name='password'
                     placeholder="password"
                     required
-                    onChange={(event: any) => setPassword(event.target.value)} 
+                    onChange={(event: any) => setPassword(event.target.value)}
                     value={password}
                 /><br />
 
                 <button type="submit">Submit</button>
             </form>
             <br />
-            <form onSubmit={sendFile}>
-                <input type="file" id="file" name="file" onChange={handleFileChange}/>
+            <form onSubmit={uploadFile}>
+                <input type="text"
+                    id="description"
+                    name="description"
+                    onChange={(event: any) => setDescription(event.target.value)}
+                    value={description} 
+                /><br />
+                <input type="file"
+                    id="file"
+                    name="file"
+                    onChange={(event: any) => { setFile(event.target.files[0]) }} 
+                /><br />
                 <button type="submit">Submit</button>
             </form>
         </div>
