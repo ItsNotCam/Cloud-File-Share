@@ -1,4 +1,6 @@
+import { promises as fs } from "fs"
 import { SERVER_SOCKET } from "../helpers/constants"
+import {TreeRoot} from './tree'
 
 interface FileProps {
   UUID: string,
@@ -17,10 +19,15 @@ export default async function Home() {
   const { files } = await fetch(`http://${SERVER_SOCKET}/api/files`)
     .then(d => d.json())
 
+  const stuff = await fs.readFile(process.cwd() + "/data/directories/cam.json", 'utf8');
+  const js = JSON.parse(stuff)
+
   return (
     <div className="container">
-      <br />
-      <br />
+      <br /><br />
+      <div style={{userSelect: "none"}}>
+        <TreeRoot {...js}/>
+      </div>
       <table className="table table-dark table-striped table-hover table-bordered">
         <thead>
           <tr>
@@ -53,7 +60,7 @@ const File = (props: FileProps): JSX.Element => {
     <tr>
       <td scope="row">{props.NAME}</td>
       <td scope="row">{props.EXTENSION}</td>
-      <td scope="row">{props.DESCRIPTION}</td>
+      <td scope="row">{props.DESCRIPTION || ""}</td>
       <td scope="row">{size} MB</td>
       <td scope="row">{props.UPLOAD_TIME}</td>
       <td scope="row">{props.ORIGINAL_OWNER_EMAIL}</td>

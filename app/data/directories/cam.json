@@ -1,0 +1,98 @@
+{
+  "files": [
+    {
+      "type": "file",
+      "name": "File",
+      "uuid": "file_uuid1",
+      "items": []
+    },
+    {
+      "type": "directory",
+      "name": "Folder 1",
+      "uuid": "",
+      "items": [
+        {
+          "type": "file",
+          "uuid": "file_uuid2",
+          "name": "File",
+          "items": []
+        },
+        {
+          "type": "file",
+          "uuid": "file_uuid3",
+          "name": "File",
+          "items": []
+        },
+        {
+          "type": "directory",
+          "name": "Folder 2",
+          "uuid": "",
+          "items": [
+            {
+              "type": "file",
+              "uuid": "file_uuid4",
+              "name": "File",
+              "items": []
+            },
+            {
+              "type": "file",
+              "uuid": "file_uuid5",
+              "name": "File",
+              "items": []
+            },
+            {
+              "type": "directory",
+              "name": "Folder 3",
+              "uuid": "",
+              "items": [
+                {
+                  "type": "file",
+                  "uuid": "file_uuid4",
+                  "name": "File",
+                  "items": []
+                },
+                {
+                  "type": "file",
+                  "uuid": "file_uuid5",
+                  "name": "File",
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "file",
+          "uuid": "file_uuid6",
+          "name": "File",
+          "items": []
+        },
+        {
+          "type": "file",
+          "uuid": "file_uuid7",
+          "name": "File",
+          "items": []
+        }
+      ]
+    },
+    {
+      "type": "file",
+      "name": "File",
+      "uuid": "file_uuid8",
+      "items": []
+    },
+    {
+      "type": "file",
+      "name": "File",
+      "uuid": "file_uuid9",
+      "items": []
+    },
+    {
+      "type": "file",
+      "name": "File",
+      "uuid": "file_uuid10",
+      "items": []
+    }
+  ],
+  "trash": []
+}
