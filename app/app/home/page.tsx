@@ -1,4 +1,4 @@
-const SERVER_SOCKET = `${process.env.API_HOST}:${process.env.API_PORT}`
+import { SERVER_SOCKET } from "../helpers/constants"
 
 interface FileProps {
   UUID: string,
@@ -14,7 +14,7 @@ interface FileProps {
 }
 
 export default async function Home() {
-  const { files } = await fetch(`http://localhost:3000/api/files`)
+  const { files } = await fetch(`http://${SERVER_SOCKET}/api/files`)
     .then(d => d.json())
 
   return (
@@ -33,27 +33,30 @@ export default async function Home() {
           </tr>
         </thead>
         <tbody>
-          {files.map((file: FileProps, idx: number) => {
-            let size: string = ""
-            if(file.SIZE_BYTES >= Math.pow(1, 6)) {
-              size = (file.SIZE_BYTES / Math.pow(10, 6)).toFixed(2)
-            } else {
-              size = (file.SIZE_BYTES / Math.pow(10, 3)).toFixed(2)
-            }
-
-            return (
-              <tr key={idx}>
-                <td scope="row">{file.NAME}</td>
-                <td scope="row">{file.EXTENSION}</td>
-                <td scope="row">{file.DESCRIPTION}</td>
-                <td scope="row">{size} MB</td>
-                <td scope="row">{file.UPLOAD_TIME}</td>
-                <td scope="row">{file.ORIGINAL_OWNER_EMAIL}</td>
-              </tr>
-            )}
-          )}
+          {files.map((file: FileProps, idx: number) => <File {...file} key={idx} />)}
         </tbody>
       </table>
     </div>
+  )
+}
+
+const File = (props: FileProps): JSX.Element => {
+  let size: string = ""
+
+  if(props.SIZE_BYTES >= Math.pow(1, 6)) {
+    size = (props.SIZE_BYTES / Math.pow(10, 6)).toFixed(2)
+  } else {
+    size = (props.SIZE_BYTES / Math.pow(10, 3)).toFixed(2)
+  }
+
+  return (
+    <tr>
+      <td scope="row">{props.NAME}</td>
+      <td scope="row">{props.EXTENSION}</td>
+      <td scope="row">{props.DESCRIPTION}</td>
+      <td scope="row">{size} MB</td>
+      <td scope="row">{props.UPLOAD_TIME}</td>
+      <td scope="row">{props.ORIGINAL_OWNER_EMAIL}</td>
+    </tr>
   )
 }
