@@ -45,14 +45,15 @@ const Tree = (props: {item: DirectoryProps, indent: number}): JSX.Element => {
           <h1 style={{margin: 0}}>
             <span style={{fontSize: "2rem"}}>
               {type === "directory" && isDroppedDown ? "v" : ">"}
-            </span> <span style={{color: "blue"}}>{name}</span>
+            </span> 
+            <span style={{color: "blue"}}>
+              {` ${name}`}
+            </span>
           </h1>      
         </div>
-        { isDroppedDown && (
-          <div>
-            {items.map((item, idx) => <Tree item={item} indent={indent+1} key={idx+100}/>)}
-          </div>
-        )}
+        <div style={{display: isDroppedDown ? "block" : "none"}}>
+          {items.map((item, idx) => <Tree item={item} indent={indent+1} key={idx+100}/>)}
+        </div>
     </div>
     )
   }
