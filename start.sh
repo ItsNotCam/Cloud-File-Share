@@ -1,3 +1,3 @@
 docker-compose up -d --build
-cd web/app
+cd app
 npm run dev
