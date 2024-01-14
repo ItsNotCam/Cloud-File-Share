@@ -1,0 +1,17 @@
+body {
+  background-color: gray;
+}
+
+.loading {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 50px;
+  /* position: absolute; */
+  /* bottom: 50%; */
+  /* left: 50%; */
+  color: pink;
+  /* z-index: 999999; */
+
+  transition: all 0.2s;
+}

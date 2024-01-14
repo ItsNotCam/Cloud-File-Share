@@ -1,3 +1,5 @@
+// GET ALL USERS
+
 "use server"
 
 //https://jasonwatmore.com/next-js-13-mysql-user-registration-and-login-tutorial-with-example-app

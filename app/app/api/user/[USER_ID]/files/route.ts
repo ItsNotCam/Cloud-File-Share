@@ -1,3 +1,5 @@
+// GET USER FILES
+
 "use server"
 
 import { CreateConnection } from '@/app/helpers/DB';
@@ -6,18 +8,13 @@ import { CreateConnection } from '@/app/helpers/DB';
 import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
-  const queryParams = request.nextUrl.searchParams
-  const user = queryParams.get("user")
-
-  let SQL: string = "SELECT * FROM FILE"
-  if( user !== null) {
-    console.log(user)
-    SQL = `${SQL} WHERE ORIGINAL_OWNER_EMAIL='${user}'`
-  }
+export async function GET(request: NextRequest, context: { params: any }): Promise<NextResponse> {
+  // const queryParams = request.nextUrl.searchParams
 
   const connection: mysql.Connection = await CreateConnection()
+  let SQL: string = `SELECT * FROM FILE WHERE OWNER_ID='${context.params.USER_ID}'`
   const [res] = await connection.query(SQL)
+
   return NextResponse.json({
     files: res
   }, {
