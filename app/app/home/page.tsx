@@ -1,10 +1,10 @@
 import { SERVER_SOCKET } from "@/app/_helpers/constants"
 import UploadForm from "@/app/home/_components/UploadForm"
 import { GetFiles } from "@/app/api/admin/files/route"
-import { FileProps } from "../_helpers/types"
+import { IFileProps } from "../_helpers/types"
 
 export default async function Home() {
-  const files: FileProps[] = await GetFiles().then(f => f.files)
+  const files: IFileProps[] = await GetFiles().then(f => f.files)
 
   return (
     <div className="container">
@@ -21,7 +21,7 @@ export default async function Home() {
           </tr>
         </thead>
         <tbody>
-          {files.map((file: FileProps, idx: number) => <File {...file} key={idx} />)}
+          {files.map((file: IFileProps, idx: number) => <File {...file} key={idx} />)}
         </tbody>
       </table>
       <UploadForm SERVER_SOCKET={SERVER_SOCKET} />
@@ -29,7 +29,7 @@ export default async function Home() {
   )
 }
 
-const File = (props: FileProps): JSX.Element => {
+const File = (props: IFileProps): JSX.Element => {
   let size: string = ""
 
   if(props.SIZE_BYTES >= 1024) {

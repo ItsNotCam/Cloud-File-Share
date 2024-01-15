@@ -1,18 +1,18 @@
 // GET ALL FILES
 import { CreateConnection } from '@/app/_helpers/db';
-import { FileProps } from "../../../_helpers/types";
+import { IFileProps } from "../../../_helpers/types";
 
 import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
-import { FileList } from '../../../_helpers/types';
+import { IFileList } from '../../../_helpers/types';
 
-async function GetFiles(): Promise<FileList> {
+async function GetFiles(): Promise<IFileList> {
   let SQL: string = "SELECT * FROM FILE"
 
   const connection: mysql.Connection = await CreateConnection()
   const [res] = await connection.query(SQL)
 
-  return {files: res as FileProps[]}
+  return {files: res as IFileProps[]}
 }
 
 async function GET(request: NextRequest): Promise<NextResponse> {

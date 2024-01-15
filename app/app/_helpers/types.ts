@@ -1,9 +1,8 @@
+export interface IFileList {
+  files: IFileProps[];
+};
 
-export type FileList = {
-  files: FileProps[];
-};// import {GetFiles} from '@app/api/admin/files/route.ts'
-
-export type FileProps = {
+export interface IFileProps {
   UUID: string
   NAME: string
   FILENAME: string
@@ -19,4 +18,3 @@ export interface IUserProps {
   EMAIL: string;
   PASSWORD: string;
 }
-

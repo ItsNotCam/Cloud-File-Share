@@ -1,15 +1,15 @@
 // GET USER FILES
 import { CreateConnection } from '@/app/_helpers/db';
-import { FileProps } from "@/app/_helpers/types";
+import { IFileProps } from "@/app/_helpers/types";
 
 import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GetFilesFromUserWithID(USER_ID: string): Promise<FileProps[]> {
+export async function GetFilesFromUserWithID(USER_ID: string): Promise<IFileProps[]> {
   const connection: mysql.Connection = await CreateConnection()
   let SQL: string = `SELECT * FROM FILE WHERE OWNER_ID='${USER_ID}'`
   const [res] = await connection.query(SQL)
-  return res as FileProps[]
+  return res as IFileProps[]
 }
 
 export async function GET(request: NextRequest, context: { params: any }): Promise<NextResponse> {
