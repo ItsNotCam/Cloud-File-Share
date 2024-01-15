@@ -64,8 +64,8 @@ async function getFileInfo(file: File): Promise<string[]> {
 }
 
 
-const SaveFileToDatabase = async (connection: mysql.Connection, FILE_ID: string, FILENAME: string, NAME: string, 
-  EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<string> => {
+async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string, FILENAME: string, NAME: string, 
+  EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<string> {
 
   let SQL: string = `INSERT INTO FILE VALUES (
     '${FILE_ID}', '${FILENAME}', '${NAME}', '${EXTENSION}', '${EXTENSION}',
