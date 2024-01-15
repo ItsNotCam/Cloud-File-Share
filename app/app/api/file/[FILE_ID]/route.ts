@@ -18,7 +18,7 @@ interface IFileIDContext {
 }
 
 // Get file data
-export async function GET(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+async function GetFileInfo(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
   console.log(context)
   const { FILE_ID } = context.params;
 
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest, context: IFileIDContext): Promis
 }
 
 // Delete file from database
-export async function DELETE(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+async function DeleteFile(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
   const { FILE_ID } = context.params
 
   const connection: mysql.Connection = await CreateConnection()
@@ -79,7 +79,7 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 }
 
 // Update file information
-export async function PATCH(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
   const { FILE_ID } = context.params
   
   const js: IFileUpdate = await request.json()
@@ -110,3 +110,5 @@ export async function PATCH(request: NextRequest, context: IFileIDContext): Prom
     })
   }
 }
+
+export { GetFileInfo as GET, DeleteFile as DELETE, UpdateFileInfo as PATCH }

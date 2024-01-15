@@ -2,14 +2,14 @@
 
 "use server"
 
-import { CreateConnection } from '@/app/helpers/DB'
+import { CreateConnection } from '@/app/_helpers/DB'
 //https://jasonwatmore.com/next-js-13-mysql-user-registration-and-login-tutorial-with-example-app
 
 import mysql from 'mysql2/promise'
 import { NextResponse } from 'next/server'
 
 
-export async function GET(request: Request, context: { params: any }): Promise<NextResponse> {
+async function DownloadFile(request: Request, context: { params: any }): Promise<NextResponse> {
   const { FILE_ID } = context.params;
   const SQL: string = `SELECT INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`
   
@@ -27,3 +27,5 @@ export async function GET(request: Request, context: { params: any }): Promise<N
     status: 200
   })
 }
+
+export {DownloadFile as GET}

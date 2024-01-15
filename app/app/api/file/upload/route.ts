@@ -10,7 +10,7 @@ import {v4 as uuidv4} from 'uuid';
 
 const EXTENSION_REGEX = /(.*)(\.\w*)$|(.*)$/g
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+async function UploadFile(request: NextRequest): Promise<NextResponse> {
   console.log(`GOT FILE`)
   const data = await request.formData()
   const file: File | null = data.get('file') as unknown as File
@@ -85,3 +85,5 @@ async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string,
 
   return SAVED_NAME
 }
+
+export {UploadFile as POST}
