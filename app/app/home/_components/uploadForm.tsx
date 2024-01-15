@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import axios, { AxiosProgressEvent } from 'axios';
 import ProgressBar from 'react-bootstrap/ProgressBar';
-import './uploadform.css'
+import './uploadForm.css'
 
 export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element {
   const [file, setFile] = useState<File>()

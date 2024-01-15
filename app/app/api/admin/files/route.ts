@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { IFileList } from '../../../_helpers/types';
 
 async function GetFiles(): Promise<IFileList> {
-  let SQL: string = "SELECT * FROM FILE"
+  let SQL: string = "SELECT * FROM FILE ORDER BY SIZE_BYTES DESC"
 
   const connection: mysql.Connection = await CreateConnection()
   const [res] = await connection.query(SQL)

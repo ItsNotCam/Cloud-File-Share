@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './home/_components/uploadform.css'
+import './home/_components/uploadForm.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
