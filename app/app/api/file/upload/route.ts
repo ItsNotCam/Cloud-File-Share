@@ -1,5 +1,5 @@
 // UPLOAD FILE
-import { CreateConnection } from "@/app/_helpers/DB";
+import { CreateConnection } from "@/app/_helpers/db";
 import { writeFile } from "fs";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'

@@ -2,7 +2,7 @@
 
 "use server"
 
-import { CreateConnection } from '@/app/_helpers/DB'
+import { CreateConnection } from '@/app/_helpers/db'
 //https://jasonwatmore.com/next-js-13-mysql-user-registration-and-login-tutorial-with-example-app
 
 import mysql from 'mysql2/promise'

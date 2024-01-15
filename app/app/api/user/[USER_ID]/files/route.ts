@@ -1,5 +1,5 @@
 // GET USER FILES
-import { CreateConnection } from '@/app/_helpers/DB';
+import { CreateConnection } from '@/app/_helpers/db';
 import { FileProps } from "@/app/_helpers/types";
 
 import mysql from 'mysql2/promise'

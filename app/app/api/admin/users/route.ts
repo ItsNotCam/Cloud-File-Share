@@ -1,5 +1,5 @@
 // GET ALL USERS
-import { CreateConnection } from '@/app/_helpers/DB';
+import { CreateConnection } from '@/app/_helpers/db';
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request): Promise<NextResponse> {
