@@ -1,5 +1,5 @@
 **/.venv
-server/app/files
+app/data
 db/mysql_data
 **/__pycache__
 **.vscode
