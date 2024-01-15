@@ -14,7 +14,14 @@ export interface IFileProps {
   LAST_DOWNLOAD_TIME: Date | null
   LAST_DOWNLOAD_USER_ID: string | null
 }
+
 export interface IUserProps {
   EMAIL: string;
   PASSWORD: string;
 }
+
+export interface IFileUpdate {
+  DESCRIPTION: string | undefined;
+  NAME: string | undefined;
+}
+

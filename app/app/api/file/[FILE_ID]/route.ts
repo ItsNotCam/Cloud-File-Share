@@ -1,14 +1,9 @@
 // FILE ACTIONS
 import { CreateConnection } from '@/app/_helpers/db';
+import { IFileUpdate } from '@/app/_helpers/types';
 import fs from 'fs';
 import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
-
-
-interface IFileUpdate {
-  DESCRIPTION: string | undefined,
-  NAME: string | undefined
-}
 
 interface IFileIDContext {
   params: { FILE_ID: string }
