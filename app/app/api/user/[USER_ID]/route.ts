@@ -1,6 +1,6 @@
 // User actions
 
-import { CreateConnection } from "@/app/helpers/DB";
+import { CreateConnection } from "@/app/_helpers/DB";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
 
