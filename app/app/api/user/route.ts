@@ -23,17 +23,3 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   return NextResponse.json({ message: "success" }, { status: 200 })
 }
-
-export async function DELETE(request: NextRequest): Promise<NextResponse> {
-  const js: IDeleteUser = await request.json()
-  const { EMAIL } = js
-
-  // const GET_PASSWD_SQL: string = `SELECT COUNT(PASSWORD) FROM USER WHERE EMAIL='${EMAIL}'`
-  // const resp
-
-  const connection: mysql.Connection = await CreateConnection()
-  const SQL: string = `DELETE FROM USER WHERE EMAIL='${EMAIL}'`
-  await connection.execute(SQL)
-
-  return NextResponse.json({ message: "success" }, { status: 200 })
-}
