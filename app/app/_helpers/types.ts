@@ -11,7 +11,7 @@ export interface IFileProps {
   SIZE_BYTES: number
   UPLOAD_TIME: Date
   OWNER_ID: string
-  LAST_DOWNLOAD_TIME: string | null
+  LAST_DOWNLOAD_TIME: Date | null
   LAST_DOWNLOAD_USER_ID: string | null
 }
 export interface IUserProps {
