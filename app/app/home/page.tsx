@@ -1,5 +1,5 @@
 import { SERVER_SOCKET } from "@/app/_helpers/constants"
-import UploadForm from "@/app/home/_components/UploadForm"
+import UploadForm from "@/app/home/_components/uploadForm"
 import { GetFiles } from "@/app/api/admin/files/route"
 import { IFileProps } from "../_helpers/types"
 
