@@ -1,23 +1,33 @@
 // GET USER FILES
-
-"use server"
-
 import { CreateConnection } from '@/app/_helpers/DB';
-//https://jasonwatmore.com/next-js-13-mysql-user-registration-and-login-tutorial-with-example-app
+import { FileProps } from "@/app/_helpers/types";
 
 import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
 
-async function GetFilesFromUserWithID(request: NextRequest, context: { params: any }): Promise<NextResponse> {
+export async function GetFilesFromUserWithID(USER_ID: string): Promise<FileProps[]> {
   const connection: mysql.Connection = await CreateConnection()
-  let SQL: string = `SELECT * FROM FILE WHERE OWNER_ID='${context.params.USER_ID}'`
+  let SQL: string = `SELECT * FROM FILE WHERE OWNER_ID='${USER_ID}'`
   const [res] = await connection.query(SQL)
+  return res as FileProps[]
+}
+
+export async function GET(request: NextRequest, context: { params: any }): Promise<NextResponse> {
+  const USER_ID: string = context.params.USER_ID
+  const res = await GetFilesFromUserWithID(USER_ID)
+
+  if(res.length < 1) {
+    return NextResponse.json({
+      message: "User does not exist"
+    }, {
+      status: 400
+    })
+  }
 
   return NextResponse.json({
+    message: "success",
     files: res
   }, {
     status: 200
   })
 }
-
-export {GetFilesFromUserWithID as GET}

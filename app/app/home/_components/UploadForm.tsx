@@ -15,7 +15,10 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
 
   const uploadFile = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if(!file) return
+    if(!file) {
+      alert("failed to upload - no file was present")
+      return
+    }
 
     try {
       const data = new FormData()
@@ -50,7 +53,7 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
         Email: <input type="text" name="EMAIL" onChange={(e) => setEmail(e.target.value)} /> <br /><br />
         Password: <input type="text" name="PASSWORD" onChange={(e) => setPassword(e.target.value)} /> <br /><br />
         <input type="file" name="file" onChange={(e) => setFile(e.target.files?.[0])}/>
-        <input type="submit" value="Upload" />
+        <input type="submit" value="Upload" disabled={file == null}/>
       </form>
       {isUploading && <><br /><ProgressBar now={uploadingProgress} /></>}
     </div>

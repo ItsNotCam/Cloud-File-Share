@@ -1,37 +1,14 @@
-import { promises as fs } from "fs"
-import { SERVER_SOCKET } from "../helpers/constants"
-import {TreeRoot} from './_components/tree'
-import UploadForm from "./_components/UploadForm"
-
-interface FileProps {
-  UUID: string,
-  NAME: string,
-  FILENAME: string,
-  EXTENSION: string | null,
-  DESCRIPTION: string | null,
-  SIZE_BYTES: number,
-  UPLOAD_TIME: string,
-  OWNER_ID: string,
-  LAST_DOWNLOAD_TIME: string | null,
-  LAST_DOWNLOAD_USER_ID: string | null,
-}
+import { SERVER_SOCKET } from "@/app/_helpers/constants"
+import UploadForm from "@/app/home/_components/UploadForm"
+import { GetFiles } from "@/app/api/admin/files/route"
+import { FileProps } from "../_helpers/types"
 
 export default async function Home() {
-  //{ files } 
-  const data = await fetch(`http://${SERVER_SOCKET}/api/test/files`)
-    .then(d => d.json())
-  const files = data.files
-
-  // const files = ok.files
-  // const stuff = await fs.readFile(process.cwd() + "/data/directories/cam.json", 'utf8');
-  // const js = JSON.parse(stuff)
+  const files: FileProps[] = await GetFiles().then(f => f.files)
 
   return (
     <div className="container">
       <br /><br />
-      {/* <div style={{userSelect: "none"}}>
-        <TreeRoot {...js}/>
-      </div> */}
       <table className="table table-dark table-striped table-hover table-bordered">
         <thead>
           <tr>
@@ -67,7 +44,7 @@ const File = (props: FileProps): JSX.Element => {
       <td scope="row">{props.EXTENSION}</td>
       <td scope="row">{props.DESCRIPTION || ""}</td>
       <td scope="row">{size} MB</td>
-      <td scope="row">{props.UPLOAD_TIME}</td>
+      <td scope="row">{props.UPLOAD_TIME.toString()}</td>
       <td scope="row">{props.OWNER_ID}</td>
     </tr>
   )

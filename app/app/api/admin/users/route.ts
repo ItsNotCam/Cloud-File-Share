@@ -1,8 +1,4 @@
 // GET ALL USERS
-
-"use server"
-
-//https://jasonwatmore.com/next-js-13-mysql-user-registration-and-login-tutorial-with-example-app
 import { CreateConnection } from '@/app/_helpers/DB';
 import { NextResponse } from 'next/server'
 

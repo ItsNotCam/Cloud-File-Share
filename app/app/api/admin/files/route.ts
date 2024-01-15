@@ -1,28 +1,28 @@
 // GET ALL FILES
-
-"use server"
-
-import { CreateConnection } from '@/app/helpers/DB';
-//https://jasonwatmore.com/next-js-13-mysql-user-registration-and-login-tutorial-with-example-app
+import { CreateConnection } from '@/app/_helpers/DB';
+import { FileProps } from "../../../_helpers/types";
 
 import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
+import { FileList } from '../../../_helpers/types';
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
-  const queryParams = request.nextUrl.searchParams
-  const user = queryParams.get("user")
-
+async function GetFiles(): Promise<FileList> {
   let SQL: string = "SELECT * FROM FILE"
-  if( user !== null) {
-    console.log(user)
-    SQL = `${SQL} WHERE OWNER_ID='${user}'`
-  }
 
   const connection: mysql.Connection = await CreateConnection()
   const [res] = await connection.query(SQL)
+
+  return {files: res as FileProps[]}
+}
+
+async function GET(request: NextRequest): Promise<NextResponse> {
+  const resp: object = await GetFiles()
   return NextResponse.json({
-    files: res
+    message: "success",
+    files: resp
   }, {
     status: 200
   })
 }
+
+export {GET, GetFiles}

@@ -1,7 +1,4 @@
 // UPLOAD FILE
-
-"use server"
-
 import { CreateConnection } from "@/app/_helpers/DB";
 import { writeFile } from "fs";
 import { NextRequest, NextResponse } from "next/server";

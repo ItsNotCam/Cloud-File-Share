@@ -1,16 +1,11 @@
 // User actions
-
 import { CreateConnection } from "@/app/_helpers/DB";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
-
-interface ICreateUser {
-  EMAIL: string,
-  PASSWORD: string
-}
+import { IUserProps } from "@/app/_helpers/types";
 
 async function CreateUser(request: NextRequest): Promise<NextResponse> {
-  const js: ICreateUser = await request.json()
+  const js: IUserProps = await request.json()
   const {EMAIL, PASSWORD} = js
 
   const connection: mysql.Connection = await CreateConnection()
