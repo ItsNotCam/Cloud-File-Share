@@ -11,8 +11,10 @@ import {v4 as uuidv4} from 'uuid';
 const EXTENSION_REGEX = /(.*)(\.\w*)$|(.*)$/g
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  console.log(`GOT FILE`)
   const data = await request.formData()
   const file: File | null = data.get('file') as unknown as File
+
 
   if(!file) {
     return NextResponse.json({ success: false })

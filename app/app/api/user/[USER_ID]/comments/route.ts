@@ -1,1 +1,4 @@
 // GET USER COMMENTS
+{
+  const SQL: string = `SELECT FILE_ID, COMMENT FROM COMMENT WHERE USER_ID='.....'`
+}

@@ -1,7 +1,7 @@
 import { promises as fs } from "fs"
 import { SERVER_SOCKET } from "../helpers/constants"
-import {TreeRoot} from './tree'
-import UploadForm from "./UploadForm"
+import {TreeRoot} from './_components/tree'
+import UploadForm from "./_components/UploadForm"
 
 interface FileProps {
   UUID: string,
@@ -18,13 +18,13 @@ interface FileProps {
 
 export default async function Home() {
   //{ files } 
-  const data = await fetch(`http://${SERVER_SOCKET}/api/files`)
+  const data = await fetch(`http://${SERVER_SOCKET}/api/test/files`)
     .then(d => d.json())
   const files = data.files
 
   // const files = ok.files
-  const stuff = await fs.readFile(process.cwd() + "/data/directories/cam.json", 'utf8');
-  const js = JSON.parse(stuff)
+  // const stuff = await fs.readFile(process.cwd() + "/data/directories/cam.json", 'utf8');
+  // const js = JSON.parse(stuff)
 
   return (
     <div className="container">

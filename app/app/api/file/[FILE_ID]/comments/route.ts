@@ -1,0 +1,10 @@
+// GET COMMENTS
+{
+  // GET
+  const GET_SQL: string = `SELECT USER_ID, COMMENT FROM COMMENT WHERE FILE_ID='....'`
+
+  // POST
+  const POST_SQL: string = `INSERT INTO COMMENT VALUES (
+    USER_ID, FILE_ID, COMMENT
+  )`
+}
