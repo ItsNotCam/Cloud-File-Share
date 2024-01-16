@@ -1,5 +1,4 @@
 // DOWNLOAD FILE
-
 "use server"
 
 import { CreateConnection } from '@/app/_helpers/db'
@@ -34,12 +33,12 @@ async function DownloadFile(request: Request, context: { params: any }, response
   const data: ReadableStream<Uint8Array> = streamFile(INTERNAL_FILE_PATH);
   const stats: Stats = await fs.promises.stat(INTERNAL_FILE_PATH); 
 
-  return new NextResponse(data, {                                            // Create a new NextResponse for the file with the given stream from the disk
-    status: 200,                                                                    //STATUS 200: HTTP - Ok
-    headers: new Headers({                                                          //Headers
-        "content-disposition": `attachment; filename=${fileName}`,           //State that this is a file attachment
-        "content-type": "application/iso",                                              //Set the file type to an iso
-        "content-length": stats.size + "",                                              //State the file size
+  return new NextResponse(data, {                                   // Create a new NextResponse for the file with the given stream from the disk
+    status: 200,                                                    // STATUS 200: HTTP - Ok
+    headers: new Headers({                                          // Headers
+        "content-disposition": `attachment; filename=${fileName}`,  // State that this is a file attachment
+        "content-type": "application/iso",                          // Set the file type to an iso
+        "content-length": `${stats.size}`                           // State the file size
     }),
   });
 }
