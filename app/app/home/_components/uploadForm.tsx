@@ -13,7 +13,7 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
 
-  const uploadFile = async (event: React.FormEvent<HTMLFormElement>) => {
+  const uploadFile = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if(!file) {
       alert("failed to upload - no file was present")
@@ -26,18 +26,16 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
       data.set('filesize', file.size.toString())
       
       setIsUploading(true)
-      await axios.post(`http://${props.SERVER_SOCKET}/api/files/upload`, data, {
+      axios.post(`http://${props.SERVER_SOCKET}/api/files/upload`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (event: AxiosProgressEvent) => {
           const progress: number = event.loaded / (event.total || 9999999) * 100
-          console.log(`${progress}`)
           setUploadingProgress(progress)
         }
-      }).then(() => {
-        setTimeout(() => {
-          setIsUploading(false)
-          setUploadingProgress(0)
-        }, 1000);
+      }).then((resp) => {
+        console.log(resp.data)
+        setIsUploading(false)
+        setUploadingProgress(0)
       })
     } catch (e: any) {
       console.error(e)
@@ -82,7 +80,7 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
 
         <br />
         <br />
-        
+
         <input type="submit" value="Submit"/>
       </form>
       <br />
