@@ -1,7 +1,7 @@
 import { SERVER_SOCKET } from "@/app/_helpers/constants"
 import UploadForm from "@/app/home/_components/uploadForm"
 import { GetFiles } from "@/app/api/admin/files/route"
-import { IAdminFileProps, IFileProps } from "../_helpers/types"
+import { IAdminFileProps } from "../_helpers/types"
 
 export default async function Home() {
   const files: IAdminFileProps[] = await GetFiles().then(f => f.files)
@@ -13,11 +13,13 @@ export default async function Home() {
         <thead>
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">ID</th>
             <th scope="col">Description</th>
             <th scope="col">Size</th>
             <th scope="col">Upload Time</th>
             <th scope="col">Uploader</th>
             <th scope="col">Created</th>
+            <th scope="col">Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -25,6 +27,7 @@ export default async function Home() {
         </tbody>
       </table>
       <UploadForm SERVER_SOCKET={SERVER_SOCKET} />
+      <br /><br /><br />
     </div>
   )
 }
@@ -40,12 +43,22 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
 
   return (
     <tr>
-      <td scope="row">{props.NAME}{props.EXTENSION}</td>
+      <td scope="row">
+        <a href={`/api/file/${props.ID}/download`}>
+          {props.NAME}{props.EXTENSION}
+        </a>
+      </td>
+      <td scope="row">{props.ID}</td>
       <td scope="row">{props.DESCRIPTION || ""}</td>
       <td scope="row">{size} MB</td>
       <td scope="row">{props.UPLOAD_TIME?.toString()}</td>
       <td scope="row">{props.EMAIL}</td>
       <td scope="row">{props.CREATED.toString()}</td>
+      <td scope="row">
+        <a href={`/api/file/${props.ID}/delete`} target="_blank" style={{color: "red"}}>
+          Delete
+        </a>
+      </td>
     </tr>
   )
 }

@@ -8,7 +8,7 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
   const {EMAIL, PASSWORD}: IUserProps = await request.json()
   
   const connection: mysql.Connection = await CreateConnection()
-  const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${EMAIL}', '${PASSWORD}', DEFAULT, NULL)`
+  const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${EMAIL}', '${EMAIL}', '${PASSWORD}', DEFAULT, NULL)`
   await connection.execute(SQL)
   
   return NextResponse.json({ message: "success" }, { status: 200 })

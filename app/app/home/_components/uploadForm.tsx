@@ -49,7 +49,7 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
       PASSWORD: password,
     }
     await axios.post(`http://${props.SERVER_SOCKET}/api/user/create`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'application/json' },
     }).then(resp => {
       setEmail("")
       setPassword("")

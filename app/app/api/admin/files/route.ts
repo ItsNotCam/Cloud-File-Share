@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 async function GetFiles(): Promise<{files: IAdminFileProps[]}> {
   let SQL: string = `
-    SELECT FILE.*, USER.*
+    SELECT FILE.*, USER.EMAIL, USER.CREATED
     FROM FILE LEFT JOIN USER ON USER.ID=FILE.OWNER_ID
     ORDER BY SIZE_BYTES DESC
   `

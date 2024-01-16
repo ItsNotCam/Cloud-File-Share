@@ -18,10 +18,11 @@ export type IFileProps = {
 }
 
 export type IUserProps = {
+  USERNAME: string
   EMAIL: string
   PASSWORD: string
   CREATED: Date
-  LAST_LOGGED_IN: Date
+  LAST_LOGGED_IN: Date | null
 }
 
 export type IFileUpdate = {

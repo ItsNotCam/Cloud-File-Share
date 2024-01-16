@@ -10,12 +10,11 @@ async function DeleteUserByID(request: NextRequest, context: { params: any }): P
   const connection: mysql.Connection = await CreateConnection(true)
 
   const OWNER_SQL: string = `DELETE FROM OWNERSHIP WHERE USER_ID='${USER_ID}';`
-  await connection.execute(OWNER_SQL)
-  
   const USER_SQL: string = `DELETE FROM USER WHERE ID='${USER_ID}'`
-  await connection.execute(USER_SQL)
-
   const COMMENT_SQL: string = `DELETE FROM COMMENT WHERE USER_ID='${USER_ID}'`
+
+  await connection.execute(OWNER_SQL)
+  await connection.execute(USER_SQL)
   await connection.execute(COMMENT_SQL)
 
   return NextResponse.json({ message: "success" }, { status: 200 })

@@ -3,29 +3,62 @@
 "use server"
 
 import { CreateConnection } from '@/app/_helpers/db'
-//https://jasonwatmore.com/next-js-13-mysql-user-registration-and-login-tutorial-with-example-app
-
 import mysql from 'mysql2/promise'
+import fs, { Stats } from 'fs'
 import { NextResponse } from 'next/server'
+import { ReadableOptions } from 'stream'
 
+type FileData = {
+  NAME: string
+  EXTENSION: string
+  INTERNAL_FILE_PATH: string
+}
 
-async function DownloadFile(request: Request, context: { params: any }): Promise<NextResponse> {
+async function DownloadFile(request: Request, context: { params: any }, response: Response): Promise<NextResponse> {
   const { FILE_ID } = context.params;
-  const SQL: string = `SELECT INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`
-  
+  const SQL: string = `SELECT NAME, EXTENSION, INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`
+  console.log(SQL)
+
   const connection: mysql.Connection = await CreateConnection()
-  const path: string = await connection.query(SQL)
+
+  const fileData: FileData = await connection.query(SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
-    .then(value => value[1][0]['INTERNAL_FILE_PATH'])
+    .then(value => value[1][0])
 
+  console.log(fileData)
 
+  const {NAME, EXTENSION, INTERNAL_FILE_PATH} = fileData;
 
-  return NextResponse.json({
-    path: path
-  }, {
-    status: 200
-  })
+  const fileName: string = `${NAME}${EXTENSION}`
+  const data: ReadableStream<Uint8Array> = streamFile(INTERNAL_FILE_PATH);
+  const stats: Stats = await fs.promises.stat(INTERNAL_FILE_PATH); 
+
+  return new NextResponse(data, {                                            // Create a new NextResponse for the file with the given stream from the disk
+    status: 200,                                                                    //STATUS 200: HTTP - Ok
+    headers: new Headers({                                                          //Headers
+        "content-disposition": `attachment; filename=${fileName}`,           //State that this is a file attachment
+        "content-type": "application/iso",                                              //Set the file type to an iso
+        "content-length": stats.size + "",                                              //State the file size
+    }),
+  });
 }
+
+// Thanks https://github.com/vercel/next.js/discussions/15453#discussioncomment-6748645
+function streamFile(path: string, options?: ReadableOptions): ReadableStream<Uint8Array> {
+  const downloadStream = fs.createReadStream(path, options);
+
+  return new ReadableStream({
+      start(controller) {
+          downloadStream.on("data", (chunk: Buffer) => controller.enqueue(new Uint8Array(chunk)));
+          downloadStream.on("end", () => controller.close());
+          downloadStream.on("error", (error: NodeJS.ErrnoException) => controller.error(error));
+      },
+      cancel() {
+          downloadStream.destroy();
+      },
+  });
+}
+
 
 export {DownloadFile as GET}
