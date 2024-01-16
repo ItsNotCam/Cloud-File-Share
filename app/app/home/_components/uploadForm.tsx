@@ -24,11 +24,9 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
       const data = new FormData()
       data.set('file', file)
       data.set('filesize', file.size.toString())
-      data.set('EMAIL', email)
-      data.set('PASSWORD', password)
       
       setIsUploading(true)
-      await axios.post(`http://${props.SERVER_SOCKET}/api/file/upload`, data, {
+      await axios.post(`http://${props.SERVER_SOCKET}/api/files/upload`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (event: AxiosProgressEvent) => {
           const progress: number = event.loaded / (event.total || 9999999) * 100
@@ -46,12 +44,50 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
     }
   }
 
+  const createUser = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const data = {
+      EMAIL: email,
+      PASSWORD: password,
+    }
+    await axios.post(`http://${props.SERVER_SOCKET}/api/user/create`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(resp => {
+      setEmail("")
+      setPassword("")
+    })
+  }
+
   return (
     <div>
       <br />
+      <form onSubmit={(event) => createUser(event)}>
+        <label>Email: </label>
+        <input 
+          type="text" 
+          name="EMAIL" 
+          onChange={(e) => setEmail(e.target.value)} 
+          value={email}/> 
+
+        <br />
+        <br />
+
+        <label>Password: </label>
+        <input 
+          type="text" 
+          id="password"
+          name="PASSWORD"
+          onChange={(e) => setPassword(e.target.value)} 
+          value={password}/> 
+
+        <br />
+        <br />
+        
+        <input type="submit" value="Submit"/>
+      </form>
+      <br />
+      <br />
       <form onSubmit={(event) => uploadFile(event)}>
-        Email: <input type="text" name="EMAIL" onChange={(e) => setEmail(e.target.value)} /> <br /><br />
-        Password: <input type="text" name="PASSWORD" onChange={(e) => setPassword(e.target.value)} /> <br /><br />
         <input type="file" name="file" onChange={(e) => setFile(e.target.files?.[0])}/>
         <input type="submit" value="Upload" disabled={file == null}/>
       </form>

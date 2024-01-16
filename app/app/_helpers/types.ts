@@ -1,13 +1,15 @@
-export interface IFileList {
+export type IFileList = {
   files: IFileProps[];
 };
 
-export interface IFileProps {
-  UUID: string
+export type IAdminFileProps = IFileProps & IUserProps
+
+export type IFileProps = {
+  ID: string
   NAME: string
-  FILENAME: string
-  EXTENSION: string | null
+  EXTENSION: string
   DESCRIPTION: string | null
+  FILE_TYPE: string
   SIZE_BYTES: number
   UPLOAD_TIME: Date
   OWNER_ID: string
@@ -15,13 +17,20 @@ export interface IFileProps {
   LAST_DOWNLOAD_USER_ID: string | null
 }
 
-export interface IUserProps {
-  EMAIL: string;
-  PASSWORD: string;
+export type IUserProps = {
+  EMAIL: string
+  PASSWORD: string
+  CREATED: Date
+  LAST_LOGGED_IN: Date
 }
 
-export interface IFileUpdate {
-  DESCRIPTION: string | undefined;
-  NAME: string | undefined;
+export type IFileUpdate = {
+  DESCRIPTION: string | undefined
+  NAME: string | undefined
 }
 
+export type ICommentProps = {
+  FILE_ID: string
+  USER_ID: string
+  COMMENT: string
+}

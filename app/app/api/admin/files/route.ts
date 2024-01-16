@@ -1,25 +1,26 @@
 // GET ALL FILES
 import { CreateConnection } from '@/app/_helpers/db';
-import { IFileProps } from "../../../_helpers/types";
+import { IAdminFileProps } from "@/app/_helpers/types";
 
-import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
-import { IFileList } from '../../../_helpers/types';
 
-async function GetFiles(): Promise<IFileList> {
-  let SQL: string = "SELECT * FROM FILE ORDER BY SIZE_BYTES DESC"
+async function GetFiles(): Promise<{files: IAdminFileProps[]}> {
+  let SQL: string = `
+    SELECT FILE.*, USER.*
+    FROM FILE LEFT JOIN USER ON USER.ID=FILE.OWNER_ID
+    ORDER BY SIZE_BYTES DESC
+  `
+  const [files] = await CreateConnection()
+    .then(connection => connection.query(SQL))
 
-  const connection: mysql.Connection = await CreateConnection()
-  const [res] = await connection.query(SQL)
-
-  return {files: res as IFileProps[]}
+  return {files: files as IAdminFileProps[]}
 }
 
 async function GET(request: NextRequest): Promise<NextResponse> {
-  const resp: object = await GetFiles()
+  const {files} = await GetFiles()
   return NextResponse.json({
     message: "success",
-    files: resp
+    files: files
   }, {
     status: 200
   })
