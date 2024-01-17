@@ -15,12 +15,12 @@ This document outlines the design and both high level and low level architecture
 
 **This application is in active development, not all of the features listed below have been implemented** - currently file uploading, file downloading, database integration and access, and most of the API has been implemented. Login and auth have not been implemented.
 
-### Tech Stack
+## Tech Stack
 * The frontend is built using **ReactJS with TypeScript**, assisted by NextJS's server side functions and SSR.
 * **NodeJS and NextJS** work together to form the backend - these manage **user authentication, file handling, and file access control**
 * **MySQL** is used to store **user information, file metadata, access permissions, and comments.**
 
-### Containerization
+## Containerization
 
 The entire application is **containerized using Docker** and can be deployed easily using **Docker Compose**. The services include a **MySQL container** and a custom-made **NodeJS container**.
 
