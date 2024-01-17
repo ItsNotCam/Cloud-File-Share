@@ -34,7 +34,7 @@ To set up the development environment:
 
 ## Database
 The database stores information about **users, files, user-file ownership, and user comments**. The **entity relationsip diagram** is shown below:
-![image](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/858e071c-0864-432b-bcf1-3a649d4c5fd1)
+![image](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/aad992b2-bb11-4eb2-a58e-e13e9bd92fb1)
 
 ## API Structure
 | **Method** | **Route** | **Function** |
