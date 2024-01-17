@@ -1,14 +1,5 @@
 # Google Drive Clone Design Documentation
 
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Architecture](#architecture)
-3. [Features](#features)
-4. [Deployment](#deployment)
-5. [Development Setup](#development-setup)
-6. [Architecture Deep Dive](#development-details)
-
 ## Overview
 
 This document outlines the design and both high level and low level architecture of my Google Drive clone. The project aims to **replicate the fundamental features of Google Drive**. These features include file uploading, file access management between users, and collaborate through shared comments. Developed with TypeScript, NodeJS, NextJS, ReactJS, and MySQL, the entire **application is containerized for easy deployment using Docker Compose.**
@@ -46,39 +37,22 @@ The database stores information about **users, files, user-file ownership, and u
 ![model](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/4affd18d-7cd5-4bcc-9b0b-a465fcd585fb)
 
 ## API Structure
-**GET** `/api/admin/users` - get all users
-
-**GET** `/api/admin/files` - get all files
-
-
-**POST** `/api/files/upload` - upload file
-
-**GET** `/api/files/[FiLE_ID]` - get file data by ID
-
-**PATCH** `/api/files/[FILE_ID]` - update file data
-
-**DELETE** `/api/files/[FILE_ID]` - delete file
-
-**GET** `/api/files/[FILE_ID]/download` - download file
-
-**GET** `/api/files/[FILE_ID]/comments` - get all comments of file
-
-
-**GET** `/api/comments/[COMMENT_ID]` - get comment info
-
-**DELETE** `/api/comments/[COMMENT_ID]` - delete comment
-
-**PATCH** `/api/comments/[COMMENT_ID]` - update comment
-
-
-**POST** `/api/users/create` - create user
-
-**GET** `/api/users/[USER_ID]` - get user information
-
-**DELETE** `/api/users/[USER_ID]` - delete user
-
-**PATCH** `/api/users/[USER_ID]` - update user information
-
-**GET** `/api/users/[USER_ID]/files` - get all files of user
-
-**GET** `/api/users/[USER_ID]/comments` - get all comments from user
+| **Method** | **Route** | **Function** |
+| ------- | ------------------ | ------------- |
+| **GET** | `/api/admin/users` | get all users |
+| **GET** | `/api/admin/files` | get all files |
+| **POST** | `/api/files/upload` | upload file |
+| **GET** | `/api/files/[FiLE_ID]`| get file data by ID |
+| **PATCH** | `/api/files/[FILE_ID]` | update file data |
+| **DELETE** | `/api/files/[FILE_ID]` | delete file |
+| **GET** | `/api/files/[FILE_ID]/download` | download file |
+| **GET** | `/api/files/[FILE_ID]/comments` | get all comments of file | 
+| **GET** | `/api/comments/[COMMENT_ID]` | get comment info |
+| **DELETE** | `/api/comments/[COMMENT_ID]` | delete comment |
+| **PATCH** | `/api/comments/[COMMENT_ID]` | update comment |
+| **POST** | `/api/users/create` | create user |
+| **GET** | `/api/users/[USER_ID]` | get user information |
+| **DELETE** | `/api/users/[USER_ID]` | delete user |
+| **PATCH** | `/api/users/[USER_ID]` | update user information |
+| **GET** | `/api/users/[USER_ID]/files` | get all files of user |
+| **GET** | `/api/users/[USER_ID]/comments` | get all comments from user |
