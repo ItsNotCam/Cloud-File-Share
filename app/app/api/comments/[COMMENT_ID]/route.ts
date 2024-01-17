@@ -9,3 +9,13 @@
   // DELETE
   const DELETE_SQL: string = `DELETE FROM COMMENT WHERE COMMENT_ID='....'`
 }
+
+import { NextResponse } from "next/server"
+
+export async function GET(request: Request) {
+  return NextResponse.json({
+    message: 'Not Implemented'
+  }, {
+    status: 200
+  })
+}
