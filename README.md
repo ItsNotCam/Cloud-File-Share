@@ -38,7 +38,6 @@ To set up the development environment:
 2. Navigate to the project directory: `cd GoogleDriveClone`
 3. Use Docker Compose to start the application: `docker-compose up -d --build`
 
-***
 
 # Development Details
 
@@ -48,22 +47,38 @@ The database stores information about **users, files, user-file ownership, and u
 
 ## API Structure
 **GET** `/api/admin/users` - get all users
+
 **GET** `/api/admin/files` - get all files
 
+
 **POST** `/api/files/upload` - upload file
+
 **GET** `/api/files/[FiLE_ID]` - get file data by ID
+
 **PATCH** `/api/files/[FILE_ID]` - update file data
+
 **DELETE** `/api/files/[FILE_ID]` - delete file
+
 **GET** `/api/files/[FILE_ID]/download` - download file
+
 **GET** `/api/files/[FILE_ID]/comments` - get all comments of file
 
+
 **GET** `/api/comments/[COMMENT_ID]` - get comment info
+
 **DELETE** `/api/comments/[COMMENT_ID]` - delete comment
+
 **PATCH** `/api/comments/[COMMENT_ID]` - update comment
 
+
 **POST** `/api/users/create` - create user
+
 **GET** `/api/users/[USER_ID]` - get user information
+
 **DELETE** `/api/users/[USER_ID]` - delete user
+
 **PATCH** `/api/users/[USER_ID]` - update user information
+
 **GET** `/api/users/[USER_ID]/files` - get all files of user
+
 **GET** `/api/users/[USER_ID]/comments` - get all comments from user
