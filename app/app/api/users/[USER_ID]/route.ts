@@ -3,7 +3,6 @@ import { CreateConnection } from "@/app/_helpers/db";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
 import { IFileProps, IUserProps } from "@/app/_helpers/types";
-import { GetFilesFromUserWithID } from "../../../api.old/users/[USER_ID]/files/route";
 
 async function DeleteUserByID(request: NextRequest, context: { params: any }): Promise<NextResponse> {
   const USER_ID: string = context.params.USER_ID;
@@ -48,3 +47,7 @@ async function GET(request: NextRequest, context: { params: any }): Promise<Next
 }
 
 export {DeleteUserByID as DELETE, GET, GetUserByID as GetUserByID, DeleteUserByID as DeleteUserByID}
+function GetFilesFromUserWithID(USER_ID: string): IFileProps[] | PromiseLike<IFileProps[]> {
+  throw new Error("Function not implemented.");
+}
+
