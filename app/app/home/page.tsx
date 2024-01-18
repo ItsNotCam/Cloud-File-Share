@@ -1,7 +1,8 @@
 import { SERVER_SOCKET } from "@/app/_helpers/constants"
-import UploadForm from "@/app/home/_components/uploadForm"
+import UploadForm from "@/app/home/_components/upload-form"
 import { GetFiles } from "@/app/api/admin/files/route"
 import { IAdminFileProps } from "../_helpers/types"
+import { DeleteButton } from "./_components/DeleteButton"
 
 export default async function Home() {
   const files: IAdminFileProps[] = await GetFiles().then(f => f.files)
@@ -55,10 +56,9 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
       <td scope="row">{props.EMAIL}</td>
       <td scope="row">{props.CREATED.toString()}</td>
       <td scope="row">
-        <a href={`/api/file/${props.ID}/delete`} target="_blank" style={{color: "red"}}>
-          Delete
-        </a>
+        <DeleteButton ID={props.ID} ServerSocket={SERVER_SOCKET}/>
       </td>
     </tr>
   )
 }
+

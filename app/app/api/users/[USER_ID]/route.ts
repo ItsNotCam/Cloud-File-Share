@@ -1,15 +1,15 @@
 // User actions
 import { CreateConnection } from "@/app/_helpers/db";
+import { IFileProps, IUserProps } from "@/app/_helpers/types";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
-import { IFileProps, IUserProps } from "@/app/_helpers/types";
 
 async function DeleteUserByID(request: NextRequest, context: { params: any }): Promise<NextResponse> {
   const USER_ID: string = context.params.USER_ID;
 
   const connection: mysql.Connection = await CreateConnection(true)
 
-  const OWNER_SQL: string = `DELETE FROM OWNERSHIP WHERE USER_ID='${USER_ID}';`
+  const OWNER_SQL: string = `DELETE FROM OWNERSHIP WHERE USER_ID='${USER_ID}'`
   const USER_SQL: string = `DELETE FROM USER WHERE ID='${USER_ID}'`
   const COMMENT_SQL: string = `DELETE FROM COMMENT WHERE USER_ID='${USER_ID}'`
 

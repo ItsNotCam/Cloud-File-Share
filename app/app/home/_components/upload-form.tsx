@@ -3,13 +3,14 @@
 import React, { useState } from "react"
 import axios, { AxiosProgressEvent } from 'axios';
 import ProgressBar from 'react-bootstrap/ProgressBar';
-import './uploadForm.css'
+import './upload-form.css'
 
 export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element {
   const [file, setFile] = useState<File>()
   const [uploadingProgress, setUploadingProgress] = useState<number>(0)
   const [isUploading, setIsUploading] = useState<boolean>(false)
 
+  const [username, setUsername] = useState<string>("")
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
 
@@ -47,12 +48,14 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
     const data = {
       EMAIL: email,
       PASSWORD: password,
+      USERNAME: username
     }
     await axios.post(`http://${props.SERVER_SOCKET}/api/users/create`, data, {
       headers: { 'Content-Type': 'application/json' },
     }).then(resp => {
       setEmail("")
       setPassword("")
+      setUsername("")
     })
   }
 
@@ -60,6 +63,16 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
     <div>
       <br />
       <form onSubmit={(event) => createUser(event)}>
+      <label>Username: </label>
+        <input 
+          type="text" 
+          name="USERNAME" 
+          onChange={(e) => setUsername(e.target.value)} 
+          value={username}/> 
+
+        <br />
+        <br />
+        
         <label>Email: </label>
         <input 
           type="text" 
