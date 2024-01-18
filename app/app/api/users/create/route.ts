@@ -22,6 +22,7 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
   }
 
   if(errors.length > 0) {
+    console.log(errors)
     return NextResponse.json({
       errors: errors
     }, { status: 400 })

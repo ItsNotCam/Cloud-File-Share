@@ -10,6 +10,8 @@ export default async function Home() {
   return (
     <div className="container">
       <br /><br />
+      <UploadForm SERVER_SOCKET={SERVER_SOCKET} />
+      <br /><br />
       <table className="table table-dark table-striped table-hover table-bordered">
         <thead>
           <tr>
@@ -27,8 +29,6 @@ export default async function Home() {
           {files.map((file: IAdminFileProps) => <File {...file} key={file.ID} />)}
         </tbody>
       </table>
-      <UploadForm SERVER_SOCKET={SERVER_SOCKET} />
-      <br /><br /><br />
     </div>
   )
 }
@@ -45,8 +45,9 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
   return (
     <tr>
       <td scope="row">
-        <a href={`/api/files/${props.ID}/download`} download={`${props.NAME}${props.EXTENSION}`}>
-          {props.NAME}{props.EXTENSION}
+        <p>{props.NAME}{props.EXTENSION}</p>
+        <a href={`/api/files/${props.ID}/download`} download={`${props.NAME}${props.EXTENSION}`} className="btn btn-primary">
+          Download
         </a>
       </td>
       <td scope="row">{props.ID}</td>

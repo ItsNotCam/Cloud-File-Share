@@ -1,9 +1,13 @@
 "use client"
 
 import React, { useState } from "react"
-import axios, { AxiosProgressEvent } from 'axios';
+import axios, { AxiosError, AxiosProgressEvent } from 'axios';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import './upload-form.css'
+
+interface ValidationErrors {
+  errors: string[]
+}
 
 export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element {
   const [file, setFile] = useState<File>()
@@ -56,45 +60,59 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
       setEmail("")
       setPassword("")
       setUsername("")
+    }).catch(err => {
+      const axiosErr: AxiosError = err as AxiosError
+      const {errors}: ValidationErrors = axiosErr.response?.data as ValidationErrors
+      alert(errors.join(" - "))
+      console.log(axiosErr.response?.data)
     })
   }
 
   return (
     <div>
       <br />
-      <form onSubmit={(event) => createUser(event)}>
-      <label>Username: </label>
-        <input 
-          type="text" 
-          name="USERNAME" 
-          onChange={(e) => setUsername(e.target.value)} 
-          value={username}/> 
+      <form onSubmit={(event) => createUser(event)} style={{backgroundColor: "#4D4C56", borderRadius: "5px", padding: "20px"}}>
+        <div className="mb3">
+          <label htmlFor="USERNAME" className="form-label color-light" style={{color: "white"}}>Username</label>
+          <input 
+            className="form-control"
+            type="text" 
+            name="USERNAME" 
+            style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white"}}
+            onChange={(e) => setUsername(e.target.value)} 
+            value={username}/> 
+        </div>
 
-        <br />
         <br />
         
-        <label>Email: </label>
-        <input 
-          type="text" 
-          name="EMAIL" 
-          onChange={(e) => setEmail(e.target.value)} 
-          value={email}/> 
+        <div className="mb3">
+          <label htmlFor="EMAIL" className="form-label" style={{color: "white"}}>Email</label>
+          <input 
+            className="form-control"
+            type="text" 
+            name="EMAIL" 
+            style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white"}}
+            onChange={(e) => setEmail(e.target.value)} 
+            value={email}/> 
+        </div>
 
         <br />
+
+        <div className="mb3">
+          <label htmlFor="PASSWORD" className="form-label" style={{color: "white"}}>Password</label>
+          <input 
+            className="form-control"
+            type="text" 
+            id="password"
+            name="PASSWORD"
+            style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white"}}
+            onChange={(e) => setPassword(e.target.value)} 
+            value={password}/> 
+        </div>
+
         <br />
 
-        <label>Password: </label>
-        <input 
-          type="text" 
-          id="password"
-          name="PASSWORD"
-          onChange={(e) => setPassword(e.target.value)} 
-          value={password}/> 
-
-        <br />
-        <br />
-
-        <input type="submit" value="Submit"/>
+        <input type="submit" value="Create User" className="btn btn-primary"/>
       </form>
       <br />
       <br />
