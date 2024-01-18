@@ -8,6 +8,7 @@ export type IFileProps = {
   ID: string
   NAME: string
   EXTENSION: string
+  FILENAME: string
   DESCRIPTION: string | null
   FILE_TYPE: string
   SIZE_BYTES: number

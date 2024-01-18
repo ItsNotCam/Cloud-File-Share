@@ -44,7 +44,7 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
   return (
     <tr>
       <td scope="row">
-        <a href={`/api/file/${props.ID}/download`}>
+        <a href={`/api/files/${props.ID}/download`} download={`${props.NAME}${props.EXTENSION}`}>
           {props.NAME}{props.EXTENSION}
         </a>
       </td>

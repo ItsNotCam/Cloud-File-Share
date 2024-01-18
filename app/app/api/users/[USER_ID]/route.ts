@@ -3,7 +3,7 @@ import { CreateConnection } from "@/app/_helpers/db";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
 import { IFileProps, IUserProps } from "@/app/_helpers/types";
-import { GetFilesFromUserWithID } from "./files/route";
+import { GetFilesFromUserWithID } from "../../../api.old/users/[USER_ID]/files/route";
 
 async function DeleteUserByID(request: NextRequest, context: { params: any }): Promise<NextResponse> {
   const USER_ID: string = context.params.USER_ID;
@@ -34,14 +34,17 @@ async function GetUserByID(USER_ID: string): Promise<IUserProps> {
 }
 
 async function GET(request: NextRequest, context: { params: any }): Promise<NextResponse> {
+  const includeFiles: string = request.nextUrl.searchParams.get("include_files") || "false"
   const USER_ID: string = context.params.USER_ID
   const userData: IUserProps = await GetUserByID(USER_ID)
-  const userFiles: IFileProps[] = await GetFilesFromUserWithID(USER_ID)
 
-  return NextResponse.json({
-    ...userData,
-    FILES: userFiles
-  }, { status: 200 })
+  let js: object = userData;
+  if(includeFiles != null && includeFiles === 'true') {
+    const FILES: IFileProps[] = await GetFilesFromUserWithID(USER_ID)
+    js = { ...userData, FILES }
+  }
+
+  return NextResponse.json(js, { status: 200 })
 }
 
 export {DeleteUserByID as DELETE, GET, GetUserByID as GetUserByID, DeleteUserByID as DeleteUserByID}
