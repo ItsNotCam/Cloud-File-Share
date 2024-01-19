@@ -21,15 +21,6 @@ The entire application is **containerized using Docker** and can be deployed eas
 * **Access Management** - Users can grant and revoke access to their files with other users
 * **Collaborative Comments** - Users can write comments on the files that they have access to - the owner and the user can delete these comments
 
-## Development Setup
-
-To set up the development environment:
-
-1. Clone the repository: `git clone https://github.com/ItsNotCam/GoogleDriveClone.git`
-2. Navigate to the project directory: `cd GoogleDriveClone`
-3. Use Docker Compose to start the application: `docker-compose up -d --build`
-
-
 # Development Details
 
 ## Database
