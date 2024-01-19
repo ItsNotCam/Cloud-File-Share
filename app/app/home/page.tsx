@@ -21,7 +21,6 @@ export default async function Home() {
             <th scope="col">Size</th>
             <th scope="col">Upload Time</th>
             <th scope="col">Uploader</th>
-            <th scope="col">Created</th>
             <th scope="col">Delete</th>
           </tr>
         </thead>
@@ -54,8 +53,7 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
       <td scope="row">{props.DESCRIPTION || ""}</td>
       <td scope="row">{size} MB</td>
       <td scope="row">{props.UPLOAD_TIME?.toString()}</td>
-      <td scope="row">{props.EMAIL}</td>
-      <td scope="row">{props.CREATED.toString()}</td>
+      <td scope="row">{props.USERNAME}</td>
       <td scope="row">
         <DeleteButton ID={props.ID} ServerSocket={SERVER_SOCKET}/>
       </td>

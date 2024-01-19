@@ -15,7 +15,6 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
   const [isUploading, setIsUploading] = useState<boolean>(false)
 
   const [username, setUsername] = useState<string>("")
-  const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
 
   const uploadFile = (event: React.FormEvent<HTMLFormElement>) => {
@@ -50,14 +49,12 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
   const createUser = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = {
-      EMAIL: email,
       PASSWORD: password,
       USERNAME: username
     }
     await axios.post(`http://${props.SERVER_SOCKET}/api/users/create`, data, {
       headers: { 'Content-Type': 'application/json' },
     }).then(resp => {
-      setEmail("")
       setPassword("")
       setUsername("")
     }).catch(err => {
@@ -81,19 +78,6 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
             style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white"}}
             onChange={(e) => setUsername(e.target.value)} 
             value={username}/> 
-        </div>
-
-        <br />
-        
-        <div className="mb3">
-          <label htmlFor="EMAIL" className="form-label" style={{color: "white"}}>Email</label>
-          <input 
-            className="form-control"
-            type="text" 
-            name="EMAIL" 
-            style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white"}}
-            onChange={(e) => setEmail(e.target.value)} 
-            value={email}/> 
         </div>
 
         <br />

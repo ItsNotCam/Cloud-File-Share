@@ -12,7 +12,7 @@ interface DirectoryProps {
 export const TreeRoot = (props: {files: DirectoryProps[]}): JSX.Element => {
   const {files} = props
   return (<>
-    {files.map((file, idx) => <Tree item={file} indent={0} key={idx+1000}/>)}
+    {files.map((file, idx) => <Tree item={file} indent={0} key={file.uuid}/>)}
   </>)
 }
 
@@ -52,7 +52,7 @@ const Tree = (props: {item: DirectoryProps, indent: number}): JSX.Element => {
           </h1>      
         </div>
         <div style={{display: isDroppedDown ? "block" : "none"}}>
-          {items.map((item, idx) => <Tree item={item} indent={indent+1} key={idx+100}/>)}
+          {items.map((item, idx) => <Tree item={item} indent={indent+1} key={item.uuid}/>)}
         </div>
     </div>
     )

@@ -5,14 +5,10 @@ import mysql from 'mysql2/promise'
 import { IUserProps } from "@/app/_helpers/types";
 
 async function CreateUser(request: NextRequest): Promise<NextResponse> {
-  const {USERNAME, EMAIL, PASSWORD}: IUserProps = await request.json()
+  const {USERNAME, PASSWORD}: IUserProps = await request.json()
   
   const errors: string[] = []
 
-  if(EMAIL.length < 1) {
-    errors.push("No email specified")
-  }
-  
   if(PASSWORD.length < 1) {
     errors.push("No password specified")
   }
@@ -29,7 +25,7 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
   }
 
   const connection: mysql.Connection = await CreateConnection()
-  const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${EMAIL}', '${PASSWORD}', DEFAULT, NULL)`
+  const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
 
   console.log(SQL)
 

@@ -55,13 +55,13 @@ async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string,
   EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<string> {
 
   let SQL: string = `INSERT INTO FILE VALUES (
-    '${FILE_ID}', '${NAME}', '${EXTENSION}', '${EXTENSION}',
-    '${USER_ID}', 'a new file', '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
+    '${FILE_ID}', '${NAME}', '${EXTENSION}', '${NAME}${EXTENSION}',
+    'a new file', '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
   );`
 
   await connection.query(SQL);
   
-  SQL = `INSERT INTO OWNERSHIP VALUES ('${USER_ID}', '${FILE_ID}', NULL, DEFAULT);`
+  SQL = `INSERT INTO OWNERSHIP VALUES ('${USER_ID}', '${FILE_ID}', NULL, 1);`
   await connection.query(SQL);
 
   SQL = `SELECT NAME, EXTENSION FROM FILE WHERE ID='${FILE_ID}'`

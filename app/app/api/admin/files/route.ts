@@ -5,11 +5,15 @@ import { IAdminFileProps } from "@/app/_helpers/types";
 import { NextRequest, NextResponse } from 'next/server'
 
 async function GetFiles(): Promise<{files: IAdminFileProps[]}> {
-  let SQL: string = `
-    SELECT FILE.*, USER.EMAIL, USER.CREATED
-    FROM FILE LEFT JOIN USER ON USER.ID=FILE.OWNER_ID
-    ORDER BY SIZE_BYTES DESC
+  
+  // select all user and file information from each file and its cooresponding owner
+  let SQL = `
+    SELECT USER.*, FILE.*
+    FROM USER 
+      INNER JOIN OWNERSHIP ON USER.ID = OWNERSHIP.USER_ID 
+      INNER JOIN FILE ON FILE.ID = FILE_ID;
   `
+
   const [files] = await CreateConnection()
     .then(connection => connection.query(SQL))
 

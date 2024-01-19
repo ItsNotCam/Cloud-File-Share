@@ -13,14 +13,12 @@ export type IFileProps = {
   FILE_TYPE: string
   SIZE_BYTES: number
   UPLOAD_TIME: Date
-  OWNER_ID: string
   LAST_DOWNLOAD_TIME: Date | null
   LAST_DOWNLOAD_USER_ID: string | null
 }
 
 export type IUserProps = {
   USERNAME: string
-  EMAIL: string
   PASSWORD: string
   CREATED: Date
   LAST_LOGGED_IN: Date | null

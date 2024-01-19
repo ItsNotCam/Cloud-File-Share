@@ -10,8 +10,9 @@ services:
     ports: 
       - '${DB_PORT}:3306'
     volumes:
-      - ./db/mysql_data:/var/lib/mysql:rw
-      - ./db:/docker-entrypoint-initdb.d:ro
+      # - ./db/mysql_data:/var/lib/mysql:rw
+      - ./db/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       backend:
         ipv4_address: '${DB_HOST}'
