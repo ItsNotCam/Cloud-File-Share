@@ -52,7 +52,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   
   // Add entry to database
   try {
-    const SAVED_NAME = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, 'dd', PATH, file.size)
+    const SAVED_NAME = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER_ID, PATH, file.size)
     return new NextResponse(
       `Successfully uploaded file ${SAVED_NAME}`,
       { status: 200 }
