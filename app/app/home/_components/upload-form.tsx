@@ -67,10 +67,11 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
           isUploading: false, 
           uploadingProgress: 0 
         }))
-      })
+      }).finally(() => window.location.reload())
     } catch (e: any) {
       console.error(e)
     }
+    
   }
 
   const createUser = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -93,6 +94,7 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
   return (
     <div>
       <br />
+      <h1 className="h1">Create User</h1>
       <form onSubmit={(event) => createUser(event)} style={{backgroundColor: "#4D4C56", borderRadius: "5px", padding: "20px"}}>
         <div className="mb3">
           <label htmlFor="USERNAME" className="form-label color-light" style={{color: "white"}}>Username</label>
@@ -102,6 +104,8 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
             name="USERNAME" 
             style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white"}}
             onChange={handleFormChange} 
+            value={state.USERNAME}
+            required
             /> 
         </div>
 
@@ -111,23 +115,37 @@ export default function UploadForm(props: {SERVER_SOCKET: string}): JSX.Element 
           <label htmlFor="PASSWORD" className="form-label" style={{color: "white"}}>Password</label>
           <input 
             className="form-control"
-            type="text" 
+            type="password" 
             id="password"
             name="PASSWORD"
             style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white"}}
             onChange={handleFormChange} 
-            /> 
+            value={state.PASSWORD}
+            required
+          /> 
         </div>
 
         <br />
 
-        <input type="submit" value="Create User" className="btn btn-primary"/>
+        <input type="submit" value="Create User" className="btn btn-primary" disabled={state.USERNAME.length < 1 || state.PASSWORD.length < 1}/>
       </form>
+
       <br />
       <br />
-      <form onSubmit={(event) => uploadFile(event)}>
-        <input type="file" name="file" onChange={handleFormChange}/>
-        <input type="submit" value="Upload" disabled={state.file == null}/>
+
+      <h1 className="h1">Upload File</h1>
+      <form onSubmit={(event) => uploadFile(event)} style={{backgroundColor: "#4D4C56", borderRadius: "5px", padding: "20px"}}>
+        <div className="myform">
+          <input 
+            className="form-control"
+            type="file" 
+            name="file" 
+            onChange={handleFormChange}
+            style={{backgroundColor: "#323239", borderColor: "#1D1D21", color: "white", height: "50px"}}
+            required
+          />
+          <input className="btn btn-primary" type="submit" value="Upload" disabled={state.file == null} />
+        </div>
       </form>
       {state.isUploading && <><br /><ProgressBar now={state.uploadingProgress} /></>}
     </div>

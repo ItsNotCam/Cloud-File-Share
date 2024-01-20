@@ -1,8 +1,9 @@
 import { SERVER_SOCKET } from "@/app/_helpers/constants"
 import UploadForm from "@/app/home/_components/upload-form"
 import { GetFiles } from "@/app/api/admin/files/route"
-import { IAdminFileProps } from "../_helpers/types"
-import DeleteButton from "./_components/delete-button"
+import { IAdminFileProps } from "@/app/_helpers/types"
+import DeleteButton from "@/app/home/_components/delete-button"
+
 
 export default async function Home() {
   const files: IAdminFileProps[] = await GetFiles().then(f => f.files)
@@ -12,6 +13,8 @@ export default async function Home() {
       <br /><br />
       <UploadForm SERVER_SOCKET={SERVER_SOCKET} />
       <br /><br />
+      
+      <h1 className="h1">Files</h1>
       <table className="table table-dark table-striped table-hover table-bordered">
         <thead>
           <tr>
@@ -24,13 +27,12 @@ export default async function Home() {
           </tr>
         </thead>
         <tbody>
-          {files.map((file: IAdminFileProps) => <File {...file} key={file.ID} />)}
+          {files.map((file: IAdminFileProps) => <File {...file} key={file.FILE_ID} />)}
         </tbody>
       </table>
     </div>
   )
 }
-
 
 const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
   let size: string = ""
@@ -41,9 +43,7 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
     size = (props.SIZE_BYTES / Math.pow(10, 3)).toFixed(2)
   }
 
-  const padString = (num: number): string => {
-    return num.toString().padStart(2, "0")
-  }
+  const padString = (num: number): string => num.toString().padStart(2, "0")
 
   const timeToString = (time: Date): string[] => {
     let hourNumber: number = time.getHours();
@@ -61,19 +61,22 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
     return [time.toDateString(), timeStr]
   }
 
+  const [dateStr, timeStr] = timeToString(props.UPLOAD_TIME)
+
   return (
     <tr>
       <td scope="row">
-        <p>{props.NAME}{props.EXTENSION}</p>
-        <a href={`/api/files/${props.FILE_ID}/download`} download={`${props.FILENAME}`} className="btn btn-primary">
+        <p>{props.FILENAME}</p>
+        <a href={`/api/files/${props.FILE_ID}/download`} download={props.FILENAME} className="btn btn-primary">
           Download
         </a>
       </td>
       <td scope="row">{props.DESCRIPTION || ""}</td>
       <td scope="row">{size} MB</td>
-      <td scope="row">{timeToString(props.UPLOAD_TIME)[0]}
+      <td scope="row">
+        {dateStr}
         <br />
-        {timeToString(props.UPLOAD_TIME)[1]}
+        {timeStr}
       </td>
       <td scope="row">{props.USERNAME}</td>
       <td scope="row">
@@ -82,4 +85,3 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
     </tr>
   )
 }
-

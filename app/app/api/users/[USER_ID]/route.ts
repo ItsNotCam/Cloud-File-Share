@@ -22,7 +22,6 @@ async function DeleteUserByID(request: NextRequest, context: { params: any }): P
 
 async function GetUserByID(USER_ID: string): Promise<IUserProps> {
   const connection: mysql.Connection = await CreateConnection(false)
-  // const SQL: string = `SELECT * FROM USER WHERE ID='${USER_ID}'`
   const SQL: string = `SELECT * FROM USER WHERE ID='${USER_ID}'`
   const resp = await connection.execute(SQL)
     .then(resp => resp.entries())
@@ -47,7 +46,7 @@ async function GET(request: NextRequest, context: { params: any }): Promise<Next
 }
 
 export {DeleteUserByID as DELETE, GET, GetUserByID as GetUserByID, DeleteUserByID as DeleteUserByID}
+
 function GetFilesFromUserWithID(USER_ID: string): IFileProps[] | PromiseLike<IFileProps[]> {
   throw new Error("Function not implemented.");
 }
-

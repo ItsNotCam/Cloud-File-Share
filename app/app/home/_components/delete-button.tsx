@@ -3,7 +3,8 @@ import axios from "axios";
 
 export default function DeleteButton(props: { ID: string; ServerSocket: string; }): JSX.Element {
   const deleteFile = () => {
-    axios.delete(`http://${props.ServerSocket}/api/files/${props.ID}`);
+    axios.delete(`http://${props.ServerSocket}/api/files/${props.ID}`)
+      .then(_ => window.location.reload())
   };
 
   return (

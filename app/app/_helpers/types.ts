@@ -1,3 +1,9 @@
+export type IComment = {
+  USER_ID: string
+  FILE_ID: string
+  COMMENT: string
+}
+
 export type IFileList = {
   files: IFileProps[];
 };
