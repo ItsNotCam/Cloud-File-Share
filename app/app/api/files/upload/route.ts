@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { MAX_STORAGE_BYTES } from "@/app/_helpers/constants";
 import { CreateConnection } from "@/app/_helpers/db";
 import {v4 as uuidv4} from 'uuid';
-import { writeFile } from "fs";
+import { rmSync, writeFile } from "fs";
 import mysql from 'mysql2/promise'
 
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
@@ -18,21 +18,26 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   
   // Get a random user
   const connection: mysql.Connection = await CreateConnection()
+  let USER_ID: string = await connection.query(`SELECT ID FROM USER ORDER BY RAND() LIMIT 1`)
+    .then(resp => resp.entries())
+    .then(entries => entries.next().value)
+    .then(value => value[1][0]['ID']);
+
   let SQL: string = `
     SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
     FROM FILE
       INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
       INNER JOIN USER ON USER_ID=USER.ID
-    WHERE USER_ID='bf7a8d43-b7b9-11ee-bf58-0242ac000002';`//(SELECT ID FROM USER ORDER BY RAND() LIMIT 1);
+    WHERE USER.ID='${USER_ID}'
+    GROUP BY USER.ID;
+  `;
   
   const RESP = await connection.query(SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
     .then(value => value[1][0]);
 
-  console.log(RESP)
-
-  if((file.size + RESP.USED_STORAGE_BYTES) > MAX_STORAGE_BYTES) {
+  if(RESP != undefined && (file.size + RESP.USED_STORAGE_BYTES) > MAX_STORAGE_BYTES) {
     return new NextResponse(
       "Uploading this file exceeded maximum storage",
       { status: 400 }
@@ -46,11 +51,18 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   await writeFile(PATH, buffer, () => {})
   
   // Add entry to database
-  const SAVED_NAME = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, RESP.ID, PATH, file.size)
-  return new NextResponse(
-    `Successfully uploaded file ${SAVED_NAME}`,
-    { status: 200 }
-  )
+  try {
+    const SAVED_NAME = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, 'dd', PATH, file.size)
+    return new NextResponse(
+      `Successfully uploaded file ${SAVED_NAME}`,
+      { status: 200 }
+    )
+  } catch (e) {
+    rmSync(PATH, { force: true })
+    return new NextResponse(
+      e.message, { status: 500 }
+    )
+  }
 }
 
 async function getFileInfo(file: File): Promise<string[]> {

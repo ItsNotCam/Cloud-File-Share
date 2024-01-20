@@ -52,26 +52,24 @@ export default function UploadForm(props: { SERVER_SOCKET: string }): JSX.Elemen
       return
     }
 
-    try {
-      const data: FormData = new FormData()
-      data.set('file', state.file)
-      data.set('filesize', state.file.size.toString())
+    const data: FormData = new FormData()
+    data.set('file', state.file)
+    data.set('filesize', state.file.size.toString())
 
-      setState({ ...state, isUploading: true })
-      axios.post(`http://${props.SERVER_SOCKET}/api/files/upload`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: handleProgressUpdate
-      }).then(_ => {
-        setState(prev => ({
-          ...prev,
-          isUploading: false,
-          uploadingProgress: 0
-        }))
-      }).finally(() => window.location.reload())
-    } catch (e: any) {
-      console.error(e)
-    }
-
+    setState({ ...state, isUploading: true })
+    axios.post(`http://${props.SERVER_SOCKET}/api/files/upload`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: handleProgressUpdate
+    }).catch((e: AxiosError) => {
+      alert(`Failed to upload file\n${e.message}\n${e.response?.data}`)
+    }).finally(() => {
+      setState(prev => ({
+        ...prev,
+        isUploading: false,
+        uploadingProgress: 0
+      }))
+      window.location.reload()
+    })
   }
 
   const createUser = async (event: React.FormEvent<HTMLFormElement>) => {
