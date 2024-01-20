@@ -1,5 +1,5 @@
 // FILE ACTIONS
-import { CreateConnection } from '@/app/_helpers/db';
+import { CreateConnection, QueryGetFirst } from '@/app/_helpers/db';
 import { IFileUpdate } from '@/app/_helpers/types';
 import fs from 'fs';
 import mysql from 'mysql2/promise'
@@ -20,11 +20,7 @@ async function GetFileInfo(request: NextRequest, context: IFileIDContext): Promi
     WHERE ID='${FILE_ID}'
   `
   const connection: mysql.Connection = await CreateConnection()
-
-  const file: object = await connection.query(SQL)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => value[1][0])
+  const file: object = await QueryGetFirst(connection, SQL)
 
   return NextResponse.json(file, { status: 200 })
 }
@@ -36,12 +32,8 @@ async function DeleteFile(request: NextRequest, context: IFileIDContext): Promis
   const connection: mysql.Connection = await CreateConnection()
 
   // get the file path of the saved file
-  const PATH: string = await connection.query(`SELECT INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => {
-      return value[1][0]['INTERNAL_FILE_PATH']
-    })
+  const SQL: string = `SELECT INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`
+  const PATH: string = (await QueryGetFirst(connection, SQL)).INTERNAL_FILE_PATH
 
   // remove from folder structure
   fs.rmSync(PATH, { force: true })

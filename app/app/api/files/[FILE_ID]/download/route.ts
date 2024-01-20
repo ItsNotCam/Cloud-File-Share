@@ -1,7 +1,7 @@
 // DOWNLOAD FILE
 "use server"
 
-import { CreateConnection } from '@/app/_helpers/db'
+import { CreateConnection, QueryGetFirst } from '@/app/_helpers/db'
 import mysql from 'mysql2/promise'
 import fs, { Stats } from 'fs'
 import { NextResponse } from 'next/server'
@@ -19,14 +19,7 @@ async function DownloadFile(request: Request, context: { params: any }, response
   console.log(SQL)
 
   const connection: mysql.Connection = await CreateConnection()
-
-  const fileData: FileData = await connection.query(SQL)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => value[1][0])
-
-  console.log(fileData)
-
+  const fileData: FileData = await QueryGetFirst(connection, SQL)
   const {NAME, EXTENSION, INTERNAL_FILE_PATH} = fileData;
 
   const fileName: string = `${NAME}${EXTENSION}`

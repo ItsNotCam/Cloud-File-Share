@@ -27,8 +27,6 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
   const connection: mysql.Connection = await CreateConnection()
   const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
 
-  console.log(SQL)
-
   try {
     const resp: any = await connection.execute(SQL)
     console.log(resp)

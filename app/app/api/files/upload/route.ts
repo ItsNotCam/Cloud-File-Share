@@ -1,10 +1,11 @@
 // UPLOAD FILE
-import { NextRequest, NextResponse } from "next/server";
 import { MAX_STORAGE_BYTES } from "@/app/_helpers/constants";
-import { CreateConnection } from "@/app/_helpers/db";
-import {v4 as uuidv4} from 'uuid';
+import { NextRequest, NextResponse } from "next/server";
+import { CreateConnection, QueryGetFirst } from "@/app/_helpers/db";
 import { rmSync, writeFile } from "fs";
+import {v4 as uuidv4} from 'uuid';
 import mysql from 'mysql2/promise'
+import { IUserProps } from "@/app/_helpers/types";
 
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const data = await request.formData()
@@ -14,15 +15,11 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   }
 
   // get file info
-  const [FILE_ID, FILENAME, EXTENSION, NAME] = await getFileInfo(file)
+  const [FILE_ID, _, EXTENSION, NAME] = await getFileInfo(file)
   
   // Get a random user
   const connection: mysql.Connection = await CreateConnection()
-  let USER_ID: string = await connection.query(`SELECT ID FROM USER ORDER BY RAND() LIMIT 1`)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => value[1][0]['ID']);
-
+  let USER_ID: string = (await QueryGetFirst(connection, `SELECT ID FROM USER ORDER BY RAND() LIMIT 1`) as {ID: string}).ID
   let SQL: string = `
     SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
     FROM FILE
@@ -32,11 +29,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
     GROUP BY USER.ID;
   `;
   
-  const RESP = await connection.query(SQL)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => value[1][0]);
-
+  const RESP: IUserProps = await QueryGetFirst(connection, SQL)
   if(RESP != undefined && (file.size + RESP.USED_STORAGE_BYTES) > MAX_STORAGE_BYTES) {
     return new NextResponse(
       "Uploading this file exceeded maximum storage",
@@ -51,18 +44,20 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   await writeFile(PATH, buffer, () => {})
   
   // Add entry to database
-  try {
-    const SAVED_NAME = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER_ID, PATH, file.size)
-    return new NextResponse(
-      `Successfully uploaded file ${SAVED_NAME}`,
-      { status: 200 }
-    )
-  } catch (e) {
+  const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER_ID, PATH, file.size)
+    .then(_ => 0).catch(_ => -1)
+
+  if(result === -1) {
     rmSync(PATH, { force: true })
     return new NextResponse(
-      e.message, { status: 500 }
+      "Error saving file to the database", { status: 500 }
     )
   }
+  
+  return new NextResponse(
+    `Successfully uploaded file.`,
+    { status: 200 }
+  )
 }
 
 async function getFileInfo(file: File): Promise<string[]> {
@@ -72,8 +67,6 @@ async function getFileInfo(file: File): Promise<string[]> {
   
   let regex = new RegExp(/(.*)(\.\w*)$|(.*)$/g)
   let match = regex.exec(FILENAME)
-
-  console.log(match)
 
   if(match) {
     FILENAME = match[0] || ""
@@ -98,10 +91,7 @@ async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string,
   await connection.query(SQL);
 
   SQL = `SELECT FILENAME FROM FILE WHERE ID='${FILE_ID}'`
-  const fileName: string = await connection.query(SQL)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => value[1][0]['FILENAME'])
+  const fileName: string = (await QueryGetFirst(connection, SQL) as {FILENAME: string}).FILENAME
 
   return fileName
 }
