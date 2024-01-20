@@ -27,7 +27,7 @@ async function GetFiles(): Promise<{files: IAdminFileProps[]}> {
 async function GET(request: NextRequest): Promise<NextResponse> {
   const {files} = await GetFiles()
   return NextResponse.json({
-    message: "success",
+    count: files.length,
     files: files
   }, {
     status: 200

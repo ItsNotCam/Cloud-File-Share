@@ -1,7 +1,7 @@
 // User actions
-import { CreateConnection } from "@/app/_helpers/db";
 import { IFileProps, IUserProps } from "@/app/_helpers/types";
 import { NextRequest, NextResponse } from "next/server";
+import { CreateConnection } from "@/app/_helpers/db";
 import mysql from 'mysql2/promise'
 
 async function DeleteUserByID(request: NextRequest, context: { params: any }): Promise<NextResponse> {
@@ -13,9 +13,16 @@ async function DeleteUserByID(request: NextRequest, context: { params: any }): P
   const USER_SQL: string = `DELETE FROM USER WHERE ID='${USER_ID}'`
   const COMMENT_SQL: string = `DELETE FROM COMMENT WHERE USER_ID='${USER_ID}'`
 
-  await connection.execute(OWNER_SQL)
-  await connection.execute(USER_SQL)
-  await connection.execute(COMMENT_SQL)
+  const commentRes: number = await connection.execute(COMMENT_SQL).then(_ => 0).catch(e => e.errno)
+  const ownerRes: number = await connection.execute(OWNER_SQL).then(_ => 0).catch(e => e.errno)
+  const userRes: number = await connection.execute(USER_SQL).then(_ => 0).catch(e => e.errno)
+
+  if(ownerRes !== 0 || userRes !== 0 || commentRes !== 0) {
+    return new NextResponse(
+      `Failed to delete user ${USER_ID}`,
+      { status: 500 }
+    )
+  } 
 
   return new NextResponse(
     `Successfully deleted user ${USER_ID}`,
