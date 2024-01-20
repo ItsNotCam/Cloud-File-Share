@@ -83,14 +83,12 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
       await CreateConnection().then(connection => connection.execute(SQL))
       return NextResponse.json({ message: "updated description" }, { status: 200 })
     } else {
-      return NextResponse.json({ message: "no changes were made" }, { status: 200 })
+      return NextResponse.json({ message: "No changes were made" }, { status: 200 })
     }
   } catch(e: any) {
-    return NextResponse.json({
-      message: e.message,
-    }, {
-      status: 500
-    })
+    return new NextResponse(
+      e.message, { status: 500 }
+    )
   }
 }
 

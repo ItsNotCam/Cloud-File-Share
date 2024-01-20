@@ -33,6 +33,7 @@ export type IUserProps = {
   PASSWORD: string
   CREATED: Date
   LAST_LOGGED_IN: Date | null
+  USED_STORAGE_BYTES: number
 }
 
 export type IFileUpdate = {

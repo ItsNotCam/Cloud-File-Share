@@ -17,7 +17,10 @@ async function DeleteUserByID(request: NextRequest, context: { params: any }): P
   await connection.execute(USER_SQL)
   await connection.execute(COMMENT_SQL)
 
-  return NextResponse.json({ message: "success" }, { status: 200 })
+  return new NextResponse(
+    `Successfully deleted user ${USER_ID}`,
+    { status: 200 }
+  )
 }
 
 async function GetUserByID(USER_ID: string): Promise<IUserProps> {
@@ -29,28 +32,11 @@ async function GetUserByID(USER_ID: string): Promise<IUserProps> {
       INNER JOIN USER ON USER_ID=USER.ID
     WHERE USER_ID='${USER_ID}';
   `
-  const resp = await connection.execute(USER_SQL)
+  const resp = await connection.query(USER_SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
     .then(value => value[1][0])
     
-  /*
-  // GET TOTAL FILE SIZE OF UPLOADED FILES OF USER
-  const FILESIZE_SQL = `
-    SELECT SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
-    FROM FILE
-      INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
-      INNER JOIN USER ON USER_ID=USER.ID
-    WHERE USER_ID='${USER_ID}';
-  `
-  const filesize_resp = await connection.execute(FILESIZE_SQL)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => value[1][0]['STORAGE'])
-    
-    resp['STORAGE_BYTES'] = filesize_resp
-    */
-
   return resp
 }
 
