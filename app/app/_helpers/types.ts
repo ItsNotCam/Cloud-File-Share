@@ -2,7 +2,12 @@ export type IFileList = {
   files: IFileProps[];
 };
 
-export type IAdminFileProps = IFileProps & IUserProps
+export type IAdminFileProps = 
+  IFileProps & IUserProps 
+  & {
+    FILE_ID: string, 
+    USER_ID: string
+  }
 
 export type IFileProps = {
   ID: string

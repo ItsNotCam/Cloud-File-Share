@@ -5,14 +5,13 @@ services:
     image: mysql
     container_name: gdc_db
     restart: always
-    env_file: ./.env
+    env_file: .env
     command: --default-authentication-plugin=caching_sha2_password
     ports: 
       - '${DB_PORT}:3306'
     volumes:
-      # - ./db/mysql_data:/var/lib/mysql:rw
-      - ./db/init.sh:/docker-entrypoint-initdb.d/init.sh
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/mysql_data:/var/lib/mysql:rw
+      - ./db/init:/docker-entrypoint-initdb.d
     networks:
       backend:
         ipv4_address: '${DB_HOST}'
@@ -21,6 +20,9 @@ services:
       interval: 1s
       timeout: 2s
       retries: 20
+  
+volumes:
+  mysql_data:
 
   # api:
   #   image: cam/gdc_api

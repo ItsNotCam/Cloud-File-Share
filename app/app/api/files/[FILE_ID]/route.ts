@@ -15,7 +15,7 @@ async function GetFileInfo(request: NextRequest, context: IFileIDContext): Promi
   const { FILE_ID } = context.params;
 
   const SQL: string = `SELECT 
-    ID, NAME, EXTENSION, FILE_TYPE, OWNER_ID, DESCRIPTION, SIZE_BYTES, UPLOAD_TIME, LAST_DOWNLOAD_TIME, LAST_DOWNLOAD_USER_ID
+    ID, NAME, EXTENSION, FILENAME, DESCRIPTION, SIZE_BYTES, UPLOAD_TIME, LAST_DOWNLOAD_TIME, LAST_DOWNLOAD_USER_ID
     FROM FILE 
     WHERE ID='${FILE_ID}'
   `
@@ -25,17 +25,6 @@ async function GetFileInfo(request: NextRequest, context: IFileIDContext): Promi
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
     .then(value => value[1][0])
-
-  // const downloaderID: object = file['LAST_DOWNLOAD_USER_ID']
-  // if(downloaderID != null) {
-  //   const GET_USERNAME_SQL: string = `SELECT EMAIL FROM USER WHERE ID='${downloaderID}'`
-  //   const resp = await connection.query(GET_USERNAME_SQL)
-  //     .then(resp => resp.entries())
-  //     .then(entries => entries.next().value)
-  //     .then(value => value[1][0])
-    
-  //   file.LAST_DOWNLOAD_USER_ID = resp['LAST_DOWNLOAD_USER_ID']
-  // }
 
   return NextResponse.json(file, { status: 200 })
 }
@@ -50,7 +39,9 @@ async function DeleteFile(request: NextRequest, context: IFileIDContext): Promis
   const PATH: string = await connection.query(`SELECT INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
-    .then(value => value[1][0]['INTERNAL_FILE_PATH'])
+    .then(value => {
+      return value[1][0]['INTERNAL_FILE_PATH']
+    })
 
   // remove from folder structure
   fs.rmSync(PATH, { force: true })

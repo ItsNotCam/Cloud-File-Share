@@ -2,7 +2,7 @@ import { SERVER_SOCKET } from "@/app/_helpers/constants"
 import UploadForm from "@/app/home/_components/upload-form"
 import { GetFiles } from "@/app/api/admin/files/route"
 import { IAdminFileProps } from "../_helpers/types"
-import { DeleteButton } from "./_components/DeleteButton"
+import DeleteButton from "./_components/delete-button"
 
 export default async function Home() {
   const files: IAdminFileProps[] = await GetFiles().then(f => f.files)
@@ -16,7 +16,6 @@ export default async function Home() {
         <thead>
           <tr>
             <th scope="col">Name</th>
-            <th scope="col">ID</th>
             <th scope="col">Description</th>
             <th scope="col">Size</th>
             <th scope="col">Upload Time</th>
@@ -32,6 +31,7 @@ export default async function Home() {
   )
 }
 
+
 const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
   let size: string = ""
 
@@ -41,21 +41,43 @@ const File = async (props: IAdminFileProps): Promise<JSX.Element> => {
     size = (props.SIZE_BYTES / Math.pow(10, 3)).toFixed(2)
   }
 
+  const padString = (num: number): string => {
+    return num.toString().padStart(2, "0")
+  }
+
+  const timeToString = (time: Date): string[] => {
+    let hourNumber: number = time.getHours();
+    let timeOfDay: string = "AM"
+
+    if(hourNumber > 12) {
+      timeOfDay = "PM"
+      hourNumber -= 12
+    }
+
+    let minuteNumber: number = time.getMinutes()
+    let secondNumber: number = time.getSeconds()
+    let timeStr: string = `${padString(hourNumber)}:${padString(minuteNumber)}:${padString(secondNumber)} ${timeOfDay}`
+
+    return [time.toDateString(), timeStr]
+  }
+
   return (
     <tr>
       <td scope="row">
         <p>{props.NAME}{props.EXTENSION}</p>
-        <a href={`/api/files/${props.ID}/download`} download={`${props.NAME}${props.EXTENSION}`} className="btn btn-primary">
+        <a href={`/api/files/${props.FILE_ID}/download`} download={`${props.FILENAME}`} className="btn btn-primary">
           Download
         </a>
       </td>
-      <td scope="row">{props.ID}</td>
       <td scope="row">{props.DESCRIPTION || ""}</td>
       <td scope="row">{size} MB</td>
-      <td scope="row">{props.UPLOAD_TIME?.toString()}</td>
+      <td scope="row">{timeToString(props.UPLOAD_TIME)[0]}
+        <br />
+        {timeToString(props.UPLOAD_TIME)[1]}
+      </td>
       <td scope="row">{props.USERNAME}</td>
       <td scope="row">
-        <DeleteButton ID={props.ID} ServerSocket={SERVER_SOCKET}/>
+        <DeleteButton ID={props.FILE_ID} ServerSocket={SERVER_SOCKET}/>
       </td>
     </tr>
   )
