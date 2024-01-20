@@ -22,12 +22,35 @@ async function DeleteUserByID(request: NextRequest, context: { params: any }): P
 
 async function GetUserByID(USER_ID: string): Promise<IUserProps> {
   const connection: mysql.Connection = await CreateConnection(false)
-  const SQL: string = `SELECT * FROM USER WHERE ID='${USER_ID}'`
-  const resp = await connection.execute(SQL)
+  const USER_SQL: string = `
+    SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
+    FROM FILE
+      INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
+      INNER JOIN USER ON USER_ID=USER.ID
+    WHERE USER_ID='${USER_ID}';
+  `
+  const resp = await connection.execute(USER_SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
     .then(value => value[1][0])
-  
+    
+  /*
+  // GET TOTAL FILE SIZE OF UPLOADED FILES OF USER
+  const FILESIZE_SQL = `
+    SELECT SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
+    FROM FILE
+      INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
+      INNER JOIN USER ON USER_ID=USER.ID
+    WHERE USER_ID='${USER_ID}';
+  `
+  const filesize_resp = await connection.execute(FILESIZE_SQL)
+    .then(resp => resp.entries())
+    .then(entries => entries.next().value)
+    .then(value => value[1][0]['STORAGE'])
+    
+    resp['STORAGE_BYTES'] = filesize_resp
+    */
+
   return resp
 }
 
