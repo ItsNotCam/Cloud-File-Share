@@ -1,9 +1,10 @@
 **/.venv
 app/data
-db/mysql_data
+db/mysql_data*
 **/__pycache__
 **.vscode
 **.next
+**.mwb
 
 # NextJS Gitignore
 
