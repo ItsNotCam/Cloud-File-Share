@@ -14,7 +14,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   }
 
   // get file info
-  const [FILE_ID, EXTENSION, NAME] = await getFileInfo(file)
+  const [FILE_ID, FILENAME, EXTENSION, NAME] = await getFileInfo(file)
   
   // Get a random user
   const connection: mysql.Connection = await CreateConnection()
@@ -73,6 +73,8 @@ async function getFileInfo(file: File): Promise<string[]> {
   let regex = new RegExp(/(.*)(\.\w*)$|(.*)$/g)
   let match = regex.exec(FILENAME)
 
+  console.log(match)
+
   if(match) {
     FILENAME = match[0] || ""
     NAME = match[1] || ""
@@ -95,13 +97,13 @@ async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string,
   SQL = `INSERT INTO OWNERSHIP VALUES ('${USER_ID}', '${FILE_ID}', NULL, 1);`
   await connection.query(SQL);
 
-  SQL = `SELECT NAME, EXTENSION FROM FILE WHERE ID='${FILE_ID}'`
-  const {recvdName, recvdExtension} = await connection.query(SQL)
+  SQL = `SELECT FILENAME FROM FILE WHERE ID='${FILE_ID}'`
+  const fileName: string = await connection.query(SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
-    .then(value => value[1][0])
+    .then(value => value[1][0]['FILENAME'])
 
-  return `${recvdName}${recvdExtension}`
+  return fileName
 }
 
 export {UploadFile as POST}
