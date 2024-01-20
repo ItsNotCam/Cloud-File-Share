@@ -23,12 +23,14 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
     FROM FILE
       INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
       INNER JOIN USER ON USER_ID=USER.ID
-    WHERE USER_ID=(SELECT ID FROM USER ORDER BY RAND() LIMIT 1);
-  `
+    WHERE USER_ID='bf7a8d43-b7b9-11ee-bf58-0242ac000002';`//(SELECT ID FROM USER ORDER BY RAND() LIMIT 1);
+  
   const RESP = await connection.query(SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
     .then(value => value[1][0]);
+
+  console.log(RESP)
 
   if((file.size + RESP.USED_STORAGE_BYTES) > MAX_STORAGE_BYTES) {
     return new NextResponse(
@@ -42,9 +44,9 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const buffer = await file.arrayBuffer()
     .then(bytes => Buffer.from(bytes))
   await writeFile(PATH, buffer, () => {})
-
+  
   // Add entry to database
-  const SAVED_NAME = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, RESP.USER_ID, PATH, file.size)
+  const SAVED_NAME = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, RESP.ID, PATH, file.size)
   return new NextResponse(
     `Successfully uploaded file ${SAVED_NAME}`,
     { status: 200 }

@@ -49,12 +49,12 @@ async function GetUserByID(USER_ID: string): Promise<IUserProps> {
 
 async function GET(request: NextRequest, context: { params: any }): Promise<NextResponse> {
   const includeFiles: string = request.nextUrl.searchParams.get("include_files") || "false"
-  const USER_ID: string = context.params.USER_ID
-  const userData: IUserProps = await GetUserByID(USER_ID)
+  const userID: string = context.params.USER_ID
+  const userData: IUserProps = await GetUserByID(userID)
 
   let js: object = userData;
   if(includeFiles != null && includeFiles === 'true') {
-    const FILES: IFileProps[] = await GetFilesFromUserWithID(USER_ID)
+    const FILES: IFileProps[] = await GetFilesFromUserWithID(userID)
     js = { ...userData, FILES }
   }
 

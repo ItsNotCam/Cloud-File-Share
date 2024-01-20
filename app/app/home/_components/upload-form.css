@@ -65,6 +65,6 @@ input[type="file"]::file-selector-button:active {
   justify-content: space-around;
 }
 
-.leform form {
-  width: 42vw;
-}
+/* .leform form {
+  width: 35vw;
+} */
