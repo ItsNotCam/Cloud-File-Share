@@ -65,9 +65,10 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
       { status: 200 }
     )
   } catch (e) {
+    const err: {message: string} = e as {message: string}
     rmSync(PATH, { force: true })
     return new NextResponse(
-      e.message, { status: 500 }
+      err.message, { status: 500 }
     )
   }
 }
