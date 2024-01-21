@@ -6,6 +6,13 @@ import {v4 as uuidv4} from 'uuid';
 import { rmSync, writeFile } from "fs";
 import mysql from 'mysql2/promise'
 
+interface IFileInfo {
+  FILE_ID: string
+  FILENAME: string
+  EXTENSION: string
+  NAME: string
+}
+
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const data = await request.formData()
   const file: File | null = data.get('file') as File
@@ -14,7 +21,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   }
 
   // get file info
-  const [FILE_ID, FILENAME, EXTENSION, NAME] = await getFileInfo(file)
+  const {FILE_ID, EXTENSION, NAME} = await getFileInfo(file)
   
   // Get a random user
   const connection: mysql.Connection = await CreateConnection()
@@ -65,23 +72,16 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-async function getFileInfo(file: File): Promise<string[]> {
-  let EXTENSION: string = ""
-  let NAME: string = file.name
-  let FILENAME: string = file.name
-  
-  let regex = new RegExp(/(.*)(\.\w*)$|(.*)$/g)
-  let match = regex.exec(FILENAME)
-
-  console.log(match)
-
-  if(match) {
-    FILENAME = match[0] || ""
-    NAME = match[1] || ""
-    EXTENSION = match[2] || ""
+async function getFileInfo(file: File): Promise<IFileInfo> {
+  const regex = new RegExp(/(.*)(\.\w*)$|(.*)$/g)
+  const match = regex.exec(file.name)
+  const [FILENAME, NAME, EXTENSION] = match ?? ["", file.name, file.name]
+  return {
+    FILE_ID: uuidv4(),
+    FILENAME: FILENAME,
+    EXTENSION: EXTENSION,
+    NAME: NAME
   }
-
-  return [uuidv4(), FILENAME, EXTENSION, NAME]
 }
 
 
