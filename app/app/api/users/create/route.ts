@@ -18,7 +18,6 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
   }
 
   if(errors.length > 0) {
-    console.log(errors)
     return NextResponse.json({
       errors: errors
     }, { status: 400 })
@@ -26,8 +25,6 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
 
   const connection: mysql.Connection = await CreateConnection()
   const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
-
-  console.log(SQL)
 
   try {
     const resp: any = await connection.execute(SQL)

@@ -15,7 +15,7 @@ interface IFileInfo {
 
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const data = await request.formData()
-  const file: File | null = data.get('file') as File
+  const file: File = data.get('file') as File
   if(!file) {
     return new NextResponse("No file has been sent", { status: 400 } )
   }

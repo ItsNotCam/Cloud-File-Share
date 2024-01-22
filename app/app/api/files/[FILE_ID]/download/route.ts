@@ -7,7 +7,7 @@ import fs, { Stats } from 'fs'
 import { NextResponse } from 'next/server'
 import { ReadableOptions } from 'stream'
 
-type FileData = {
+interface IFileData {
   NAME: string
   EXTENSION: string
   INTERNAL_FILE_PATH: string
@@ -16,19 +16,14 @@ type FileData = {
 async function DownloadFile(request: Request, context: { params: any }, response: Response): Promise<NextResponse> {
   const { FILE_ID } = context.params;
   const SQL: string = `SELECT NAME, EXTENSION, INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`
-  console.log(SQL)
 
   const connection: mysql.Connection = await CreateConnection()
-
-  const fileData: FileData = await connection.query(SQL)
+  const fileData: IFileData = await connection.query(SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
     .then(value => value[1][0])
 
-  console.log(fileData)
-
   const {NAME, EXTENSION, INTERNAL_FILE_PATH} = fileData;
-
   const fileName: string = `${NAME}${EXTENSION}`
   const data: ReadableStream<Uint8Array> = streamFile(INTERNAL_FILE_PATH);
   const stats: Stats = await fs.promises.stat(INTERNAL_FILE_PATH); 
