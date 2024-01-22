@@ -1,7 +1,7 @@
 // User actions
 import { IFileProps, IUserProps } from "@/app/_helpers/types";
 import { NextRequest, NextResponse } from "next/server";
-import { CreateConnection } from "@/app/_helpers/db";
+import { CreateConnection, QueryGetFirst } from "@/app/_helpers/db";
 import mysql from 'mysql2/promise'
 
 async function DeleteUserByID(request: NextRequest, context: { params: any }): Promise<NextResponse> {
@@ -39,11 +39,7 @@ async function GetUserByID(USER_ID: string): Promise<IUserProps> {
       INNER JOIN USER ON USER_ID=USER.ID
     WHERE USER_ID='${USER_ID}';
   `
-  const resp = await connection.query(USER_SQL)
-    .then(resp => resp.entries())
-    .then(entries => entries.next().value)
-    .then(value => value[1][0])
-    
+  const resp = await QueryGetFirst(connection, USER_SQL)
   return resp
 }
 
