@@ -27,10 +27,8 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
   const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
 
   try {
-    const resp: any = await connection.execute(SQL)
-    console.log(resp)
+    await connection.execute(SQL)
   } catch(err) {
-    console.log(err)
     const sqlError = err as mysql.QueryError;
     const errCode: string = sqlError.code;
     const msg: string = sqlError.message;
