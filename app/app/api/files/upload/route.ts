@@ -22,7 +22,6 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   }
 
   // get file info
-  const [FILE_ID, _, EXTENSION, NAME] = await getFileInfo(file)
   const {FILE_ID, EXTENSION, NAME} = await getFileInfo(file)
   
   // Get a random user
@@ -58,7 +57,6 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   if(result === -1) {
     rmSync(PATH, { force: true })
     return new NextResponse(
-      err.message, { status: 500 }
       "Error saving file to the database", { status: 500 }
     )
   }
