@@ -1,6 +1,6 @@
 // GET ALL FILES
-import { CreateConnection } from '@/app/_helpers/db';
-import { IAdminFileProps } from "@/app/_helpers/types";
+import { CreateConnection } from '@/lib/db';
+import { IAdminFileProps } from "@/lib/types";
 
 import { NextRequest, NextResponse } from 'next/server'
 

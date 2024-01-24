@@ -1,7 +1,7 @@
 // DOWNLOAD FILE
 "use server"
 
-import { CreateConnection, QueryGetFirst } from '@/app/_helpers/db'
+import { CreateConnection, QueryGetFirst } from '@/lib/db'
 import mysql from 'mysql2/promise'
 import fs, { Stats } from 'fs'
 import { NextResponse } from 'next/server'

@@ -1,4 +1,4 @@
-import { CreateConnection } from "@/app/_helpers/db"
+import { CreateConnection } from "@/lib/db"
 import { IComment } from "@/app/_helpers/types"
 import { NextResponse } from "next/server"
 

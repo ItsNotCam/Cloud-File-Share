@@ -1,7 +1,7 @@
 // UPLOAD FILE
 import { MAX_STORAGE_BYTES } from "@/app/_helpers/constants";
 import { NextRequest, NextResponse } from "next/server";
-import { CreateConnection, QueryGetFirst } from "@/app/_helpers/db";
+import { CreateConnection, QueryGetFirst } from "@/lib/db";
 import { rmSync, writeFile } from "fs";
 import {v4 as uuidv4} from 'uuid';
 import mysql from 'mysql2/promise'

@@ -1,6 +1,6 @@
 // FILE ACTIONS
-import { CreateConnection, QueryGetFirst } from '@/app/_helpers/db';
-import { IFileUpdate } from '@/app/_helpers/types';
+import { CreateConnection, QueryGetFirst } from '@/lib/db';
+import { IFileUpdate } from '@/lib/types';
 import fs from 'fs';
 import mysql from 'mysql2/promise'
 import { NextRequest, NextResponse } from 'next/server'
@@ -28,7 +28,10 @@ async function GetFileInfo(request: NextRequest, context: IFileIDContext): Promi
 // Delete file from database
 async function DeleteFile(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
   const { FILE_ID } = context.params
+	return await DeleteFileByID(FILE_ID)
+}
 
+async function DeleteFileByID(FILE_ID: string): Promise<NextResponse> {
   const connection: mysql.Connection = await CreateConnection()
 
   // get the file path of the saved file
@@ -84,4 +87,4 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
   }
 }
 
-export { GetFileInfo as GET, DeleteFile as DELETE, UpdateFileInfo as PATCH }
+export { GetFileInfo as GET, DeleteFile as DELETE, UpdateFileInfo as PATCH, DeleteFileByID as DeleteFileByID }

@@ -1,5 +1,5 @@
 // User actions
-import { CreateConnection } from "@/app/_helpers/db";
+import { CreateConnection } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
 import { IUserProps } from "@/app/_helpers/types";

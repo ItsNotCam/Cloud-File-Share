@@ -1,7 +1,7 @@
 // User actions
 import { IFileProps, IUserProps } from "@/app/_helpers/types";
 import { NextRequest, NextResponse } from "next/server";
-import { CreateConnection, QueryGetFirst } from "@/app/_helpers/db";
+import { CreateConnection, QueryGetFirst } from "@/lib/db";
 import mysql from 'mysql2/promise'
 
 async function DeleteUserByID(request: NextRequest, context: { params: any }): Promise<NextResponse> {

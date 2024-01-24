@@ -12,7 +12,8 @@ export type IAdminFileProps =
   IFileProps & IUserProps 
   & {
     FILE_ID: string, 
-    USER_ID: string
+    USER_ID: string,
+		DeleteFile: (FILE_ID: string) => {}
   }
 
 export type IFileProps = {
