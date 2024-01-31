@@ -3,6 +3,7 @@ import { CreateConnection, QueryGetFirst } from '@/lib/db';
 import { IFileUpdate } from '@/lib/types';
 import fs from 'fs';
 import mysql from 'mysql2/promise'
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server'
 
 interface IFileIDContext {
@@ -28,6 +29,19 @@ async function GetFileInfo(request: NextRequest, context: IFileIDContext): Promi
 // Delete file from database
 async function DeleteFile(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
   const { FILE_ID } = context.params
+
+	const token = cookies().get("token")?.value;
+	const CAN_DELETE_SQL: string = `
+		SELECT IS_OWNER FROM OWNERSHIP WHERE FILE_ID='${FILE_ID}' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
+	`
+
+	const connection = await CreateConnection()
+	const resp = await QueryGetFirst(connection, CAN_DELETE_SQL)
+
+	if(!resp.IS_OWNER.readInt8()) {
+		return NextResponse.json({message: "not allowed"}, {status: 403})
+	}
+
 	return await DeleteFileByID(FILE_ID)
 }
 

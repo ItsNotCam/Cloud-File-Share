@@ -132,6 +132,11 @@ body {
 	background-color: transparent;
 	font-size: 1.2rem;
 	color: white;
+	transition: filter 0.15s;
+}
+
+.username:focus, .password:focus, .submit:focus {
+	filter: drop-shadow(0 0 0.3rem teal);
 }
 
 .submit {
@@ -144,6 +149,11 @@ body {
 	transition: background-color 0.15s;
 	transform: scale(85%);
 	outline: none;
+	transition: filter 0.15s;
+}
+
+.submit:hover {
+	filter: drop-shadow(0 0 0.3rem lime);
 }
 
 .login-container input:focus {
@@ -211,4 +221,8 @@ table td, th {
 
 .logout-button:hover {
 	filter: drop-shadow(0 0 0.3rem);
+}
+
+.file-download-link:hover {
+	color: white;
 }
