@@ -13,10 +13,13 @@ interface IFileInfo {
   NAME: string
 }
 import { IUserProps } from "@/lib/types";
+import { cookies } from "next/headers";
+import DBAuth from "@/lib/db/DBAuth";
 
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const data = await request.formData()
   const file: File = data.get('file') as File
+	const DESCRIPTION: string = data.get('description') as string;
   if(!file) {
     return new NextResponse("No file has been sent", { status: 400 } )
   }
@@ -24,15 +27,24 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   // get file info
   const {FILE_ID, EXTENSION, NAME} = await getFileInfo(file)
   
-  // Get a random user
+  // Get user from token
   const connection: mysql.Connection = await CreateConnection()
-  let USER_ID: string = (await QueryGetFirst(connection, `SELECT ID FROM USER ORDER BY RAND() LIMIT 1`) as {ID: string}).ID
+	const token = cookies().get("token")?.value || "";
+	const USER = await DBAuth.GetUserFromToken(token)
+
+	if(USER === undefined) {
+		return new NextResponse(
+			`User doesnt exist`,
+			{ status: 200 }
+		)
+	}
+
   let SQL: string = `
     SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
     FROM FILE
       INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
       INNER JOIN USER ON USER_ID=USER.ID
-    WHERE USER.ID='${USER_ID}'
+    WHERE USER.ID='${USER.ID}'
     GROUP BY USER.ID;
   `;
   
@@ -51,7 +63,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   await writeFile(PATH, buffer, () => {})
   
   // Add entry to database
-  const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER_ID, PATH, file.size)
+  const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, DESCRIPTION, USER.ID, PATH, file.size)
     .then(_ => 0).catch(_ => -1)
 
   if(result === -1) {
@@ -81,11 +93,11 @@ async function getFileInfo(file: File): Promise<IFileInfo> {
 
 
 async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string, NAME: string, 
-  EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<string> {
+  EXTENSION: string, DESCRIPTION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<string> {
 
   let SQL: string = `INSERT INTO FILE VALUES (
     '${FILE_ID}', '${NAME}', '${EXTENSION}', '${NAME}${EXTENSION}',
-    'a new file', '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
+    '${DESCRIPTION}', '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
   );`
   await connection.query(SQL);
   

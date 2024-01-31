@@ -3,6 +3,8 @@ import { authenticate } from '@/lib/db/util'
 import { redirect } from 'next/navigation'
 import DBFiles from '@/lib/db/DBFiles'
 import FileTable from './_components/file-table'
+import UploadForm from './_components/upload-form'
+import { SERVER_SOCKET } from '@/lib/constants'
 
 export default async function Home(): Promise<JSX.Element> {
 	const user = await authenticate()
@@ -20,6 +22,7 @@ export default async function Home(): Promise<JSX.Element> {
 				<br />
 				<strong style={{ color: "white" }}>User ID:</strong> {user.ID}
 			</p>
+			<UploadForm SERVER_SOCKET={SERVER_SOCKET}/>
 			{files.length > 0 ? (
 				<FileTable files={files} />
 			) : (

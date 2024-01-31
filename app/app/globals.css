@@ -222,7 +222,3 @@ table td, th {
 .logout-button:hover {
 	filter: drop-shadow(0 0 0.3rem);
 }
-
-.file-download-link:hover {
-	color: white;
-}
