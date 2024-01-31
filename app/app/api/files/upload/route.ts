@@ -1,5 +1,5 @@
 // UPLOAD FILE
-import { MAX_STORAGE_BYTES } from "@/app/_helpers/constants";
+import { MAX_STORAGE_BYTES } from "@/lib/constants";
 import { NextRequest, NextResponse } from "next/server";
 import { CreateConnection, QueryGetFirst } from "@/lib/db";
 import { rmSync, writeFile } from "fs";
@@ -12,7 +12,7 @@ interface IFileInfo {
   EXTENSION: string
   NAME: string
 }
-import { IUserProps } from "@/app/_helpers/types";
+import { IUserProps } from "@/lib/types";
 
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const data = await request.formData()

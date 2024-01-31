@@ -14,10 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './dropdown.css'
 
 interface IMouseContext {
-	pos: {
-		left: number,
-		top: number
-	},
+	pos: { left: number, top: number },
 	inDropdown: boolean
 }
 

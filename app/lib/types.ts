@@ -30,6 +30,7 @@ export type IFileProps = {
 }
 
 export type IUserProps = {
+	ID: string
   USERNAME: string
   PASSWORD: string
   CREATED: Date

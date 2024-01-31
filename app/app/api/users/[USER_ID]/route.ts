@@ -1,5 +1,5 @@
 // User actions
-import { IFileProps, IUserProps } from "@/app/_helpers/types";
+import { IFileProps, IUserProps } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { CreateConnection, QueryGetFirst } from "@/lib/db";
 import mysql from 'mysql2/promise'

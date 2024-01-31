@@ -2,7 +2,7 @@
 import { CreateConnection } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
-import { IUserProps } from "@/app/_helpers/types";
+import { IUserProps } from "@/lib/types";
 
 async function CreateUser(request: NextRequest): Promise<NextResponse> {
   const {USERNAME, PASSWORD}: IUserProps = await request.json()
