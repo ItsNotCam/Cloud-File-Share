@@ -1,3 +1,6 @@
+import { QueryGetFirst } from "../db"
+import DBAuth from "./DBAuth"
+import { IDBUser } from "./DBUser"
 import { CreateConnection } from "./util"
 
 export interface IDBFile {
@@ -14,23 +17,46 @@ export interface IDBFile {
 	IS_OWNER: boolean
 }
 
+interface ok {
+	USER_ID?: string,
+	TOKEN?: string
+}
+
 export default abstract class DBFile {
-	static async GetFilesOfUserById(USER_ID: string): Promise<IDBFile[]> {
+	static async GetFilesOfUser(identifier: {USER_ID?: string, TOKEN?: string}): Promise<IDBFile[]> {
 		const connection = await CreateConnection()
 		if(connection === null)
 			return []
 
-		let SQL = `
-			SELECT 
-				F.ID, F.NAME, F.EXTENSION, F.FILENAME, F.DESCRIPTION, 
-				F.SIZE_BYTES, F.UPLOAD_TIME, F.LAST_DOWNLOAD_TIME, F.LAST_DOWNLOAD_USER_ID,
-				IS_OWNER
-			FROM OWNERSHIP 
-				INNER JOIN USER AS U ON U.ID = USER_ID 
-				INNER JOIN FILE AS F ON F.ID = FILE_ID
-			WHERE U.ID='${USER_ID}'
-			ORDER BY F.FILENAME;
-		`
+		const {USER_ID, TOKEN}  = identifier
+
+		let SQL: string = ""
+		if(USER_ID !== undefined) {
+			SQL = `
+				SELECT 
+					F.ID, F.NAME, F.EXTENSION, F.FILENAME, OWNERSHIP.DESCRIPTION, 
+					F.SIZE_BYTES, F.UPLOAD_TIME, F.LAST_DOWNLOAD_TIME, F.LAST_DOWNLOAD_USER_ID,
+					IS_OWNER
+				FROM OWNERSHIP 
+					INNER JOIN USER AS U ON U.ID = USER_ID 
+					INNER JOIN FILE AS F ON F.ID = FILE_ID
+				WHERE U.ID='${USER_ID}'
+				ORDER BY F.FILENAME;
+			`
+		} else {
+			SQL = `
+				SELECT 
+					F.ID, F.NAME, F.EXTENSION, F.FILENAME, OWNERSHIP.DESCRIPTION, 
+					F.SIZE_BYTES, F.UPLOAD_TIME, F.LAST_DOWNLOAD_TIME, F.LAST_DOWNLOAD_USER_ID,
+					IS_OWNER
+				FROM OWNERSHIP 
+					INNER JOIN USER AS U ON U.ID = USER_ID 
+					INNER JOIN FILE AS F ON F.ID = FILE_ID	
+					INNER JOIN AUTH ON AUTH.USER_ID=U.ID
+				WHERE AUTH.TOKEN='${TOKEN}'
+				ORDER BY F.FILENAME;
+			`
+		}
 
 		try {
 			const resp = await connection.query(SQL)
@@ -39,19 +65,13 @@ export default abstract class DBFile {
 				files[i].IS_OWNER = files[i].IS_OWNER.readInt8() // i have it as a bit in the database so i have to read the output here
 			}
 
-			// const owner = files[1].IS_OWNER
-			// console.log(owner.readInt8())
-			// if(owner.readInt8())
-			// 	console.log("yep")
-
-			// console.log(files[1].readUIntLE())
-			// console.log(files[1])
-			// console.log("VALUE: ", files[1].IS_OWNER)
 			return files
 		} catch (err) {
-			return []
+			console.log(err)
 		} finally {
 			connection.end()
 		}
+		
+		return []
 	}
 }

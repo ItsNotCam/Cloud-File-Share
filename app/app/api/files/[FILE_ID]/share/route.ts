@@ -28,7 +28,7 @@ export async function POST(request: Request, context: {params: any}): Promise<Ne
 			const USER_SQL = `SELECT ID FROM USER WHERE USERNAME='${username}'`
 			const SHARE_SQL = `
 				INSERT INTO OWNERSHIP VALUES (
-					(${USER_SQL}), '${FILE_ID}', NULL, DEFAULT 
+					(${USER_SQL}), '${FILE_ID}', '', NULL, DEFAULT 
 				);
 			`
 			const resp: RowDataPacket[] = await connection.execute(SHARE_SQL) as RowDataPacket[]

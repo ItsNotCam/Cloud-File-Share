@@ -4,7 +4,8 @@ import { CreateConnection, QueryGetFirst } from './util';
 export interface IDBUser {
 	ID: string,
 	USERNAME: string,
-	PASSWORD: string
+	PASSWORD: string,
+	CRAETED_AT: Date
 }
 
 export default abstract class DBUser {
@@ -35,13 +36,6 @@ export default abstract class DBUser {
 		if(connection === null)
 			return undefined
 
-		// const USER_SQL: string = `
-		// 	SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
-		// 	FROM FILE
-		// 		INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
-		// 		INNER JOIN USER ON USER_ID=USER.ID
-		// 	WHERE USERNAME='${USERNAME}';
-		// `
 		const USER_SQL: string = `SELECT * FROM USER WHERE USERNAME='${USERNAME}';`
 
 		try {

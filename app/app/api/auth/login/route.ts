@@ -14,8 +14,5 @@ export async function POST(request: NextRequest): Promise<Response> {
 
 	const token = await DBAuth.GenerateToken(foundUser.ID);
 
-	DBFiles.GetFilesOfUserById(foundUser.ID)
-
-	// console.log("user", foundUser, "token", token)
 	return NextResponse.json({ status: "authenticated", token: token }, { status: 200 })
 }

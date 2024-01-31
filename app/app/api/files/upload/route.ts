@@ -97,11 +97,11 @@ async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string,
 
   let SQL: string = `INSERT INTO FILE VALUES (
     '${FILE_ID}', '${NAME}', '${EXTENSION}', '${NAME}${EXTENSION}',
-    '${DESCRIPTION}', '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
+    '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
   );`
   await connection.query(SQL);
   
-  SQL = `INSERT INTO OWNERSHIP VALUES ('${USER_ID}', '${FILE_ID}', NULL, 1);`
+  SQL = `INSERT INTO OWNERSHIP VALUES ('${USER_ID}', '${FILE_ID}', '${DESCRIPTION}', NULL, 1);`
   await connection.query(SQL);
 
   SQL = `SELECT FILENAME FROM FILE WHERE ID='${FILE_ID}'`

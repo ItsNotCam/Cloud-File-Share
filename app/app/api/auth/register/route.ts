@@ -20,5 +20,6 @@ export async function POST(request: NextRequest): Promise<Response> {
 	}
 
 	const token = await DBAuth.GenerateToken(newUser.ID);
+	console.log(token)
 	return NextResponse.json({ token: token }, { status: 200 })
 }

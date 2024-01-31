@@ -1,3 +1,4 @@
+import moment from "moment";
 import DBUser, { IDBUser } from "./DBUser";
 import { CreateConnection, QueryGetFirst } from "./util";
 import { v4 } from 'uuid';
@@ -11,12 +12,17 @@ export default abstract class DBAuth {
 		const DELSQL: string = `DELETE FROM AUTH WHERE USER_ID='${ID}'`
 		await connection.execute(DELSQL)
 
-		const uuid: string = v4()
-		const expire = Date.now()
-		const SQL: string = `INSERT INTO AUTH VALUES ('${ID}', '${uuid}')`//, '${expire}')`
-		await connection.execute(SQL)		
+		const token: string = v4()
+		const expireDate = moment(Date.now()).add(30, 'm').toDate();
+		const expireSQL = `${expireDate.getFullYear()}-${expireDate.getMonth()+1}-${expireDate.getDate()} ${expireDate.getHours()}:${expireDate.getMinutes()}:${expireDate.getSeconds()}`
+		console.log(expireSQL)
 
-		return uuid;
+		const SQL: string = `INSERT INTO AUTH VALUES ('${ID}', '${token}', '${expireSQL}')`
+		const resp = await connection.execute(SQL)		
+
+		console.log(resp)
+
+		return token;
 	}
 
 	static async GetUserFromToken(token: string): Promise<IDBUser | undefined> {

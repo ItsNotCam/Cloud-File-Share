@@ -11,6 +11,12 @@ import { useState } from "react";
 export default function FileTable(props: { files: IDBFile[] }): JSX.Element {
 	const [showShareMenu, setShowShareMenu] = useState<boolean>(false)
 	const [filetoShare, setFileToShare] = useState<IDBFile | undefined>(undefined)
+	const [startIdx, setStartIdx] = useState<number>(0)
+
+	const [page, setPage] = useState<number>(0)
+	// const [itemsPerPage, setItemsPerPage] = useState<number>(5)
+
+	const itemsPerPage = 15;
 
 	const { files } = props;
 
@@ -25,6 +31,21 @@ export default function FileTable(props: { files: IDBFile[] }): JSX.Element {
 	const showShare = (file: IDBFile) => {
 		setFileToShare(file)
 		setShowShareMenu(true)
+	}
+
+	const nextPage = () => {
+		setStartIdx(prev => prev+(1*itemsPerPage))
+		setPage(prev => Math.min(prev+1, Math.floor(files.length / itemsPerPage)))
+	}
+	
+	const prevPage = () => {
+		setStartIdx(prev => Math.max(0, prev-(1*itemsPerPage)))
+		setPage(prev => Math.max(0, prev-1))
+	}
+	
+	const updateItemsPerPage = (e) => {
+		// setItemsPerPage(e.target.value)
+		setPage(0)
 	}
 
 	return (<>
@@ -45,7 +66,7 @@ export default function FileTable(props: { files: IDBFile[] }): JSX.Element {
 				</tr>
 			</thead>
 			<tbody>
-				{files.map(file => (
+				{files.slice((page*itemsPerPage), (page*itemsPerPage)+itemsPerPage).map(file => (
 					<tr key={file.ID}>
 						<td style={{textAlign: "center"}}>
 							<a href={`/api/files/${file.ID}/download`} download={file.FILENAME}>
@@ -75,5 +96,10 @@ export default function FileTable(props: { files: IDBFile[] }): JSX.Element {
 				))}
 			</tbody>
 		</table>
+		<div>
+			<button onClick={prevPage} style={{border: "1px solid gray", padding: "10px", margin: "10px"}}>Back</button>
+			<button onClick={nextPage} style={{border: "1px solid gray", padding: "10px", margin: "10px"}}>Next</button>
+		</div>
+		<h1>Page {page+1}</h1>
 	</>)
 }
