@@ -41,9 +41,9 @@ export default abstract class DBFile {
 					INNER JOIN USER AS U ON U.ID = USER_ID 
 					INNER JOIN FILE AS F ON F.ID = FILE_ID
 				WHERE U.ID='${USER_ID}'
-				ORDER BY F.FILENAME;
+				ORDER BY F.UPLOAD_TIME DESC;
 			`
-		} else {
+		} else if(TOKEN !== undefined) {
 			SQL = `
 				SELECT 
 					F.ID, F.NAME, F.EXTENSION, F.FILENAME, OWNERSHIP.DESCRIPTION, 
