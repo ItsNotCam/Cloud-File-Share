@@ -19,19 +19,15 @@ interface IUploadFormProps {
 	file: File | null
 	uploadingProgress: number
 	isUploading: boolean
-	USERNAME: string
-	PASSWORD: string
 	DESCRIPTION: string
 }
 
-export default function UploadForm(props: { SERVER_SOCKET: string }): JSX.Element {
+export default function UploadForm(): JSX.Element {
 	const router = useRouter()
 	const [state, setState] = useState<IUploadFormProps>({
 		file: null,
 		uploadingProgress: 0,
 		isUploading: false,
-		USERNAME: "",
-		PASSWORD: "",
 		DESCRIPTION: ""
 	})
 	const inputFile = useRef(null);
@@ -69,7 +65,7 @@ export default function UploadForm(props: { SERVER_SOCKET: string }): JSX.Elemen
 		data.set('description', state.DESCRIPTION)
 
 		setState({ ...state, isUploading: true })
-		axios.post(`http://${props.SERVER_SOCKET}/api/files/upload`, data, {
+		axios.post(`/api/files/upload`, data, {
 			headers: { 'Content-Type': 'multipart/form-data' },
 			onUploadProgress: handleProgressUpdate
 		}).catch((e: AxiosError) => {
@@ -88,11 +84,7 @@ export default function UploadForm(props: { SERVER_SOCKET: string }): JSX.Elemen
 
 	const createUser = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault()
-		const data = {
-			PASSWORD: state.PASSWORD,
-			USERNAME: state.USERNAME
-		}
-		await axios.post(`http://${props.SERVER_SOCKET}/api/users/create`, data, {
+		await axios.post(`/api/users/create`, {
 			headers: { 'Content-Type': 'application/json' },
 		}).then(_ => {
 			setState(prev => ({ ...prev, USERNAME: "", PASSWORD: "", DESCRIPTION: ""}))
@@ -107,7 +99,7 @@ export default function UploadForm(props: { SERVER_SOCKET: string }): JSX.Elemen
 
 	const resetFile = () => {
 		if (inputFile.current) {
-			inputFile.current.value = "";
+			inputFile.current.value = ""; //ignore
 		}
 
 		setState({ ...state, file: null })

@@ -12,7 +12,8 @@ export default abstract class DBAuth {
 		await connection.execute(DELSQL)
 
 		const uuid: string = v4()
-		const SQL: string = `INSERT INTO AUTH VALUES ('${ID}', '${uuid}')`
+		const expire = Date.now()
+		const SQL: string = `INSERT INTO AUTH VALUES ('${ID}', '${uuid}')`//, '${expire}')`
 		await connection.execute(SQL)		
 
 		return uuid;

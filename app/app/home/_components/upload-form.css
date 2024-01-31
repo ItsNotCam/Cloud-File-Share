@@ -126,3 +126,50 @@ input[type="file"]::file-selector-button:active {
 	border-color: red;
 }
 
+.share-file {
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+}
+
+.share-file button {
+	background-color: transparent;
+	color: #55b549;
+	border: 1px solid;
+	padding: 0.5rem 0.8rem;
+	border-radius: 15px;
+	transition: filter 0.1s;
+}
+
+.share-file button:hover {
+	filter: drop-shadow(0 0 0.3rem lime);
+}
+
+
+.share-file input {
+	background-color: transparent;
+	border-bottom: 1px solid gray;
+	outline: none;
+	font-size: 1.25rem;
+}
+
+.share-file p {
+	font-size: 1.2rem;
+}
+
+.share-border {
+	border: 1px solid gray;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 2rem;
+	border-radius: 5px;
+}
+
+.share-border p {
+	color: white;
+	font-weight: 700;
+}

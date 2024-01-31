@@ -22,7 +22,7 @@ export default async function Home(): Promise<JSX.Element> {
 				<br />
 				<strong style={{ color: "white" }}>User ID:</strong> {user.ID}
 			</p>
-			<UploadForm SERVER_SOCKET={SERVER_SOCKET}/>
+			<UploadForm />
 			{files.length > 0 ? (
 				<FileTable files={files} />
 			) : (

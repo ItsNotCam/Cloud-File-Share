@@ -1,5 +1,5 @@
-import { CreateConnection } from "@/lib/db"
-import { IComment } from "@/app/_helpers/types"
+import { CreateConnection } from "@/lib/db/util"
+import { IComment } from "@/lib/types"
 import { NextResponse } from "next/server"
 
 const errMsgs: Map<number, string> = new Map([
