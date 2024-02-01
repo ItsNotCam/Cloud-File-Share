@@ -74,10 +74,10 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
 
 	let mods: string[] = []
 	if (description !== undefined && description.length > 0) {
-		mods.push(`DESCRIPTION='${description}'`)
+		mods.push(`DESCRIPTION='${description.substring(0, 5000)}'`)
 	}
 	if (name !== undefined && name.length > 0) {
-		mods.push(`NAME='${name}'`)
+		mods.push(`NAME='${name.substring(0, 64)}'`)
 	}
 
 	try {

@@ -17,11 +17,10 @@ interface IHomeState {
 }
 
 export default function Home(): JSX.Element {
-	const router = useRouter()
 	const [state, setState] = useState<IHomeState>({
 		gettingFiles: true,
 		selectedFileIdx: -1,
-		showFileInfo: false,
+		showFileInfo: true,
 		files: []
 	})
 
@@ -29,10 +28,14 @@ export default function Home(): JSX.Element {
 	useEffect(() => fetchFiles(), [])
 
 	const fetchFiles = () => {
+    setState(prev => ({
+      ...prev,
+      gettingFiles: true
+    }))
+
 		fetch("/api/files")
 			.then(resp => resp.json())
 			.then(js => {
-				console.log(js)
 				setState(prev => ({
 					...prev,
 					files: js.files,

@@ -7,15 +7,17 @@ import { useRouter } from "next/navigation";
 const defaultFile: IDBFile = {
 	DESCRIPTION: "",
 	EXTENSION: "",
-	FILENAME: "",
+	FILENAME: "Select a file :)",
 	ID: "",
-	IS_OWNER: false,
+	IS_OWNER: true,
 	LAST_DOWNLOAD_TIME: new Date(),
 	LAST_DOWNLOAD_USER_ID: "",
 	NAME: "",
 	SIZE_BYTES: 0,
 	UPLOAD_TIME: new Date()
 }
+
+const MAX_DESCRIPTION_LENGTH: number = 5000;
 
 export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void }): JSX.Element {
 	let file: IDBFile = props.file === undefined ? defaultFile : props.file
@@ -33,6 +35,10 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 			}).then(() => props.refreshInfo())
 		}
 	}
+
+  const updateDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value.substring(0, MAX_DESCRIPTION_LENGTH))
+  }
 
 	const fileInfo = [
 		["Type", file.EXTENSION],
@@ -78,7 +84,7 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 				<textarea 
 					className="file-detail-description text-sm" 
 					value={description} 
-					onChange={(e) => {setDescription(e.target.value)}}
+					onChange={updateDescription}
 					onBlur={getUnfocus}
 				/>
 				<span className="text-xs">{description.length} / 5,000</span>

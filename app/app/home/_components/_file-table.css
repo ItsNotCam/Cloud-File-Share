@@ -128,9 +128,12 @@
 	width: 100%;
 	padding: 0.5rem;
 	resize: none;
+  margin-top: 0.5rem;
 }
 
 .file-detail-description:focus {
-	border: none;
-	border-color: var(--color-info-dark);
+  outline: none !important;
+  border: 2px solid var(--color-info-dark);/* #719ECE; */
+  box-shadow: 0 0 5px var(--color-info);
+  padding: 0.5rem;
 }

@@ -1,4 +1,4 @@
-import './file-table.css'
+import './_file-table.css'
 
 import { IDBFile } from "@/lib/db/DBFiles";
 import {FileActions} from "./file-actions";
@@ -25,7 +25,8 @@ export default function FileTable(props: {
 			</thead>
 			<tbody className="scrollable">
 				{files.map((file, i) => (
-					<tr key={file.ID} className={`text-center file-table-row font-light ${selectedFileIdx === i ? "file-table-row-selected" : ""}`} onClick={() => setSelected(i)}>
+					<tr key={file.ID} className={`text-center file-table-row font-light ${selectedFileIdx === i ? "file-table-row-selected" : ""}`} 
+            onClick={() => setSelected(i)}>
 						<td className="text-left w-3/5 font-medium">
 							<FileIcon extension={file.EXTENSION} />
 							<span style={{marginLeft: "1rem"}}>{file.FILENAME}</span>

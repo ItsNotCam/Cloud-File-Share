@@ -1,6 +1,4 @@
 import { QueryGetFirst } from "../db"
-import DBAuth from "./DBAuth"
-import { IDBUser } from "./DBUser"
 import { CreateConnection } from "./util"
 
 export interface IDBFile {
@@ -36,8 +34,7 @@ export default abstract class DBFile {
 					INNER JOIN USER AS U ON U.ID = USER_ID 
 					INNER JOIN FILE AS F ON F.ID = FILE_ID	
 					INNER JOIN AUTH ON AUTH.USER_ID=U.ID
-				WHERE AUTH.TOKEN='${token}' AND F.ID='${FILE_ID}'
-				ORDER BY F.FILENAME;
+				WHERE AUTH.TOKEN='${token}' AND F.ID='${FILE_ID}';
 			`
 		} else {
 			SQL = `
@@ -53,7 +50,9 @@ export default abstract class DBFile {
 		}
 
 		try {
-			return await QueryGetFirst(connection, SQL) as IDBFile;
+      let file = await QueryGetFirst(connection, SQL) as IDBFile;
+      file.IS_OWNER = (file.IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
+      return file
 		} catch (err) {
 			console.log(err)
 		} finally {
@@ -92,7 +91,7 @@ export default abstract class DBFile {
 					INNER JOIN FILE AS F ON F.ID = FILE_ID	
 					INNER JOIN AUTH ON AUTH.USER_ID=U.ID
 				WHERE AUTH.TOKEN='${TOKEN}'
-				ORDER BY F.FILENAME;
+				ORDER BY F.UPLOAD_TIME DESC;
 			`
 		}
 
@@ -100,7 +99,7 @@ export default abstract class DBFile {
 			const resp = await connection.query(SQL)
 			const files: IDBFile[] = resp[0] as IDBFile[]
 			for(let i = 0; i < files.length; i++) {
-				files[i].IS_OWNER = files[i].IS_OWNER.readInt8() // i have it as a bit in the database so i have to read the output here
+				files[i].IS_OWNER = (files[i].IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
 			}
 
 			return files
