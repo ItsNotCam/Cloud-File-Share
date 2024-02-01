@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+	--color-bg: #f7fafd;
+	--color-fg: #ffffff;
+	--color-light: #f0f1f1;
+	--color-alt: #f0f4f8;
+	--color-info: #c4d2eb;
+	--color-info-light: #c1e7fe;
+	--color-info-dark: #2564d4;
+	--color-dark: #c7c7c7;
+
+	--file-info-width: 30rem;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background-color: var(--color-bg);
+}
+
+.bg-default {
+	background-color: var(--color-fg);
+}
