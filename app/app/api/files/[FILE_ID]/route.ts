@@ -73,18 +73,23 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
 	const { description, name } = js;
 
 	let mods: string[] = []
-	if (description !== undefined && description.length > 0) {
+	if (description !== undefined) {
 		mods.push(`DESCRIPTION='${description.substring(0, 5000)}'`)
 	}
-	if (name !== undefined && name.length > 0) {
+	if (name !== undefined) {
 		mods.push(`NAME='${name.substring(0, 64)}'`)
 	}
 
 	try {
 		let SQL: string = ""
 		if (mods.length > 0) {
-			const user_id = await DBAuth.GetUserFromToken(cookies().get("token")?.value || "")
-			SQL = `UPDATE OWNERSHIP SET ${mods.join(',')} WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
+			const user_id = await DBAuth.GetUserFromToken(cookies().get("token")?.value || "") 
+      const concatName = name?.substring(0, 64)
+      SQL = `UPDATE FILE SET 
+        NAME='${concatName}'
+        WHERE ID='${FILE_ID}'`
+
+			// SQL = `UPDATE OWNERSHIP SET ${mods.join(',')} WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
 			console.log(SQL)
 
 			const connection = await CreateConnection()
@@ -99,6 +104,7 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
 			return NextResponse.json({ message: "No changes were made" }, { status: 200 })
 		}
 	} catch (e: any) {
+    console.log(e.message)
 		return new NextResponse(
 			e.message, { status: 500 }
 		)

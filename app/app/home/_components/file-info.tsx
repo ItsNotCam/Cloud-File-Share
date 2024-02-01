@@ -24,6 +24,7 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 	const fileIcon: JSX.Element = FileIcon({ extension: file.EXTENSION })
 
 	const [description, setDescription] = useState<string>(file.DESCRIPTION)
+  const [name, setName] = useState<string>(file.NAME)
 
 	const getUnfocus = (e: React.FocusEvent) => {
 		if(description !== file.DESCRIPTION) {
@@ -34,10 +35,24 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 				})
 			}).then(() => props.refreshInfo())
 		}
+
+    if(name !== file.NAME) {
+      console.log("ok")
+      fetch(`/api/files/${file.ID}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          name: name
+        })
+      }).then(() => props.refreshInfo())
+    }
 	}
 
   const updateDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value.substring(0, MAX_DESCRIPTION_LENGTH))
+  }
+
+  const updateName = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setName(e.target.value)
   }
 
 	const fileInfo = [
@@ -51,10 +66,16 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 		setDescription(file.DESCRIPTION)
 	}, [file.DESCRIPTION])
 
+  useEffect(() => {
+    setName(file.NAME)
+  }, [file.NAME])
+
 	return (<>
 		<h1 className="file-info-name font-semibold">
 			<span>{fileIcon}</span>
-			<p>{file.FILENAME}</p>
+      <p className="text-lg">{file.NAME}{file.EXTENSION}</p>
+      {/* <textarea value={name} onChange={updateName} onBlur={getUnfocus}/>{file.EXTENSION} */}
+      
 		</h1>
 		<div className="file-icon-centered">
 			{fileIcon}

@@ -94,6 +94,16 @@
 	text-wrap: wrap;
 	word-wrap: break-word;
 	word-break: break-all;
+  width: 100%;
+}
+
+.file-info-name textarea {
+  /* width: 100%; */
+  border: 2px solid var(--color-dark);
+  border-radius: 5px;
+  /* height: 2rem; */
+  resize: none;
+  padding: 0.2rem;
 }
 
 .scrollable {

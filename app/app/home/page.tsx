@@ -19,10 +19,18 @@ interface IHomeState {
 export default function Home(): JSX.Element {
 	const [state, setState] = useState<IHomeState>({
 		gettingFiles: true,
-		selectedFileIdx: -1,
+		selectedFileIdx : -1,
 		showFileInfo: true,
 		files: []
 	})
+
+  const [ isHoldingCtrl, setIsHoldingCtrl ] = useState<boolean>(false);
+  const keyHandler = (e: KeyboardEvent) => setIsHoldingCtrl(e.ctrlKey)
+
+  useEffect(() => {
+    document.addEventListener('keydown', keyHandler);
+    document.addEventListener('keyup', keyHandler);
+  }, [])
 
 	// fetch files on load
 	useEffect(() => fetchFiles(), [])

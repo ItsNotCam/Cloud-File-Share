@@ -18,10 +18,6 @@ export function FileActionsBar(props: { file: IDBFile }): React.ReactNode {
 		return ""
 	}
 
-	const downloadFile = () => {
-
-	}
-
 	return (
 		<div className="file-action-bar">
 			<IconButton>
