@@ -118,3 +118,19 @@
 .file-detail-header {
 	font-weight: 600;
 }
+
+.file-detail-description {
+	/* background-color: var(--color-alt); */
+	padding-top: 0.5rem;
+	border: 1px solid gray;
+	border-radius: 5px;
+	height: 5rem;
+	width: 100%;
+	padding: 0.5rem;
+	resize: none;
+}
+
+.file-detail-description:focus {
+	border: none;
+	border-color: var(--color-info-dark);
+}

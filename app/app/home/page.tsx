@@ -46,12 +46,26 @@ export default function Home(): JSX.Element {
 			...prev,
 			selectedFileIdx: index
 		}))
+
+		refreshFileInfo(index)
 	}
 
 	const toggleInfoShown = () => {
 		setState(prev => ({
 			...prev,
 			showFileInfo: !prev.showFileInfo
+		}))
+	}
+
+	const refreshFileInfo = async(index: number) => {
+		const stateFiles = state.files
+		const selectedFile = stateFiles[index]
+		stateFiles[index] = await fetch(`/api/files/${selectedFile.ID}`)
+			.then(file => file.json())
+
+		setState(prev => ({
+			...prev,
+			files: stateFiles
 		}))
 	}
 
@@ -74,7 +88,7 @@ export default function Home(): JSX.Element {
 				/>
 			</div>
 			<div className={`file-info bg-default ${state.showFileInfo ? "" : "width-0"}`}>
-				<FileInfo file={state.files[state.selectedFileIdx]} />
+				<FileInfo file={state.files[state.selectedFileIdx]} refreshInfo={() => refreshFileInfo(state.selectedFileIdx)} />
 			</div>
 		</div>
 	)
