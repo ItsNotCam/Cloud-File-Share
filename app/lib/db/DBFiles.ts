@@ -17,11 +17,6 @@ export interface IDBFile {
 	IS_OWNER: boolean
 }
 
-interface ok {
-	USER_ID?: string,
-	TOKEN?: string
-}
-
 export default abstract class DBFile {
 	static async GetFilesOfUser(identifier: {USER_ID?: string, TOKEN?: string}): Promise<IDBFile[]> {
 		const connection = await CreateConnection()
@@ -42,7 +37,7 @@ export default abstract class DBFile {
 					INNER JOIN FILE AS F ON F.ID = FILE_ID
 				WHERE U.ID='${USER_ID}'
 				ORDER BY F.UPLOAD_TIME DESC;
-			`
+			` 
 		} else if(TOKEN !== undefined) {
 			SQL = `
 				SELECT 

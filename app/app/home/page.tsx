@@ -21,8 +21,6 @@ export default async function Home(): Promise<JSX.Element> {
 				<strong style={{ color: "white" }}>Username:</strong> {user.USERNAME}
 				<br />
 				<strong style={{ color: "white" }}>User ID:</strong> {user.ID}
-				<br />
-				<strong style={{ color: "white" }}>Created:</strong> {user.CREATED_AT}
 			</p>
 			<UploadForm />
 			{files.length > 0 ? (

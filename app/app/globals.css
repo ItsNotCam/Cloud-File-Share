@@ -79,15 +79,19 @@ body {
 
 .main-container, .table-container {
 	display: flex;
-	width: 100vw;
-	height: 100vh;
 	justify-content: center;
 	align-items: center;
+}
+
+.full-height-width {
+	width: 100vw;
+	height: 100vh;
 }
 
 .table-container {
 	flex-direction: column;
 	gap: 3rem;
+	margin-block: 5rem;
 }
 
 .login-container {
@@ -195,12 +199,12 @@ a:hover {
 }
 
 .table-cont {
-  height: 400px;
+  height: 40vh;
   width: 85%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 table {
@@ -209,6 +213,7 @@ table {
   width: 100%;
   max-height: 100%;
   overflow: hidden;
+	cursor: default;
 }
 
 table th {
@@ -218,6 +223,14 @@ table th {
 table td, th {
 	border: 2px solid rgb(117, 117, 117);
 	padding: 0.7rem;
+}
+
+.table-row:hover {
+	background-color: #212121;
+}
+
+.table-row-highlighted {
+	background-color: #232337;
 }
 
 .logout-button {
@@ -233,4 +246,35 @@ table td, th {
 
 .logout-button:hover {
 	filter: drop-shadow(0 0 0.3rem);
+}
+
+.file-info-container {
+	border-radius: 5px;
+	border: 2px solid;
+	color: gray;
+	padding: 2rem;
+}
+
+.file-info-container h1 {
+	font-size: 2rem;
+	font-weight: 700;
+	border-bottom: 3px solid gray;
+	margin-bottom: 0.5rem;
+	max-width: 35rem;
+	text-wrap: nowrap;
+	overflow: hidden;
+}
+
+.file-info {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 35rem;
+}
+
+.file-actions {
+	font-size: 2rem;
+	display: flex;
+	flex-direction: column;
+	margin-left: 2rem;
 }
