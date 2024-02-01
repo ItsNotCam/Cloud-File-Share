@@ -12,7 +12,7 @@ export interface IDBFile {
 	SIZE_BYTES: number,
 	UPLOAD_TIME: Date,
 	LAST_DOWNLOAD_TIME: Date,
-	LAST_DOWNLOAD_USER_ID: Date,
+	LAST_DOWNLOAD_USER_ID: string,
 
 	IS_OWNER: boolean
 }

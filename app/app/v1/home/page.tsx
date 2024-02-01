@@ -1,5 +1,5 @@
 import { SERVER_SOCKET } from "@/lib/constants"
-import UploadForm from "@/app/home/_components/upload-form"
+import UploadForm from "@/app/v2/home/_components/upload-form"
 import { GetFiles } from "@/app/api/admin/files/route"
 import { IAdminFileProps } from "@/lib/types"
 import DeleteButton from "@/app/home/_components/delete-button"

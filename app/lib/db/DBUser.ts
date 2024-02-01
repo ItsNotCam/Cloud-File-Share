@@ -5,7 +5,7 @@ export interface IDBUser {
 	ID: string,
 	USERNAME: string,
 	PASSWORD: string,
-	CRAETED_AT: Date
+	CREATED_AT: Date
 }
 
 export default abstract class DBUser {

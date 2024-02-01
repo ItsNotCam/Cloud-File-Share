@@ -1,0 +1,74 @@
+:root {
+	--color-bg: #f7fafd;
+	--color-fg: #ffffff;
+	--color-light: #f0f1f1;
+	--color-alt: #f0f4f8;
+	--color-info: #c4d2eb;
+	--color-info-light: #c1e7fe;
+	--color-info-dark: #2564d4;
+	--color-dark: #c7c7c7;
+
+	--file-info-width: 30rem;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	background-color: var(--color-bg);
+}
+
+.bg-default {
+	background-color: var(--color-fg);
+}
+
+.file-list {
+	width: 100%;
+	height: calc(100vh - 4rem);
+	overflow: hidden;
+}
+
+.wrapper-horizontal {
+	display: flex;
+	flex-direction: row;
+	margin: 2rem;
+	gap: 1rem;
+}
+
+.wrapper-horizontal > * {
+	padding: 2rem;
+	border-radius: 1rem;
+}
+
+.file-info {
+	width: var(--file-info-width);
+	height: calc(100vh - 4rem);
+	float: right;
+	overflow: auto;
+}
+
+.logout-button {
+	border: 2px solid;
+	margin-top: 1rem;
+	margin-left: 1rem;
+	padding: 0.6rem 2rem;
+	border-radius: 10px;
+	color: red;
+
+	background-color: transparent;
+	transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+	background-color: rgba(150, 0, 0, 5);
+}
+
+.file-action-bar {
+	width: 5rem;
+	background-color: #f0f4f8;
+	padding: 2px;
+	border-radius: 20px;
+}
