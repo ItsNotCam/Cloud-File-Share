@@ -6,29 +6,38 @@ import mysql from 'mysql2/promise'
 import fs, { Stats } from 'fs'
 import { NextResponse } from 'next/server'
 import { ReadableOptions } from 'stream'
+import { cookies } from 'next/headers'
 
 interface IFileData {
-  NAME: string
-  EXTENSION: string
+  FILENAME: string
   INTERNAL_FILE_PATH: string
 }
 
 async function DownloadFile(request: Request, context: { params: any }, response: Response): Promise<NextResponse> {
   const { FILE_ID } = context.params;
-  const SQL: string = `SELECT NAME, EXTENSION, INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`
+	const token = cookies().get("token")?.value
+
+	// get file name and internal file path only if the user owns the file
+  const SQL: string = `
+		SELECT CONCAT(NAME, EXTENSION) AS FILENAME, INTERNAL_FILE_PATH 
+		FROM FILE 
+			INNER JOIN OWNERSHIP ON FILE.ID=OWNERSHIP.FILE_ID
+			INNER JOIN AUTH ON TOKEN='${token}'
+		WHERE FILE.ID='${FILE_ID}' 
+			AND OWNERSHIP.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
+	`
 
   const connection: mysql.Connection = await CreateConnection()
   const fileData: IFileData = await QueryGetFirst(connection, SQL)
 	
-  const {NAME, EXTENSION, INTERNAL_FILE_PATH} = fileData;
-  const fileName: string = `${NAME}${EXTENSION}`
+  const {FILENAME, INTERNAL_FILE_PATH} = fileData;
   const data: ReadableStream<Uint8Array> = streamFile(INTERNAL_FILE_PATH);
   const stats: Stats = await fs.promises.stat(INTERNAL_FILE_PATH); 
 
   return new NextResponse(data, {                                   // Create a new NextResponse for the file with the given stream from the disk
     status: 200,                                                    // STATUS 200: HTTP - Ok
     headers: new Headers({                                          // Headers
-        "content-disposition": `attachment; filename=${fileName}`,  // State that this is a file attachment
+        "content-disposition": `attachment; filename=${FILENAME}`,  // State that this is a file attachment
         "content-type": "application/iso",                          // Set the file type to an iso
         "content-length": `${stats.size}`                           // State the file size
     }),

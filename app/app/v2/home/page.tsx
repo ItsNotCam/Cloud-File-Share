@@ -5,6 +5,8 @@ import DBFiles from '@/lib/db/DBFiles'
 import FileTable from './_components/file-table'
 import UploadForm from './_components/upload-form'
 
+import '../../globals_old.css'
+
 export default async function Home(): Promise<JSX.Element> {
 	const user = await authenticate()
 	if (user === undefined) {

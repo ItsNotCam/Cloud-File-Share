@@ -4,6 +4,13 @@ import { RowDataPacket } from "mysql2";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server"
 
+interface IOwnershipProps {
+	USERNAME: string, 
+	IS_OWNER: string, 
+	NAME: string, 
+	DESCRIPTION: string
+}
+
 export async function POST(request: Request, context: {params: any}): Promise<NextResponse> {
 	const token = cookies().get('token')?.value;
 	const { username } = await request.json() as {username: string}
@@ -11,7 +18,7 @@ export async function POST(request: Request, context: {params: any}): Promise<Ne
 
 	const AUTH_TO_ID_SQL = `SELECT USER_ID FROM AUTH WHERE TOKEN='${token}'`
 	const SQL = `
-		SELECT USERNAME, IS_OWNER 
+		SELECT USERNAME, IS_OWNER, NAME, DESCRIPTION
 		FROM OWNERSHIP
 			INNER JOIN USER ON USER.ID=(${AUTH_TO_ID_SQL})
 		WHERE USER_ID=(${AUTH_TO_ID_SQL}) AND FILE_ID='${FILE_ID}'
@@ -19,20 +26,20 @@ export async function POST(request: Request, context: {params: any}): Promise<Ne
 
 	const connection = await CreateConnection()
 	try {
-		const resp = await QueryGetFirst(connection, SQL)
-		if(resp.USERNAME === username)
+		const fileInfoResp: IOwnershipProps = await QueryGetFirst(connection, SQL)
+		if(fileInfoResp.USERNAME === username)
 			throw "cant share with yourself, idiot"
 
-		const isOwner = resp.IS_OWNER.readInt8() === 1
+		const isOwner = (fileInfoResp.IS_OWNER as any).readInt8() === 1
 		if(isOwner) {
 			const USER_SQL = `SELECT ID FROM USER WHERE USERNAME='${username}'`
 			const SHARE_SQL = `
 				INSERT INTO OWNERSHIP VALUES (
-					(${USER_SQL}), '${FILE_ID}', '', NULL, DEFAULT 
+					(${USER_SQL}), '${FILE_ID}', NULL, 0, '${fileInfoResp.NAME}', '${fileInfoResp.DESCRIPTION}' 
 				);
 			`
-			const resp: RowDataPacket[] = await connection.execute(SHARE_SQL) as RowDataPacket[]
-			const affectedRows = resp[0].affectedRows;
+			const shareResp: RowDataPacket[] = await connection.execute(SHARE_SQL) as RowDataPacket[]
+			const affectedRows = shareResp[0].affectedRows;
 			if(affectedRows > 0) {
 				return NextResponse.json({
 					message: "Shared Success"

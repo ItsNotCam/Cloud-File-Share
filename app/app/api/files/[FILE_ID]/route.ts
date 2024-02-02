@@ -75,20 +75,22 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
 		if (description !== undefined || name !== undefined) {
 			const user_id = await DBAuth.GetUserFromToken(cookies().get("token")?.value || "") 
 			
-			const connection = await CreateConnection()
+			let UPDATE_SQL: string[] = []
 			if(description !== undefined) {
 				const trimmedDesc = description.substring(0, 5000) 
-				const SQL = `UPDATE OWNERSHIP SET 
-					DESCRIPTION='${trimmedDesc}'
-					WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
-				const resp = await connection.execute(SQL)
+				UPDATE_SQL.push(`DESCRIPTION='${trimmedDesc}'`)
 			}
 			
 			if(name !== undefined) {
-				const trimmedName = name.substring(0, 64)
-				const SQL = `UPDATE FILE SET NAME='${trimmedName}'WHERE ID='${FILE_ID}'`
-				const resp = await connection.execute(SQL)
+				const trimmedName = name.substring(0, 64) 
+				UPDATE_SQL.push(`NAME='${trimmedName}'`)
 			}
+			
+			const connection = await CreateConnection()
+			const SQL = `UPDATE OWNERSHIP SET 
+				${UPDATE_SQL.join(", ")} 
+				WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
+			await connection.execute(SQL)
 
 			return NextResponse.json({ 
 				message: "updated file"

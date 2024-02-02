@@ -64,7 +64,11 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   
   // Add entry to database
   const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, DESCRIPTION, USER.ID, PATH, file.size)
-    .then(_ => 0).catch(_ => -1)
+    .then(_ => 0)
+		.catch(err => {
+			console.log(err)
+			return -1
+		})
 
   if(result === -1) {
     rmSync(PATH, { force: true })
@@ -93,21 +97,20 @@ async function getFileInfo(file: File): Promise<IFileInfo> {
 
 
 async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string, NAME: string, 
-  EXTENSION: string, DESCRIPTION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<string> {
+  EXTENSION: string, DESCRIPTION: string, USER_ID: string, PATH: string, FILE_SIZE: number) {
 
   let SQL: string = `INSERT INTO FILE VALUES (
-    '${FILE_ID}', '${NAME}', '${EXTENSION}', '${NAME}${EXTENSION}',
-    '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
+    '${FILE_ID}', '${EXTENSION}', '${PATH}', ${FILE_SIZE}, 
+		DEFAULT, NULL, NULL
   );`
   await connection.query(SQL);
   
-  SQL = `INSERT INTO OWNERSHIP VALUES ('${USER_ID}', '${FILE_ID}', '${DESCRIPTION}', NULL, 1);`
+  SQL = `INSERT INTO OWNERSHIP VALUES (
+		'${USER_ID}', '${FILE_ID}', NULL, 1, '${NAME}', 
+		'${DESCRIPTION}'
+	)`;
+
   await connection.query(SQL);
-
-  SQL = `SELECT FILENAME FROM FILE WHERE ID='${FILE_ID}'`
-  const fileName: string = (await QueryGetFirst(connection, SQL) as {FILENAME: string}).FILENAME
-
-  return fileName
 }
 
 export {UploadFile as POST}
