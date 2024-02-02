@@ -1,5 +1,8 @@
 # Google Drive Clone Design Documentation
 
+![gif](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/2380889c-3873-499b-844b-d97c1dba79e1)
+
+
 ![image](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/de943a2c-7532-4259-b051-6d92c552e8f0)
 My design in action
 
