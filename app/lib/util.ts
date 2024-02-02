@@ -19,5 +19,5 @@ export const toDateString = (date: Date): string => {
 	const monthNames = [
 		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
 	]
-	return `${monthNames[parsedDate.getMonth()]} ${parsedDate.getDay()}, ${parsedDate.getFullYear()}`
+	return `${monthNames[parsedDate.getMonth()]} ${parsedDate.getDate()}, ${parsedDate.getFullYear()}`
 }
