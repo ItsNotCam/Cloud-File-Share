@@ -103,9 +103,9 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 								}
 							</div>
 						</td>
-						<td>{file.IS_OWNER ? "me" : "~"}</td>
-						<td>{toDateString(file.UPLOAD_TIME)}</td>
-						<td>{calcFileSize(file.SIZE_BYTES)}</td>
+						<td className="text-left">{file.IS_OWNER ? "me" : "~"}</td>
+						<td className="text-left">{toDateString(file.UPLOAD_TIME)}</td>
+						<td className="text-left">{calcFileSize(file.SIZE_BYTES)}</td>
 						<td className="w-2"><FileActions file={file} /></td>
 					</tr>
 				))}

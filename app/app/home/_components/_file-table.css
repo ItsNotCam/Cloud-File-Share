@@ -183,3 +183,10 @@
 .file-table-row-selected, .file-table-row-selected:hover {
 	background-color: var(--color-info-light);
 }
+
+.file-action-bar {
+	width: 7.5rem;
+	background-color: #f0f4f8;
+	padding: 2px;
+	border-radius: 20px;
+}

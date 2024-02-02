@@ -52,6 +52,19 @@ export default function Home(): JSX.Element {
 			})
 	}
 
+	const deleteFile = (index: number) => {
+		const file = state.files[index]
+		if(!file.IS_OWNER) {
+			fetch(`/api/files/${file.ID}/unshare`, {
+				method: "POST",
+			}).then(() => fetchFiles())
+		} else {
+			fetch(`/api/files/${file.ID}`, {
+				method: "DELETE"
+			}).then(() => fetchFiles())
+		}
+	}
+
 	const setSelected = (index: number) => {
 		setState(prev => ({
 			...prev,
@@ -91,7 +104,10 @@ export default function Home(): JSX.Element {
 						}}/>
 					</IconButton>
 				</div>
-				<FileActionsBar file={state.files[state.selectedFileIdx]}/>
+				<FileActionsBar 
+					file={state.files[state.selectedFileIdx]} 
+					deleteFile={() => deleteFile(state.selectedFileIdx)}
+				/>
 				<FileTable 
 					selectedFileIdx={state.selectedFileIdx} 
 					setSelected={setSelected} 

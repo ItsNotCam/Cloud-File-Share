@@ -3,6 +3,8 @@ import { IconButton } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import ClearIcon from '@mui/icons-material/Clear';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useRouter } from "next/navigation";
 
 export function FileActions(props: { file: IDBFile }): React.ReactNode {
 	return (
@@ -12,7 +14,9 @@ export function FileActions(props: { file: IDBFile }): React.ReactNode {
 	)
 }
 
-export function FileActionsBar(props: { file: IDBFile }): React.ReactNode {
+export function FileActionsBar(props: { file: IDBFile, deleteFile: () => void }): React.ReactNode {
+	const router = useRouter()
+
 	const {file} = props
 	if(file === undefined) {
 		return ""
@@ -30,6 +34,9 @@ export function FileActionsBar(props: { file: IDBFile }): React.ReactNode {
 					</IconButton>
 				</span>
 			</a>
+			<IconButton onClick={props.deleteFile}>
+				<DeleteIcon fontSize="small" />
+			</IconButton>
 		</div>
 	)
 }

@@ -38,10 +38,3 @@
 .logout-button:hover {
 	background-color: rgba(150, 0, 0, 5);
 }
-
-.file-action-bar {
-	width: 5rem;
-	background-color: #f0f4f8;
-	padding: 2px;
-	border-radius: 20px;
-}
