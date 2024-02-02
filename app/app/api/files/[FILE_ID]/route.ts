@@ -71,34 +71,27 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
 
 	const js = await request.json() as { description?: string, name?: string }
 	const { description, name } = js;
-
-	let mods: string[] = []
-	if (description !== undefined) {
-		mods.push(`DESCRIPTION='${description.substring(0, 5000)}'`)
-	}
-	if (name !== undefined) {
-		mods.push(`NAME='${name.substring(0, 64)}'`)
-	}
-
 	try {
-		let SQL: string = ""
-		if (mods.length > 0) {
+		if (description !== undefined || name !== undefined) {
 			const user_id = await DBAuth.GetUserFromToken(cookies().get("token")?.value || "") 
-      const concatName = name?.substring(0, 64)
-      SQL = `UPDATE FILE SET 
-        NAME='${concatName}'
-        WHERE ID='${FILE_ID}'`
-
-			// SQL = `UPDATE OWNERSHIP SET ${mods.join(',')} WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
-			console.log(SQL)
-
+			
 			const connection = await CreateConnection()
-			const resp = await connection.execute(SQL)
-			console.log(resp)
+			if(description !== undefined) {
+				const trimmedDesc = description.substring(0, 5000) 
+				const SQL = `UPDATE OWNERSHIP SET 
+					DESCRIPTION='${trimmedDesc}'
+					WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
+				const resp = await connection.execute(SQL)
+			}
+			
+			if(name !== undefined) {
+				const trimmedName = name.substring(0, 64)
+				const SQL = `UPDATE FILE SET NAME='${trimmedName}'WHERE ID='${FILE_ID}'`
+				const resp = await connection.execute(SQL)
+			}
 
 			return NextResponse.json({ 
-				message: "updated description", 
-				description: description 
+				message: "updated file"
 			}, { status: 200 })
 		} else {
 			return NextResponse.json({ message: "No changes were made" }, { status: 200 })

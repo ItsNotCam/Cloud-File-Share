@@ -95,6 +95,7 @@ export default function Home(): JSX.Element {
 				<FileTable 
 					selectedFileIdx={state.selectedFileIdx} 
 					setSelected={setSelected} 
+					refreshFileInfo={refreshFileInfo}
 					files={state.files} 
 				/>
 			</div>

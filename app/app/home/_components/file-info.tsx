@@ -74,8 +74,6 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 		<h1 className="file-info-name font-semibold">
 			<span>{fileIcon}</span>
       <p className="text-lg">{file.NAME}{file.EXTENSION}</p>
-      {/* <textarea value={name} onChange={updateName} onBlur={getUnfocus}/>{file.EXTENSION} */}
-      
 		</h1>
 		<div className="file-icon-centered">
 			{fileIcon}
