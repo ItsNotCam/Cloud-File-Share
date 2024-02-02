@@ -16,8 +16,8 @@ export default abstract class DBUser {
 
 		const USER_SQL: string = `
 			SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
-			FROM FILE
-				INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
+			FROM FILE_OBJECT
+				INNER JOIN FILE_INSTANCE ON FILE_ID=FILE.ID
 				INNER JOIN USER ON USER_ID=USER.ID
 			WHERE USER_ID='${USER_ID}';
 		`
@@ -93,7 +93,7 @@ export default abstract class DBUser {
 			return false;
 
 		try {
-			const OWNER_SQL: string = `DELETE FROM OWNERSHIP WHERE USER_ID='${USER_ID}'`
+			const OWNER_SQL: string = `DELETE FROM FILE_INSTANCE WHERE USER_ID='${USER_ID}'`
 			const USER_SQL: string = `DELETE FROM USER WHERE ID='${USER_ID}'`
 			const COMMENT_SQL: string = `DELETE FROM COMMENT WHERE USER_ID='${USER_ID}'`
 		

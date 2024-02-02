@@ -41,8 +41,8 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 
   let SQL: string = `
     SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
-    FROM FILE
-      INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
+    FROM FILE_OBJECT AS FO
+      INNER JOIN FILE_INSTANCE AS FI ON FI.FILE_ID=FO.ID
       INNER JOIN USER ON USER_ID=USER.ID
     WHERE USER.ID='${USER.ID}'
     GROUP BY USER.ID;
@@ -99,13 +99,13 @@ async function getFileInfo(file: File): Promise<IFileInfo> {
 async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string, NAME: string, 
   EXTENSION: string, DESCRIPTION: string, USER_ID: string, PATH: string, FILE_SIZE: number) {
 
-  let SQL: string = `INSERT INTO FILE VALUES (
+  let SQL: string = `INSERT INTO FILE_OBJECT VALUES (
     '${FILE_ID}', '${EXTENSION}', '${PATH}', ${FILE_SIZE}, 
 		DEFAULT, NULL, NULL
   );`
   await connection.query(SQL);
   
-  SQL = `INSERT INTO OWNERSHIP VALUES (
+  SQL = `INSERT INTO FILE_INSTANCE VALUES (
 		'${USER_ID}', '${FILE_ID}', NULL, 1, '${NAME}', 
 		'${DESCRIPTION}'
 	)`;

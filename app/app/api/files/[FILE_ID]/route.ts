@@ -27,7 +27,8 @@ async function DeleteFile(request: NextRequest, context: IFileIDContext): Promis
 
 	const token = cookies().get("token")?.value;
 	const CAN_DELETE_SQL: string = `
-		SELECT IS_OWNER FROM OWNERSHIP WHERE FILE_ID='${FILE_ID}' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
+		SELECT IS_OWNER FROM FILE_INSTANCE 
+		WHERE FILE_ID='${FILE_ID}' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
 	`
 
 	const connection = await CreateConnection()
@@ -44,18 +45,18 @@ async function DeleteFileByID(FILE_ID: string): Promise<NextResponse> {
 	const connection: mysql.Connection = await CreateConnection()
 
 	// get the file path of the saved file
-	const SQL: string = `SELECT INTERNAL_FILE_PATH FROM FILE WHERE ID='${FILE_ID}'`
+	const SQL: string = `SELECT INTERNAL_FILE_PATH FROM FILE_OBJECT WHERE ID='${FILE_ID}'`
 	const PATH: string = (await QueryGetFirst(connection, SQL)).INTERNAL_FILE_PATH
 
 	// remove from folder structure
 	fs.rmSync(PATH, { force: true })
 
 	// remove from tables
-	let OWN_SQL: string = `DELETE FROM OWNERSHIP WHERE FILE_ID='${FILE_ID}'`
+	let OWN_SQL: string = `DELETE FROM FILE_INSTANCE WHERE FILE_ID='${FILE_ID}'`
 	await connection.execute(OWN_SQL)
 	let COMM_SQL: string = `DELETE FROM COMMENT WHERE FILE_ID='${FILE_ID}'`
 	await connection.execute(COMM_SQL)
-	let FILE_SQL: string = `DELETE FROM FILE WHERE ID='${FILE_ID}'`
+	let FILE_SQL: string = `DELETE FROM FILE_OBJECT WHERE ID='${FILE_ID}'`
 	await connection.execute(FILE_SQL)
 
 	return NextResponse.json({
@@ -87,7 +88,7 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
 			}
 			
 			const connection = await CreateConnection()
-			const SQL = `UPDATE OWNERSHIP SET 
+			const SQL = `UPDATE FILE_INSTANCE SET 
 				${UPDATE_SQL.join(", ")} 
 				WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
 			await connection.execute(SQL)

@@ -20,11 +20,11 @@ async function DownloadFile(request: Request, context: { params: any }, response
 	// get file name and internal file path only if the user owns the file
   const SQL: string = `
 		SELECT CONCAT(NAME, EXTENSION) AS FILENAME, INTERNAL_FILE_PATH 
-		FROM FILE 
-			INNER JOIN OWNERSHIP ON FILE.ID=OWNERSHIP.FILE_ID
+		FROM FILE_OBJECT AS FO
+			INNER JOIN FILE_INSTANCE AS FI ON FO.ID=FI.FILE_ID
 			INNER JOIN AUTH ON TOKEN='${token}'
-		WHERE FILE.ID='${FILE_ID}' 
-			AND OWNERSHIP.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
+		WHERE FO.ID='${FILE_ID}' 
+			AND FI.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
 	`
 
   const connection: mysql.Connection = await CreateConnection()

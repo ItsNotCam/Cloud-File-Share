@@ -19,7 +19,7 @@ export async function POST(request: Request, context: {params: any}): Promise<Ne
 	const AUTH_TO_ID_SQL = `SELECT USER_ID FROM AUTH WHERE TOKEN='${token}'`
 	const SQL = `
 		SELECT USERNAME, IS_OWNER, NAME, DESCRIPTION
-		FROM OWNERSHIP
+		FROM FILE_INSTANCE
 			INNER JOIN USER ON USER.ID=(${AUTH_TO_ID_SQL})
 		WHERE USER_ID=(${AUTH_TO_ID_SQL}) AND FILE_ID='${FILE_ID}'
 	`
@@ -34,7 +34,7 @@ export async function POST(request: Request, context: {params: any}): Promise<Ne
 		if(isOwner) {
 			const USER_SQL = `SELECT ID FROM USER WHERE USERNAME='${username}'`
 			const SHARE_SQL = `
-				INSERT INTO OWNERSHIP VALUES (
+				INSERT INTO FILE_INSTANCE VALUES (
 					(${USER_SQL}), '${FILE_ID}', NULL, 0, '${fileInfoResp.NAME}', '${fileInfoResp.DESCRIPTION}' 
 				);
 			`
@@ -69,7 +69,7 @@ export async function DELETE(request: Request, context: {params: any}): Promise<
 
 	const SQL = `
 		SELECT IS_OWNER
-		FROM OWNERSHIP 
+		FROM FILE_INSTANCE 
 		WHERE USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
 			AND FILE_ID='${FILE_ID}'
 	`
@@ -81,7 +81,7 @@ export async function DELETE(request: Request, context: {params: any}): Promise<
 		if(isOwner) {
 			const USER_SQL = `SELECT ID FROM USER WHERE USERNAME='${username}'`
 			const DEL_SQL = `
-				DELETE FROM OWNERSHIP
+				DELETE FROM FILE_INSTANCE
 				WHERE USER_ID=(${USER_SQL}) AND FILE_ID='${FILE_ID}'
 			`
 
