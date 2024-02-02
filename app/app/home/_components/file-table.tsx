@@ -60,6 +60,13 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 		})
 	}
 
+	const resetFilename = (index?: number) => {
+		let idx = index ?? selectedFileIdx;
+		const file = files[idx]
+		setEditingFilename(false)
+		setFilename(file.NAME)
+	}
+
 	const getRowCSSClasses = (index: number): string => {
 		let classes: string = "text-left file-table-row font-light"
 		if (selectedFileIdx === index) {
@@ -92,7 +99,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 											className="filename-input"
 											value={filename}
 											onChange={(e) => setFilename(e.target.value)}
-											onBlur={() => updateFilename(i)}
+											onBlur={() => resetFilename(i)}
 											onKeyDown={handleKeyDown} 
 										/>
 									) : (
