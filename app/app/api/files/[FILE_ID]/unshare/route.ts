@@ -16,7 +16,7 @@ export async function POST(request: Request, context: {params: any}): Promise<Ne
 		}
 
 		const DEL_SQL = `
-			DELETE FROM OWNERSHIP WHERE USER_ID='${userResp.USER_ID}' AND FILE_ID='${FILE_ID}'
+			DELETE FROM FILE_INSTANCE WHERE USER_ID='${userResp.USER_ID}' AND FILE_ID='${FILE_ID}'
 		`
 		const resp: RowDataPacket[] = await connection.execute(DEL_SQL) as RowDataPacket[]
 		const affectedRows = resp[0].affectedRows;

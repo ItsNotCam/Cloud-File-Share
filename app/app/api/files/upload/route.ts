@@ -41,8 +41,8 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 
   let SQL: string = `
     SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
-    FROM FILE
-      INNER JOIN OWNERSHIP ON FILE_ID=FILE.ID
+    FROM FILE_OBJECT AS FO
+      INNER JOIN FILE_INSTANCE AS FI ON FI.FILE_ID=FO.ID
       INNER JOIN USER ON USER_ID=USER.ID
     WHERE USER.ID='${USER.ID}'
     GROUP BY USER.ID;
@@ -64,7 +64,11 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   
   // Add entry to database
   const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, DESCRIPTION, USER.ID, PATH, file.size)
-    .then(_ => 0).catch(_ => -1)
+    .then(_ => 0)
+		.catch(err => {
+			console.log(err)
+			return -1
+		})
 
   if(result === -1) {
     rmSync(PATH, { force: true })
@@ -93,21 +97,20 @@ async function getFileInfo(file: File): Promise<IFileInfo> {
 
 
 async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string, NAME: string, 
-  EXTENSION: string, DESCRIPTION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<string> {
+  EXTENSION: string, DESCRIPTION: string, USER_ID: string, PATH: string, FILE_SIZE: number) {
 
-  let SQL: string = `INSERT INTO FILE VALUES (
-    '${FILE_ID}', '${NAME}', '${EXTENSION}', '${NAME}${EXTENSION}',
-    '${PATH}', ${FILE_SIZE}, DEFAULT, NULL, NULL
+  let SQL: string = `INSERT INTO FILE_OBJECT VALUES (
+    '${FILE_ID}', '${EXTENSION}', '${PATH}', ${FILE_SIZE}, 
+		DEFAULT, NULL, NULL
   );`
   await connection.query(SQL);
   
-  SQL = `INSERT INTO OWNERSHIP VALUES ('${USER_ID}', '${FILE_ID}', '${DESCRIPTION}', NULL, 1);`
+  SQL = `INSERT INTO FILE_INSTANCE VALUES (
+		'${USER_ID}', '${FILE_ID}', NULL, 1, '${NAME}', 
+		'${DESCRIPTION}'
+	)`;
+
   await connection.query(SQL);
-
-  SQL = `SELECT FILENAME FROM FILE WHERE ID='${FILE_ID}'`
-  const fileName: string = (await QueryGetFirst(connection, SQL) as {FILENAME: string}).FILENAME
-
-  return fileName
 }
 
 export {UploadFile as POST}

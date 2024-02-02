@@ -1,0 +1,40 @@
+.file-list {
+	width: 100%;
+	/* height: calc(100vh - 4rem); */
+	overflow: hidden;
+}
+
+.wrapper-horizontal {
+	display: flex;
+	flex-direction: row;
+	margin: 2rem;
+	gap: 1rem;
+}
+
+.wrapper-horizontal > * {
+	padding: 2rem;
+	border-radius: 1rem;
+}
+
+.file-info {
+	width: var(--file-info-width);
+	/* height: calc(100vh - 4rem); */
+	float: right;
+	overflow: auto;
+}
+
+.logout-button {
+	border: 2px solid;
+	margin-top: 1rem;
+	margin-left: 1rem;
+	padding: 0.6rem 2rem;
+	border-radius: 10px;
+	color: red;
+
+	background-color: transparent;
+	transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+	background-color: rgba(150, 0, 0, 5);
+}

@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+	box-sizing: border-box;
+	color: #AAAAAA;
+}
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+	background-color: #111111;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.code {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-weight: bold;
+}
+
+.mycode {
+	padding: 0.9rem 1rem;
+	margin-block-start: 1rem;
+	background-color: rgb(15,15,17);
+	border-radius: 0.6rem;
+	border: 1px solid rgb(50,50,50);
+	position: relative;
+
+	margin-left: 1rem;
+  display: flex;
+}
+
+.mycode::after {
+	font-size: 0.9rem;
+	content: "ok but who asked";
+
+	align-self: center;
+	justify-self: center;
+	display: block;
+	position: absolute;
+	left: 0;
+	bottom: -3rem;
+
+  /* vertical-align: middle; */
+
+	width: 100%;
+
+	padding: 0.5rem;
+	/* background-color: rgb(15,15,17); */
+	border-radius: 0.6rem;
+	border: 1px solid rgb(50,50,50);
+	text-align: center;
+
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.mycode:hover::after {
+	opacity: 1;
+}
+
+.main-container, .table-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.full-height-width {
+	width: 100vw;
+	height: 100vh;
+}
+
+.table-container {
+	flex-direction: column;
+	gap: 3rem;
+	margin-block: 5rem;
+}
+
+.login-container {
+	background-color: #181818;
+	color: #AAAAAA;
+	padding: 1rem;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	border-radius: 10px;
+	
+	min-height: 500px;
+	min-width: 500px;
+}
+
+.login-container h1 {
+	color: white;
+	font-size: 2rem;
+}
+
+.login-container p {
+	padding-block-end: 1rem;
+}
+
+.login-container form {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	color: black;
+}
+
+.username, .password, .submit {
+	padding: 0.8rem 1rem;
+	border-radius: 2rem;
+	text-align: center;
+	border: 2px solid #70A5C1;
+	background-color: transparent;
+	font-size: 1.2rem;
+	color: white;
+	transition: filter 0.15s;
+}
+
+.username:focus, .password:focus, .submit:focus {
+	filter: drop-shadow(0 0 0.3rem teal);
+}
+
+.submit {
+	padding: 0.8rem 1rem;
+	width: 50%;
+	border-radius: 1.5rem;
+	border: 2px solid #55b549;
+	color: white;
+	cursor: pointer;
+	transition: background-color 0.15s;
+	transform: scale(85%);
+	outline: none;
+	transition: filter 0.15s;
+}
+
+.submit:hover {
+	filter: drop-shadow(0 0 0.3rem lime);
+}
+
+.login-container input:focus {
+	border-color: #70A5C1;
+	outline: none;
+}
+
+a {
+	/* text-decoration: underline;	 */
+	color: #AAAAAA;
+	transition: color 0.1s;
+}
+
+a:hover {
+	color: white;
+}
+
+.validating {
+	color: white;
+	position: absolute;
+	background-color: rgba(12,12,12,0.8);
+	padding: 2rem;
+	border-radius: 50%;
+	height: 400px;
+	width: 400px;
+	align-content: center;
+	align-items: center;
+	text-align: center;
+	display: flex;
+
+	pointer-events: none;
+
+	opacity: 0;
+	transition: opacity 0.5s;
+}
+
+.show-valid {
+	opacity: 1;
+}
+
+.table-cont {
+  height: 40vh;
+  width: 85%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  /* overflow-y: auto; */
+}
+
+table {
+	text-align: left;
+	border: 2px solid rgb(117, 117, 117);
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+	cursor: default;
+}
+
+table th {
+	background-color: #1d2428;
+}
+
+table td, th {
+	border: 2px solid rgb(117, 117, 117);
+	padding: 0.7rem;
+}
+
+.table-row:hover {
+	background-color: #212121;
+}
+
+.table-row-highlighted {
+	background-color: #232337;
+}
+
+.logout-button {
+	color: #c4354a;
+	border: 1px solid;
+	background-color: #451c22;
+	padding: 0.5rem 1.5rem;
+	border-radius: 0.4rem;
+	font-size: 1.2rem;
+	text-decoration: none;
+	transition: filter 0.15s;
+}
+
+.logout-button:hover {
+	filter: drop-shadow(0 0 0.3rem);
+}
+
+.file-info-container {
+	border-radius: 5px;
+	border: 2px solid;
+	color: gray;
+	padding: 2rem;
+}
+
+.file-info-container h1 {
+	font-size: 2rem;
+	font-weight: 700;
+	border-bottom: 3px solid gray;
+	margin-bottom: 0.5rem;
+	max-width: 35rem;
+	text-wrap: nowrap;
+	overflow: hidden;
+}
+
+.file-info {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 35rem;
+}
+
+.file-actions {
+	font-size: 2rem;
+	display: flex;
+	flex-direction: column;
+	margin-left: 2rem;
+}
