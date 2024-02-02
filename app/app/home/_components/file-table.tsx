@@ -83,19 +83,25 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 			<tbody className="scrollable">
 				{files.map((file, i) => (
 					<tr key={file.ID} className={getRowCSSClasses(i)} onClick={() => setSelected(i)}>
-						<td className="name-field text-left w-3/5 font-medium">
+						<td className="name-field">
 							<FileIcon extension={file.EXTENSION} />
-							<span style={{ marginLeft: "1rem" }} onClick={() => tryEditFilename(i)}>
+							<div onClick={() => tryEditFilename(i)}>
 								{editingFilename && selectedFileIdx === i
-									? <input type="text"
-										className="filename-input"
-										value={filename}
-										onChange={(e) => setFilename(e.target.value)}
-										onBlur={() => updateFilename(i)}
-										onKeyDown={handleKeyDown} />
-									: `${file.NAME}${file.EXTENSION}`
+									? (
+										<input type="text"
+											className="filename-input"
+											value={filename}
+											onChange={(e) => setFilename(e.target.value)}
+											onBlur={() => updateFilename(i)}
+											onKeyDown={handleKeyDown} 
+										/>
+									) : (
+										<span>
+											{`${file.NAME}${file.EXTENSION}`}
+										</span>
+									)
 								}
-							</span>
+							</div>
 						</td>
 						<td>{file.IS_OWNER ? "me" : "~"}</td>
 						<td>{toDateString(file.UPLOAD_TIME)}</td>
