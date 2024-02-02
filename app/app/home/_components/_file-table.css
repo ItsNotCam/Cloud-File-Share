@@ -184,9 +184,32 @@
 	background-color: var(--color-info-light);
 }
 
-.file-action-bar {
-	width: 7.5rem;
+.file-action-wrapper {
 	background-color: #f0f4f8;
 	padding: 2px;
 	border-radius: 20px;
+}
+
+.file-action-bar {
+	display: flex;
+	align-items: center;	
+	/* justify-content: center; */
+}
+
+.file-action-bar input {
+	cursor: pointer;
+}
+
+.progress-wrapper {
+	height: 0.2rem;
+	display: flex;
+	border-radius: 3px;
+}
+
+.progress {
+	background-color: var(--color-info);
+	transition: width 0.4s;
+	justify-self: center;
+	margin-inline: 1rem;
+	border-radius: 3px;
 }

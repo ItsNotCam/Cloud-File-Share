@@ -1,19 +1,18 @@
 "use client"
 import { IDBFile } from "@/lib/db/DBFiles"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import FileTable from "./_components/file-table"
 import { IconButton } from "@mui/material"
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import FileInfo from "./_components/file-info"
-import {FileActions, FileActionsBar } from "./_components/file-actions"
+import { FileActionsBar } from "./_components/file-actions"
 
 interface IHomeState {
 	gettingFiles: boolean
 	selectedFileIdx: number
 	showFileInfo: boolean
-	files: IDBFile[]
+	files: IDBFile[],
+	isHoldingCtrl: boolean
 }
 
 export default function Home(): JSX.Element {
@@ -21,19 +20,15 @@ export default function Home(): JSX.Element {
 		gettingFiles: true,
 		selectedFileIdx : -1,
 		showFileInfo: true,
-		files: []
+		files: [],
+		isHoldingCtrl: false
 	})
 
-  const [ isHoldingCtrl, setIsHoldingCtrl ] = useState<boolean>(false);
-  const keyHandler = (e: KeyboardEvent) => setIsHoldingCtrl(e.ctrlKey)
-
   useEffect(() => {
-    document.addEventListener('keydown', keyHandler);
-    document.addEventListener('keyup', keyHandler);
+		fetchFiles()
+    document.addEventListener('keydown', setIsHoldingCtrl);
+    document.addEventListener('keyup', setIsHoldingCtrl);
   }, [])
-
-	// fetch files on load
-	useEffect(() => fetchFiles(), [])
 
 	const fetchFiles = () => {
     setState(prev => ({
@@ -93,6 +88,13 @@ export default function Home(): JSX.Element {
 		}))
 	}
 
+	const setIsHoldingCtrl = (e: KeyboardEvent) => {
+		setState(prev => ({
+			...prev,
+			isHoldingCtrl: e.ctrlKey
+		}))
+	}
+
 	return (
 		<div className="wrapper-horizontal">
 			<div className="file-list bg-default">
@@ -107,6 +109,7 @@ export default function Home(): JSX.Element {
 				<FileActionsBar 
 					file={state.files[state.selectedFileIdx]} 
 					deleteFile={() => deleteFile(state.selectedFileIdx)}
+					updateFiles={fetchFiles}
 				/>
 				<FileTable 
 					selectedFileIdx={state.selectedFileIdx} 
@@ -116,7 +119,10 @@ export default function Home(): JSX.Element {
 				/>
 			</div>
 			<div className={`file-info bg-default ${state.showFileInfo ? "" : "width-0"}`}>
-				<FileInfo file={state.files[state.selectedFileIdx]} refreshInfo={() => refreshFileInfo(state.selectedFileIdx)} />
+				<FileInfo 
+					file={state.files[state.selectedFileIdx]} 
+					refreshInfo={() => refreshFileInfo(state.selectedFileIdx)} 
+				/>
 			</div>
 		</div>
 	)

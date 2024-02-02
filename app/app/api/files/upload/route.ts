@@ -19,7 +19,6 @@ import DBAuth from "@/lib/db/DBAuth";
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const data = await request.formData()
   const file: File = data.get('file') as File
-	const DESCRIPTION: string = data.get('description') as string;
   if(!file) {
     return new NextResponse("No file has been sent", { status: 400 } )
   }
@@ -63,7 +62,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   await writeFile(PATH, buffer, () => {})
   
   // Add entry to database
-  const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, DESCRIPTION, USER.ID, PATH, file.size)
+  const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER.ID, PATH, file.size)
     .then(_ => 0)
 		.catch(err => {
 			console.log(err)
@@ -97,7 +96,7 @@ async function getFileInfo(file: File): Promise<IFileInfo> {
 
 
 async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string, NAME: string, 
-  EXTENSION: string, DESCRIPTION: string, USER_ID: string, PATH: string, FILE_SIZE: number) {
+  EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number) {
 
   let SQL: string = `INSERT INTO FILE_OBJECT VALUES (
     '${FILE_ID}', '${EXTENSION}', '${PATH}', ${FILE_SIZE}, 
@@ -106,8 +105,7 @@ async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string,
   await connection.query(SQL);
   
   SQL = `INSERT INTO FILE_INSTANCE VALUES (
-		'${USER_ID}', '${FILE_ID}', NULL, 1, '${NAME}', 
-		'${DESCRIPTION}'
+		'${USER_ID}', '${FILE_ID}', NULL, 1, '${NAME}', ""
 	)`;
 
   await connection.query(SQL);

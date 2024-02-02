@@ -2,10 +2,6 @@
 
 ![gif](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/2380889c-3873-499b-844b-d97c1dba79e1)
 
-
-![image](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/de943a2c-7532-4259-b051-6d92c552e8f0)
-My design in action
-
 ## Overview
 
 This document outlines the design and both high level and low level architecture of my Google Drive clone. The project aims to **replicate the fundamental features of Google Drive**. These features include file uploading, file access management between users, and collaborate through shared comments. Developed with TypeScript, NodeJS, NextJS, ReactJS, and MySQL, the entire **application is containerized for easy deployment using Docker Compose.**
