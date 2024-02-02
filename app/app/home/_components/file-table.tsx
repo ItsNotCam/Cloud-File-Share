@@ -39,6 +39,11 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 		if(event.keyCode === 13) {
 			updateFilename()
 		}
+
+		if(event.key === "Escape") {
+			setEditingFilename(false)
+			resetFilename()
+		}
 	}
 
 	const updateFilename = (index?: number) => {
