@@ -31,20 +31,16 @@ export default function Home(): JSX.Element {
   }, [])
 
 	const fetchFiles = () => {
-    setState(prev => ({
-      ...prev,
-      gettingFiles: true
-    }))
-
+    setState(prev => ({ ...prev, gettingFiles: true }))
 		fetch("/api/files")
-			.then(resp => resp.json())
-			.then(js => {
-				setState(prev => ({
-					...prev,
-					files: js.files,
-					gettingFiles: false
-				}))
-			})
+		.then(resp => resp.json())
+		.then(js => {
+			setState(prev => ({
+				...prev,
+				files: js.files,
+				gettingFiles: false
+			}))
+		})
 	}
 
 	const deleteFile = (index: number) => {
@@ -65,7 +61,6 @@ export default function Home(): JSX.Element {
 			...prev,
 			selectedFileIdx: index
 		}))
-
 		refreshFileInfo(index)
 	}
 
@@ -81,18 +76,11 @@ export default function Home(): JSX.Element {
 		const selectedFile = stateFiles[index]
 		stateFiles[index] = await fetch(`/api/files/${selectedFile.ID}`)
 			.then(file => file.json())
-
-		setState(prev => ({
-			...prev,
-			files: stateFiles
-		}))
+		setState(prev => ({ ...prev, files: stateFiles }))
 	}
 
 	const setIsHoldingCtrl = (e: KeyboardEvent) => {
-		setState(prev => ({
-			...prev,
-			isHoldingCtrl: e.ctrlKey
-		}))
+		setState(prev => ({ ...prev, isHoldingCtrl: e.ctrlKey }))
 	}
 
 	return (

@@ -30,19 +30,15 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 
 	const tryEditFilename = (index: number) => {
 		if (selectedFileIdx === index && !editingFilename) {
-			setEditingFilename(true)
 			setFilename(files[index].NAME)
+			setEditingFilename(true)
 		}
 	}
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
-		if(event.keyCode === 13) {
-			updateFilename()
-		}
-
-		if(event.key === "Escape") {
-			setEditingFilename(false)
-			resetFilename()
+		switch(event.key) {
+			case "Enter": updateFilename()
+			case "Escape": resetFilename()
 		}
 	}
 
@@ -86,16 +82,16 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 			<thead>
 				<tr className="text-left">
 					<th className="w-3/5">Name</th>
-					<th>Owner</th>
-					<th>Uploaded</th>
-					<th>File Size</th>
+					<th className='file-table-1'>Owner</th>
+					<th className='file-table-2'>Uploaded</th>
+					<th className='file-table-3'>File Size</th>
 					<th className="w-2"></th>
 				</tr>
 			</thead>
-			<tbody className="scrollable">
+			<tbody>
 				{files.map((file, i) => (
 					<tr key={file.ID} className={getRowCSSClasses(i)} onClick={() => setSelected(i)}>
-						<td className="name-field">
+						<td className={`name-field ${i === selectedFileIdx ? "cursor-text" : ""}`}>
 							<FileIcon extension={file.EXTENSION} />
 							<div onClick={() => tryEditFilename(i)}>
 								{editingFilename && selectedFileIdx === i
@@ -118,7 +114,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 						<td className="text-left">{file.IS_OWNER ? "me" : "~"}</td>
 						<td className="text-left">{toDateString(file.UPLOAD_TIME)}</td>
 						<td className="text-left">{calcFileSize(file.SIZE_BYTES)}</td>
-						<td className="w-2"><FileActions file={file} /></td>
+						<td><FileActions file={file} /></td>
 					</tr>
 				))}
 			</tbody>
