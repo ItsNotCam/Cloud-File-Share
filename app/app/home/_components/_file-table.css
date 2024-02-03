@@ -93,11 +93,6 @@
   padding: 0.2rem;
 }
 
-.scrollable {
-	overflow: scroll;
-}
-
-
 .horizontal-divider {
 	width: 100%;
 	height: 1px;
@@ -136,16 +131,15 @@
 }
 
 .name-field {
-	display: flex;
-	flex-grow: 1;
 	gap: 1rem;
+	display: flex;
 	text-align: left;
 	font-weight: 400;
 	margin-left: 0.5rem;
 }
 
 .name-field > div {
-	cursor: text;
+	/* cursor: text; */
 	flex-grow: 1;
 }
 
@@ -165,15 +159,6 @@
 
 .file-table-row {
 	border-bottom: 1px solid var(--color-dark);
-	vertical-align: middle;
-	height: 100%;
-	width: 100%;
-
-	/* display: inline;  */
-	flex-direction: column;
-	justify-content: center;
-	text-align: center;
-	vertical-align: middle;
 }
 
 .file-table-row:hover { 
@@ -184,9 +169,54 @@
 	background-color: var(--color-info-light);
 }
 
-.file-action-bar {
-	width: 7.5rem;
+.file-action-wrapper {
 	background-color: #f0f4f8;
 	padding: 2px;
 	border-radius: 20px;
 }
+
+.file-action-bar {
+	display: flex;
+	align-items: center;	
+	/* justify-content: center; */
+}
+
+.file-action-bar input {
+	cursor: pointer;
+}
+
+.progress-wrapper {
+	height: 0.2rem;
+	display: flex;
+	border-radius: 3px;
+}
+
+.progress {
+	background-color: var(--color-info);
+	transition: width 0.4s;
+	justify-self: center;
+	margin-inline: 1rem;
+	border-radius: 3px;
+}
+
+.file-table-1 {
+	overflow: hidden;
+}
+
+/* @media (max-width: 1200px) {
+	.file-table-1 {
+		display: none
+	}
+}
+
+@media (max-width: 1100px) {
+	.file-table-2 {
+		display: none
+	}
+}
+
+@media (max-width: 900px) {
+	.file-table-3 {
+		display: none
+	}
+} */
