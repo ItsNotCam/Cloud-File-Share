@@ -106,10 +106,19 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 					onChange={updateDescription}
 					onBlur={getUnfocus}
 				/>
-				<span className="text-xs">{description.length} / 5,000</span>
+				<span className="text-xs">{descLengthtoStr(description.length)} / 5,000</span>
 			</div>
 		</div>
 	</>)
+}
+
+const descLengthtoStr = (l: number) => {
+	if(l / 1000 >= 1) {
+		const lengthToString = `000${l % 1000}`.slice(-3)
+		return `${Math.floor(l/1000)},${lengthToString}`
+	} else {
+		return `${l}`
+	}
 }
 
 function AccessList() {

@@ -4,7 +4,7 @@ import { IDBFile } from "@/lib/db/DBFiles";
 import { FileActions } from "./file-actions";
 import FileIcon from './file-icon';
 import { calcFileSize, toDateString } from '@/lib/util';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface IFileTableProps {
 	setSelected: (index: number) => void,
@@ -23,22 +23,30 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 
 	const [editingFilename, setEditingFilename] = useState<boolean>(false)
 	const [filename, setFilename] = useState<string>("")
+	const textInputRef = useRef(null)
 	
 	useEffect(() => {
 		setEditingFilename(false);
 	}, [selectedFileIdx])
 
+	useEffect(() => {
+		document.addEventListener("keydown", (event) => {
+			if(event.key === "Escape") {
+				resetFilename()
+			}
+		});
+	}, [])
+
 	const tryEditFilename = (index: number) => {
 		if (selectedFileIdx === index && !editingFilename) {
 			setFilename(files[index].NAME)
-			setEditingFilename(true)
+			setEditingFilename(true);
 		}
 	}
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
-		switch(event.key) {
-			case "Enter": updateFilename()
-			case "Escape": resetFilename()
+		if(event.key === "Enter") {
+			updateFilename()
 		}
 	}
 
@@ -62,10 +70,13 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 	}
 
 	const resetFilename = (index?: number) => {
-		let idx = index ?? selectedFileIdx;
-		const file = files[idx]
 		setEditingFilename(false)
-		setFilename(file.NAME)
+		
+		const file = files[index ?? selectedFileIdx]
+		if(file !== undefined) {
+			console.log(file)
+			setFilename(file.NAME)
+		}
 	}
 
 	const getRowCSSClasses = (index: number): string => {
@@ -94,21 +105,18 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 						<td className={`name-field ${i === selectedFileIdx ? "cursor-text" : ""}`}>
 							<FileIcon extension={file.EXTENSION} />
 							<div onClick={() => tryEditFilename(i)}>
-								{editingFilename && selectedFileIdx === i
-									? (
-										<input type="text"
-											className="filename-input"
-											value={filename}
-											onChange={(e) => setFilename(e.target.value)}
-											onBlur={() => resetFilename(i)}
-											onKeyDown={handleKeyDown} 
-										/>
-									) : (
-										<span>
-											{`${file.NAME}${file.EXTENSION}`}
-										</span>
-									)
-								}
+								<input type="text"
+									className="filename-input"
+									value={filename}
+									onChange={(e) => setFilename(e.target.value)}
+									onBlur={() => resetFilename(i)}
+									ref={textInputRef}
+									style={{display: editingFilename && selectedFileIdx === i ? "block" : "none"}}	
+									onKeyDown={handleKeyDown}
+								/>
+								<span style={{display: editingFilename && selectedFileIdx === i ? "none" : "block"}}>
+									{`${file.NAME}${file.EXTENSION}`}
+								</span>
 							</div>
 						</td>
 						<td className="text-left">{file.IS_OWNER ? "me" : "~"}</td>

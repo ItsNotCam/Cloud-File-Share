@@ -39,7 +39,7 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 
 	const openUploadDialog = () => {
 		try {
-			(inputFile.current as any).click()
+			(inputFile.current as any).focus()
 		} catch {
 			alert("failed to open input dialog")
 		}
@@ -113,7 +113,7 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 					</>)
 				}
 				<label htmlFor="files" className="file-upload" style={{color: "gray"}}>
-					<IconButton onClick={openUploadDialog} title="Upload File">
+					<IconButton onClick={openUploadDialog} title="Upload File" >
 						<CloudUploadIcon fontSize="small"/>
 					</IconButton>
 				</label>
