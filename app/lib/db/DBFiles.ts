@@ -16,15 +16,15 @@ export interface IDBFile {
 }
 
 export default abstract class DBFile {
-	static async GetFileInfo(FILE_ID: string, userID: {token?: string, id?: string}) {
+	static async GetFileInfo(FILE_ID: string, identifier: {TOKEN?: string, USER_ID?: string}) {
 		const connection = await CreateConnection()
 		if(connection === null)
 			return []
 
-		const {token, id} = userID;
+		const {TOKEN, USER_ID} = identifier;
 		let SQL = ""
 
-		if(token !== undefined) {
+		if(TOKEN !== undefined) {
 			SQL = `
 				SELECT 
 					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION) AS FILENAME, FI.DESCRIPTION, 
@@ -34,7 +34,7 @@ export default abstract class DBFile {
 					INNER JOIN USER AS U ON U.ID = USER_ID 
 					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
 					INNER JOIN AUTH ON AUTH.USER_ID=U.ID
-				WHERE AUTH.TOKEN='${token}' AND FO.ID='${FILE_ID}';
+				WHERE AUTH.TOKEN='${TOKEN}' AND FO.ID='${FILE_ID}';
 			`
 		} else {
 			SQL = `
@@ -46,7 +46,7 @@ export default abstract class DBFile {
 					INNER JOIN USER AS U ON U.ID = USER_ID 
 					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
 					INNER JOIN AUTH ON AUTH.USER_ID=U.ID
-				WHERE U.ID='${userID}' AND FO.ID='${FILE_ID}';
+				WHERE U.ID='${USER_ID}' AND FO.ID='${FILE_ID}';
 			`
 		}
 
@@ -112,4 +112,121 @@ export default abstract class DBFile {
 		
 		return []
 	}
+
+  static async UserIsOwner(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string }): Promise<boolean> {
+    const {USER_ID, TOKEN} = identifier
+
+    if(!USER_ID && !TOKEN) {
+      return false;
+    }
+
+    const connection = await CreateConnection()
+    let SQL = `
+      SELECT COUNT(*) AS COUNT
+      FROM FILE_INSTANCE
+      WHERE FILE_UD='${FILE_ID}' AND IS_OWNER=1 AND USER_ID=
+    `
+    if(USER_ID) {
+      SQL += `'${USER_ID}'`
+    } else {
+      SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}' LIMIT 1)`
+    }
+
+    const resp = await QueryGetFirst(connection, SQL)
+    return resp.COUNT > 0;
+  }
+
+  static async UpdateFileInfo(
+    FILE_ID: string,
+    identifier: { TOKEN?: string, USER_ID?: string }, 
+    info: { DESCRIPTION?: string, NAME?: string }): Promise<boolean> 
+  {
+    const {TOKEN, USER_ID} = identifier
+    const {DESCRIPTION, NAME} = info
+
+    if(!TOKEN && !USER_ID) {
+      return false;
+    }
+
+    if(!DESCRIPTION && !NAME) {
+      return false;
+    }
+
+    /*
+      GENERATE SQL QUERY
+    
+      All of this will end up with something like:
+      
+      UPDATE FILE_INSTANCE
+      SET DESCRIPTION='...', NAME='...'
+      WHERE FILE_ID='...' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='...')
+    */
+    let SQL = `UPDATE FILE_INSTANCE SET`
+    {
+      let updatedFields: string[] = []
+      if(DESCRIPTION) {
+        updatedFields.push(`DESCRIPTION='${DESCRIPTION}'`)
+      }
+      if(NAME) {
+        updatedFields.push(`NAME='${NAME}'`)
+      }
+
+      SQL += ` ${updatedFields.join(",")} 
+        WHERE FILE_ID='${FILE_ID}' 
+        AND USER_ID=`
+
+      if(USER_ID) {
+        SQL += `'${USER_ID}'`
+      } else {
+        SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}'`
+      }
+    }
+
+    console.log(`UPDATING FILE:\n${SQL}`)
+    try {
+      const connection = await CreateConnection()
+      await connection.execute(SQL)
+      return true;
+    } catch (err: any) {
+      console.log(`UPDATING FILE FAILED:\n${err.message}`)
+    }
+    return false;
+  }
+
+  static async DeleteFile(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string }): Promise<string | undefined> {
+    const connection = await CreateConnection()
+    const {USER_ID, TOKEN} = identifier
+    try {
+      // get the file path of the saved file
+      const validateUser = await DBFile.UserIsOwner(FILE_ID,{
+        USER_ID: USER_ID,
+        TOKEN: TOKEN
+      })
+
+      if(!validateUser)
+        throw "unauthorized"
+
+      const SQL: string = `
+        SELECT INTERNAL_FILE_PATH 
+        FROM FILE_OBJECT 
+        WHERE ID='${FILE_ID}'
+      `
+      const PATH: string = (await QueryGetFirst(connection, SQL)).INTERNAL_FILE_PATH
+  
+      // remove from tables
+      let OWN_SQL: string = `DELETE FROM FILE_INSTANCE WHERE FILE_ID='${FILE_ID}'`
+      await connection.execute(OWN_SQL)
+      let COMM_SQL: string = `DELETE FROM COMMENT WHERE FILE_ID='${FILE_ID}'`
+      await connection.execute(COMM_SQL)
+      let FILE_SQL: string = `DELETE FROM FILE_OBJECT WHERE ID='${FILE_ID}'`
+      await connection.execute(FILE_SQL)
+      return PATH;
+    } catch(err: any) {
+      console.log("ERROR DELETING FILE: " + err.message)
+    } finally {
+      connection.end()
+    }
+
+    return undefined;
+  }
 }

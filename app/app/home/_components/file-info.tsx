@@ -2,7 +2,6 @@ import { IDBFile } from "@/lib/db/DBFiles";
 import FileIcon from "./file-icon";
 import { calcFileSize, toDateString } from "@/lib/util";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 const defaultFile: IDBFile = {
 	DESCRIPTION: "",
