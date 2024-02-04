@@ -1,10 +1,6 @@
 // FILE ACTIONS
-import { CreateConnection, QueryGetFirst } from '@/lib/db';
-import DBAuth from '@/lib/db/DBAuth';
 import DBFile from '@/lib/db/DBFiles';
-import { IFileUpdate } from '@/lib/types';
 import fs from 'fs';
-import mysql from 'mysql2/promise'
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -13,89 +9,65 @@ interface IFileIDContext {
 }
 
 // Get file data
-async function GetFileInfo(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+async function GET(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
 	const { FILE_ID } = context.params;
-	const token = cookies().get("token")?.value;
-
-	const file = await DBFile.GetFileInfo(FILE_ID, {token: token})
+	const file = await DBFile.GetFileInfo(FILE_ID, {
+    TOKEN: cookies().get("token")?.value
+  })
 	return NextResponse.json(file, { status: 200 })
 }
 
 // Delete file from database
-async function DeleteFile(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+async function DELETE(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
 	const { FILE_ID } = context.params
+  const PATH = await DBFile.DeleteFile(FILE_ID, { 
+    TOKEN: cookies().get("token")?.value,
+  })
 
-	const token = cookies().get("token")?.value;
-	const CAN_DELETE_SQL: string = `
-		SELECT IS_OWNER FROM FILE_INSTANCE 
-		WHERE FILE_ID='${FILE_ID}' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
-	`
-
-	const connection = await CreateConnection()
-	const resp = await QueryGetFirst(connection, CAN_DELETE_SQL)
-
-	if (!resp.IS_OWNER.readInt8()) {
-		return NextResponse.json({ message: "not allowed" }, { status: 403 })
-	}
-
-	return await DeleteFileByID(FILE_ID)
-}
-
-async function DeleteFileByID(FILE_ID: string): Promise<NextResponse> {
-	const connection: mysql.Connection = await CreateConnection()
-
-	// get the file path of the saved file
-	const SQL: string = `SELECT INTERNAL_FILE_PATH FROM FILE_OBJECT WHERE ID='${FILE_ID}'`
-	const PATH: string = (await QueryGetFirst(connection, SQL)).INTERNAL_FILE_PATH
-
-	// remove from folder structure
-	fs.rmSync(PATH, { force: true })
-
-	// remove from tables
-	let OWN_SQL: string = `DELETE FROM FILE_INSTANCE WHERE FILE_ID='${FILE_ID}'`
-	await connection.execute(OWN_SQL)
-	let COMM_SQL: string = `DELETE FROM COMMENT WHERE FILE_ID='${FILE_ID}'`
-	await connection.execute(COMM_SQL)
-	let FILE_SQL: string = `DELETE FROM FILE_OBJECT WHERE ID='${FILE_ID}'`
-	await connection.execute(FILE_SQL)
+  if(PATH != undefined) {
+    // remove from folder structure
+    fs.rmSync(PATH, { force: true })
+    return NextResponse.json({
+      message: "file deleted"
+    }, {
+      status: 200
+    })
+  }
 
 	return NextResponse.json({
-		message: "file deleted"
+		message: "file was not deleted"
 	}, {
-		status: 200
+		status: 500
 	})
 }
 
 // Update file information
-async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+async function PATCH(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
 	const { FILE_ID } = context.params
 
-	const js = await request.json() as { description?: string, name?: string }
-	const { description, name } = js;
+	const { description, name } = await request.json() as { 
+    description?: string, 
+    name?: string 
+  }
+
 	try {
 		if (description !== undefined || name !== undefined) {
-			const user_id = await DBAuth.GetUserFromToken(cookies().get("token")?.value || "") 
-			
-			let UPDATE_SQL: string[] = []
-			if(description !== undefined) {
-				const trimmedDesc = description.substring(0, 5000) 
-				UPDATE_SQL.push(`DESCRIPTION='${trimmedDesc}'`)
-			}
-			
-			if(name !== undefined) {
-				const trimmedName = name.substring(0, 64) 
-				UPDATE_SQL.push(`NAME='${trimmedName}'`)
-			}
-			
-			const connection = await CreateConnection()
-			const SQL = `UPDATE FILE_INSTANCE SET 
-				${UPDATE_SQL.join(", ")} 
-				WHERE FILE_ID='${FILE_ID}' AND USER_ID='${user_id?.ID}';`
-			await connection.execute(SQL)
+      const identifier = {
+        TOKEN: cookies().get("token")?.value
+      }
+
+      const info = {
+        DESCRIPTION: description?.substring(0, 5000),
+        NAME: name?.substring(0,64)
+      }
+
+      await DBFile.UpdateFileInfo(FILE_ID, identifier, info)
 
 			return NextResponse.json({ 
 				message: "updated file"
-			}, { status: 200 })
+			}, { 
+        status: 200 
+      })
 		} else {
 			return NextResponse.json({ message: "No changes were made" }, { status: 200 })
 		}
@@ -106,5 +78,3 @@ async function UpdateFileInfo(request: NextRequest, context: IFileIDContext): Pr
 		)
 	}
 }
-
-export { GetFileInfo as GET, DeleteFile as DELETE, UpdateFileInfo as PATCH, DeleteFileByID as DeleteFileByID }
