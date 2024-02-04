@@ -124,7 +124,7 @@ export default abstract class DBFile {
     let SQL = `
       SELECT COUNT(*) AS COUNT
       FROM FILE_INSTANCE
-      WHERE FILE_UD='${FILE_ID}' AND IS_OWNER=1 AND USER_ID=
+      WHERE FILE_ID='${FILE_ID}' AND IS_OWNER=1 AND USER_ID=
     `
     if(USER_ID) {
       SQL += `'${USER_ID}'`
@@ -178,7 +178,7 @@ export default abstract class DBFile {
       if(USER_ID) {
         SQL += `'${USER_ID}'`
       } else {
-        SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}'`
+        SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}')`
       }
     }
 

@@ -9,7 +9,7 @@ interface IFileIDContext {
 }
 
 // Get file data
-async function GET(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+export async function GET(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
 	const { FILE_ID } = context.params;
 	const file = await DBFile.GetFileInfo(FILE_ID, {
     TOKEN: cookies().get("token")?.value
@@ -18,7 +18,7 @@ async function GET(request: NextRequest, context: IFileIDContext): Promise<NextR
 }
 
 // Delete file from database
-async function DELETE(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+export async function DELETE(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
 	const { FILE_ID } = context.params
   const PATH = await DBFile.DeleteFile(FILE_ID, { 
     TOKEN: cookies().get("token")?.value,
@@ -42,7 +42,7 @@ async function DELETE(request: NextRequest, context: IFileIDContext): Promise<Ne
 }
 
 // Update file information
-async function PATCH(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+export async function PATCH(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
 	const { FILE_ID } = context.params
 
 	const { description, name } = await request.json() as { 

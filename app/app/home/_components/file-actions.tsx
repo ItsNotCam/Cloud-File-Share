@@ -39,7 +39,7 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 
 	const openUploadDialog = () => {
 		try {
-			(inputFile.current as any).focus()
+			(inputFile.current as any).click()
 		} catch {
 			alert("failed to open input dialog")
 		}
