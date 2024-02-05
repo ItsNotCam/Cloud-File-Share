@@ -53,7 +53,10 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	return (
 		<div className={`file-grid__row ${isSelected && !file.isBeingUploaded ? "file-grid__row-selected" : ""}`} 
-			onClick={setSelected}>
+			onClick={() => {
+					if(!file.isBeingUploaded)
+						setSelected
+				}}>
 				{file.isBeingUploaded 
 					? <div className="uploading-bar">
 							<div className="uploading-bar-progress" id="uploading-bar" style={{width: 0}}/>
@@ -66,7 +69,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 					if(file.isBeingUploaded){
 						setEditingFilename(false)
 					}
-				}}/>
+				}}/>``
 				<div className={`${isSelected ? "cursor-text w-full" : ""}`}>
 					{editingFilename && isSelected && !file.isBeingUploaded
 						?<input type="text"
