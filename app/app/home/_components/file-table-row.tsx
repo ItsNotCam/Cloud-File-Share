@@ -25,14 +25,14 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	const textInputRef = useRef(null)
 
-	useEffect(() => {
-		setFilename(file.NAME)
-		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape") {
-				setFilename(file.NAME)
-			}
-		});
-	}, [])
+	// useEffect(() => {
+	// 	setFilename(file.NAME)
+	// 	document.addEventListener("keydown", (event) => {
+	// 		if (event.key === "Escape") {
+	// 			setFilename(file.NAME)
+	// 		}
+	// 	});
+	// }, [])
 
 	useEffect(() => {
 		setEditingFilename(false)
@@ -94,7 +94,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 						onKeyDown={handleKeyDown}
 					/> 
 					: <span style={{ display: editingFilename && isSelected ? "none" : "block" }} onClick={() => tryEditFilename()}>
-							{`${file.NAME}${file.EXTENSION}`}
+							{`${filename}${file.EXTENSION}`}
 						</span>
 					}
 				</div>
