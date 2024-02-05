@@ -35,7 +35,8 @@ export default function FileTableRow(props: IFileTablRowProps) {
 	useEffect(() => {
 		setEditingFilename(false)
 		setFilename(file.NAME)
-	}, [isSelected])
+		setEditingFilename(false)
+	}, [file])
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Enter") {
@@ -62,7 +63,11 @@ export default function FileTableRow(props: IFileTablRowProps) {
 				}
 			
 			<div className="file-grid__col-1 cursor-default"> 
-				<FileIcon extension={file.EXTENSION} onClick={() => setEditingFilename(false)}/>
+				<FileIcon extension={file.EXTENSION} onClick={() => {
+					if(file.isBeingUploaded){
+						setEditingFilename(false)
+					}
+				}}/>
 				<div className={`${isSelected ? "cursor-text w-full" : ""}`}>
 					{editingFilename && isSelected && !file.isBeingUploaded
 						?<input type="text"

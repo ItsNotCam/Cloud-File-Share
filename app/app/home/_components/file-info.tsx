@@ -110,7 +110,7 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 							onChange={updateDescription}
 							onBlur={getUnfocus}
 						/>
-						<span className="text-xs">{descLengthtoStr(description.length)} / 5,000</span>
+						<span className="text-xs">{descLengthtoStr(description?.length)} / 5,000</span>
 					</div>
 				</div>
 			</Scrollable>
