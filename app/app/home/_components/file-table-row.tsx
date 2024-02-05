@@ -46,7 +46,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 	}
 
 	const tryEditFilename = () => {
-		if(isSelected) {
+		if(isSelected && !file.isBeingUploaded) {
 			setEditingFilename(true)
 		}
 	}
