@@ -22,7 +22,7 @@ interface IFileActionsBarState {
 }
 
 interface IFileActionsBarProps { 
-	file: IDBFile, 
+	file: IUploadingFile, 
 	files: IUploadingFile[],
 	uploadFileRef: any,
 	refreshFiles: () => void,
@@ -47,6 +47,11 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 	}
 
 	const deleteFile = () => {
+		if(file.isBeingUploaded) {
+			alert("This file is currently being uploaded! You must wait until it has completed to delete it")
+			return;
+		}
+
 		if (!file.IS_OWNER) {
 			fetch(`/api/files/${file.ID}/unshare`, {
 				method: "POST",
@@ -74,8 +79,11 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 	const uploadFile = (event: React.ChangeEvent) => {
 		event.preventDefault()
 		
-		if(props.files.length > 0 && props.files[0].isBeingUploaded)
+		if(props.files.length > 0 && props.files[0].isBeingUploaded) {
+			alert(`A file is currently being uploaded! You must wait until it has been uploaded to upload another file.\n
+				(This will be changed in the future)`)
 			return;
+		}
 
 		if (!inputFile || !inputFile.current) {
 			alert("failed to upload - no file was present")
