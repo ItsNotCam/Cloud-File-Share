@@ -9,8 +9,8 @@ export interface IDBFile {
 	DESCRIPTION: string,
 	SIZE_BYTES: number,
 	UPLOAD_TIME: Date,
-	LAST_DOWNLOAD_TIME: Date,
-	LAST_DOWNLOAD_USER_ID: string,
+	LAST_DOWNLOAD_TIME: Date | undefined,
+	LAST_DOWNLOAD_USER_ID: string | undefined,
 
 	IS_OWNER: boolean
 }
@@ -139,7 +139,8 @@ export default abstract class DBFile {
   static async UpdateFileInfo(
     FILE_ID: string,
     identifier: { TOKEN?: string, USER_ID?: string }, 
-    info: { DESCRIPTION?: string, NAME?: string }): Promise<boolean> 
+    info: { DESCRIPTION?: string, NAME?: string }
+	): Promise<boolean> 
   {
     const {TOKEN, USER_ID} = identifier
     const {DESCRIPTION, NAME} = info

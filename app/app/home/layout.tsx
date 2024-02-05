@@ -1,3 +1,4 @@
+import Scrollable from '@/lib/scrollable';
 import Header from './header';
 import './styles.css'
 
@@ -10,8 +11,8 @@ export default function RootLayout({
 }>) {
   return (
 		<WithAuth>
-			<Header />
-			{children}
+		 	<Header />
+		 	{children}
 		</WithAuth>
 	)
 }

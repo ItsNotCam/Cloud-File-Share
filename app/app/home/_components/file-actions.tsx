@@ -2,12 +2,11 @@ import { IDBFile } from "@/lib/db/DBFiles";
 import { IconButton } from "@mui/material";
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
-import ClearIcon from '@mui/icons-material/Clear';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useRouter } from "next/navigation";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import React, { FormEvent, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios, { AxiosError, AxiosProgressEvent } from "axios";
+import { IUploadingFile } from "../page";
 
 export function FileActions(props: { file: IDBFile }): React.ReactNode {
 	return (
@@ -24,8 +23,10 @@ interface IFileActionsBarState {
 
 interface IFileActionsBarProps { 
 	file: IDBFile, 
-	deleteFile: () => void, 
-	updateFiles: () => void 
+	files: IUploadingFile[],
+	uploadFileRef: any,
+	refreshFiles: () => void,
+	addFile: (file: IUploadingFile) => void
 }
 
 export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
@@ -45,8 +46,25 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 		}
 	}
 
+	const deleteFile = () => {
+		if (!file.IS_OWNER) {
+			fetch(`/api/files/${file.ID}/unshare`, {
+				method: "POST",
+			}).then(() => props.refreshFiles())
+		} else {
+			fetch(`/api/files/${file.ID}`, {	
+				method: "DELETE"
+			}).then(() => props.refreshFiles())
+		}
+	}
+
 	const handleProgressUpdate = (event: AxiosProgressEvent) => {
+		var ubr = document.getElementById("uploading-bar")
 		const progress: number = event.loaded / (event.total || 9999999) * 100
+		if(ubr) {
+			ubr.style.width = `${progress}%`
+		}
+
 		setState(prev => ({
 			...prev,
 			uploadProgress: progress
@@ -55,6 +73,10 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 
 	const uploadFile = (event: React.ChangeEvent) => {
 		event.preventDefault()
+
+		if(props.files[0].isBeingUploaded)
+			return;
+
 		if (!inputFile || !inputFile.current) {
 			alert("failed to upload - no file was present")
 			return
@@ -66,8 +88,28 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 			return
 		}
 
+		const file = files[0]
+
 		const data: FormData = new FormData()
 		data.set('file', files[0])
+
+		const splitFilename = file.name.split('.') || ""
+		const extension = `.${splitFilename.pop()}` || ""
+		const filename = splitFilename.splice(0,file.name.length-1).join("")
+
+		props.addFile({
+			DESCRIPTION: "",
+			EXTENSION: extension,
+			ID: "",
+			NAME: filename,
+			FILENAME: file.name,
+			SIZE_BYTES: file.size,
+			UPLOAD_TIME: new Date(Date.now()),
+			LAST_DOWNLOAD_TIME: undefined,
+			LAST_DOWNLOAD_USER_ID: undefined,
+			IS_OWNER: false,
+			isBeingUploaded: true
+		})
 
 		setState({ ...state, isUploading: true })
 		axios.post(`/api/files/upload`, data, {
@@ -82,7 +124,7 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 				uploadProgress: 0
 			}))
 
-			props.updateFiles()
+			props.refreshFiles()
 			resetFile()
 		})
 	}
@@ -95,37 +137,34 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 
 	return (
 		<div className="file-action-wrapper">
-			<div className="file-action-bar">
-				{
-					file === undefined 
-						? ""
-						: (<>
-							<a href={`/api/files/${file.ID}/download`} download={file.FILENAME}>
-								<span className="file-download-link">
-									<IconButton>
-										<DownloadIcon fontSize="small"/>
-									</IconButton>
-								</span>
-							</a>
-							<IconButton onClick={props.deleteFile}>
-								<DeleteIcon fontSize="small" />
-							</IconButton>
-					</>)
-				}
-				<label htmlFor="files" className="file-upload" style={{color: "gray"}}>
-					<IconButton onClick={openUploadDialog} title="Upload File" >
-						<CloudUploadIcon fontSize="small"/>
-					</IconButton>
-				</label>
-				<input 
-					id="files" 
-					style={{visibility: "hidden"}} 
-					type="file" 
-					ref={inputFile} 
-					onChange={uploadFile}
-				/>
-			</div>
-			<LoadingBar progress={state.uploadProgress} />
+			{
+				file === undefined 
+					? ""
+					: (<>
+						<a href={`/api/files/${file.ID}/download`} download={file.FILENAME}>
+							<span className="file-download-link">
+								<IconButton>
+									<DownloadIcon fontSize="large" />
+								</IconButton>
+							</span>
+						</a>
+						<IconButton onClick={deleteFile}>
+							<DeleteIcon fontSize="large"  />
+						</IconButton>
+				</>)
+			}
+			<label htmlFor="files" className="file-upload">
+				<IconButton onClick={openUploadDialog} title="Upload File" >
+					<CloudUploadIcon fontSize="large" />
+				</IconButton>
+			</label>
+			<input 
+				id="files" 
+				style={{visibility: "hidden", display: "none"}} 
+				type="file" 
+				ref={inputFile} 
+				onChange={uploadFile}
+			/>
 		</div>
 	)
 }

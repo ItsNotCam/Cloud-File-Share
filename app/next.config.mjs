@@ -17,10 +17,6 @@ import dotenv from 'dotenv';
 // const dotenv = require('dotenv');
 dotenv.config({path: '../.env'})
 
-const nextConfig = {
-	experimental: {
-    serverActions: true,
-  },
-};
+const nextConfig = {}
 
 export default nextConfig;

@@ -13,7 +13,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 
 import ImageIcon from '@mui/icons-material/Image';
 
-export default function FileIcon(props: {extension: string}): JSX.Element {
+export default function FileIcon(props: {extension: string, onClick?: () => void}): JSX.Element {
 	const iconMap = new Map([
 		// archives
 		[".7z", <FolderZipIcon style={{color: "#737373"}} />],
@@ -54,8 +54,10 @@ export default function FileIcon(props: {extension: string}): JSX.Element {
 		[".pdf", <DescriptionIcon style={{color: "#E64F40"}}/>],
 	])
 
+	const DoNothing = () => {};
+
 	const icon = iconMap.get(props.extension)
 	return icon === undefined
-		? <InsertDriveFileOutlinedIcon />
-		: icon as JSX.Element
+		? <span onClick={props.onClick || DoNothing}><InsertDriveFileOutlinedIcon/></span>
+		: <span onClick={props.onClick}>{icon as JSX.Element}</span>
 }

@@ -1,7 +1,13 @@
 .file-table {
-	width: 100%;
 	cursor: default;
-	overflow: auto;
+	overflow: hidden;
+	margin-top: 1rem;
+	width: 100%;
+}
+
+.file-table > tbody {
+	overflow-y: scroll;
+	position: relative;
 }
 
 .file-table td, .file-table th {
@@ -17,11 +23,6 @@
 
 .width-0 * {
 	opacity: 0;
-}
-
-.file-info {
-	transition: width 0.25s;
-	overflow: hidden;
 }
 
 .info-button {
@@ -98,7 +99,7 @@
 	width: 100%;
 	height: 1px;
 	background-color: gray;	
-	margin-block: 2rem;
+	margin-block: 1.5rem;
 	padding-inline: 0;
 }
 
@@ -106,6 +107,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+	margin-top: 1rem;
 }
 
 .file-detail-header {
@@ -137,6 +139,10 @@
 	text-align: left;
 	font-weight: 400;
 	margin-left: 0.5rem;
+	flex-grow: 1;
+	/* max-width: 40rem;
+	min-width: 35rem; */
+	/* min-width: 10rem; */
 }
 
 .name-field > div {
@@ -200,24 +206,40 @@
 	border-radius: 3px;
 }
 
-.file-table-1 {
-	overflow: hidden;
+.file-table-1,
+.file-table-2,
+.file-table-3,
+.file-table-4 {
+	width: 8rem;
 }
 
-/* @media (max-width: 1200px) {
+.file-table-4 {
+	width: 1rem;
+}
+
+.file-table-1 {
+	width: 5rem;
+}
+
+@media (max-width: 1500px) {
 	.file-table-1 {
 		display: none
 	}
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1400px) {
 	.file-table-2 {
 		display: none
 	}
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1300px) {
 	.file-table-3 {
 		display: none
 	}
-} */
+}
+
+.file-table-wrapper {
+	max-height: 5rem;
+	width: 100%;
+}
