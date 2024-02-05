@@ -40,7 +40,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 		<div className="file-grid">
 			<div className="h-full">
 				{files.map((file, index) => (
-					<div onClick={() => setSelected(index)}>
+					<div onClick={() => {if(!file.isBeingUploaded)setSelected(index)}}>
 						<FileTableRow 
 							index={index}
 							files={files}
