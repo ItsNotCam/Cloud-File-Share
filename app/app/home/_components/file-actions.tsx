@@ -73,8 +73,8 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 
 	const uploadFile = (event: React.ChangeEvent) => {
 		event.preventDefault()
-
-		if(props.files[0].isBeingUploaded)
+		
+		if(props.files.length > 0 && props.files[0].isBeingUploaded)
 			return;
 
 		if (!inputFile || !inputFile.current) {
