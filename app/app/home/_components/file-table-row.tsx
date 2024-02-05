@@ -35,8 +35,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 	useEffect(() => {
 		setEditingFilename(false)
 		setFilename(file.NAME)
-		setEditingFilename(false)
-	}, [file])
+	}, [isSelected])
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Enter") {
