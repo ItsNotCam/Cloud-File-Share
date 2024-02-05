@@ -69,7 +69,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 					if(file.isBeingUploaded){
 						setEditingFilename(false)
 					}
-				}}/>``
+				}}/>
 				<div className={`${isSelected ? "cursor-text w-full" : ""}`}>
 					{editingFilename && isSelected && !file.isBeingUploaded
 						?<input type="text"
