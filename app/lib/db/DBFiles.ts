@@ -1,4 +1,5 @@
 import { QueryGetFirst } from "../db"
+import Logger from "../logger"
 import { CreateConnection } from "./util"
 
 export interface IDBFile {
@@ -54,8 +55,8 @@ export default abstract class DBFile {
       let file = await QueryGetFirst(connection, SQL) as IDBFile;
       file.IS_OWNER = (file.IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
       return file
-		} catch (err) {
-			console.log(err)
+		} catch (err: any) {
+			Logger.LogErr(err.message)
 		} finally {
 			connection.end()
 		}
@@ -104,8 +105,8 @@ export default abstract class DBFile {
 			}
 
 			return files
-		} catch (err) {
-			console.log(err)
+		} catch (err: any) {
+			Logger.LogErr(err.message)
 		} finally {
 			connection.end()
 		}
@@ -183,13 +184,13 @@ export default abstract class DBFile {
       }
     }
 
-    console.log(`UPDATING FILE:\n${SQL}`)
     try {
       const connection = await CreateConnection()
       await connection.execute(SQL)
+      Logger.LogMsg(`Updated file successfully`)
       return true;
     } catch (err: any) {
-      console.log(`UPDATING FILE FAILED:\n${err.message}`)
+      Logger.LogErr(`UPDATING FILE FAILED:\n${err.message}`)
     }
     return false;
   }
@@ -223,7 +224,7 @@ export default abstract class DBFile {
       await connection.execute(FILE_SQL)
       return PATH;
     } catch(err: any) {
-      console.log("ERROR DELETING FILE: " + err.message)
+      Logger.LogErr("ERROR DELETING FILE: " + err.message)
     } finally {
       connection.end()
     }

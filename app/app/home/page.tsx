@@ -120,23 +120,67 @@ export default function Home(): JSX.Element {
 		}))
 	}
 
-	const setFileUploaded = (index: number) => {
-		let newFiles = state.files
-		newFiles[index].isBeingUploaded = false;
-
-		setState(prev => ({
-			...prev, files: newFiles
-		}))
+	const setFileUploaded = (file: IUIFile) => {
+    setState(prev => {
+      let theIndex = prev.files.indexOf(file)
+      let newFiles = Array.from(prev.files)
+      newFiles[theIndex].isBeingUploaded = false;
+      return ({
+        ...prev, 
+        files: newFiles
+      })
+      
+    })
 	}
 
 	const deleteFile = async() => {
 		let file = state.files[state.selectedFileIdx]
+    let newFiles: IUIFile[] = []
+    
+    for(let i = 0; i < state.files.length; i++) {
+      if(i !== state.selectedFileIdx)
+        newFiles.push(state.files[i])// = [state.files[i]].concat(newFiles)
+    }
+    console.log(newFiles)
+    
+    setState(prev => ({
+      ...prev,
+      files: newFiles
+    }))
 
 		let URL = `/api/files/${file.ID}${file.IS_OWNER ? "" : "/unshare"}`
 		let method = file.IS_OWNER ? "DELETE" : "POST"
 		await fetch(URL, { method: method })
 
-		refreshFiles()
+    console.log("refreshing files")
+		let updatedFiles = await retrieveFiles()
+		let modifiedFiles: IUIFile[] = []
+		let currentFiles = Array.from(state.files)
+
+		while(currentFiles.length > 0) {
+			let currentFile = currentFiles[0]
+			currentFiles = currentFiles.slice(1)
+
+			if(currentFile?.isBeingUploaded) {
+				modifiedFiles.push(currentFile)
+			} else {
+				const f = updatedFiles[0]
+				updatedFiles = updatedFiles.slice(1)
+
+				if(f !== undefined) {
+					modifiedFiles.push(f)
+				}
+			}
+		}
+
+		if(updatedFiles.length > 0) {
+			modifiedFiles = modifiedFiles.concat(updatedFiles)
+		}
+
+    setState(prev => ({
+      ...prev,
+			files: modifiedFiles
+		}))
 	}
 
 	const refreshFiles = async() => {
@@ -164,10 +208,10 @@ export default function Home(): JSX.Element {
 			modifiedFiles = modifiedFiles.concat(updatedFiles)
 		}
 
-		setState(prev => ({
-			...prev,
+    setState({
+      ...state,
 			files: modifiedFiles
-		}))
+		})
 	}
 
 	const setFileID = (index: number, ID: string) => {

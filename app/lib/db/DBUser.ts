@@ -1,5 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import { CreateConnection, QueryGetFirst } from './util';
+import Logger from '../logger';
 
 export interface IDBUser {
 	ID: string,
@@ -24,7 +25,8 @@ export default abstract class DBUser {
 		try {
 			const resp = await QueryGetFirst(connection, USER_SQL)
 			return resp;
-		} catch (err) {
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return undefined;
 		} finally {
 			connection.end();
@@ -41,8 +43,8 @@ export default abstract class DBUser {
 		try {
 			const resp = await QueryGetFirst(connection, USER_SQL)
 			return resp;
-		} catch (err) {
-			console.log(err)
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return undefined;
 		} finally {
 			connection.end();
@@ -64,7 +66,8 @@ export default abstract class DBUser {
 			}
 
 			return await DBUser.GetByUsername(USERNAME)
-		} catch(err) { 
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return undefined; 
 		} finally {
 			connection.end()
@@ -80,8 +83,8 @@ export default abstract class DBUser {
 			const SQL: string = `SELECT * FROM USER WHERE USERNAME='${USERNAME}' AND PASSWORD='${PASSWORD}'`
 			const USER: IDBUser = await QueryGetFirst(connection, SQL);
 			return USER;
-		} catch(err) {
-			return undefined;
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 		} finally {
 			connection.end()
 		}
@@ -107,8 +110,8 @@ export default abstract class DBUser {
 			} 
 
 			return true;
-		} catch (err) {
-			console.log(err)
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return false;
 		} finally {
 			connection.end()

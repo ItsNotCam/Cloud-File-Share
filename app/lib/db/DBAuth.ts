@@ -1,5 +1,5 @@
 import moment from "moment";
-import DBUser, { IDBUser } from "./DBUser";
+import { IDBUser } from "./DBUser";
 import { CreateConnection, QueryGetFirst } from "./util";
 import { v4 } from 'uuid';
 
@@ -15,12 +15,9 @@ export default abstract class DBAuth {
 		const token: string = v4()
 		const expireDate = moment(Date.now()).add(30, 'm').toDate();
 		const expireSQL = `${expireDate.getFullYear()}-${expireDate.getMonth()+1}-${expireDate.getDate()} ${expireDate.getHours()}:${expireDate.getMinutes()}:${expireDate.getSeconds()}`
-		console.log(expireSQL)
 
 		const SQL: string = `INSERT INTO AUTH VALUES ('${ID}', '${token}', '${expireSQL}')`
 		const resp = await connection.execute(SQL)		
-
-		console.log(resp)
 
 		return token;
 	}

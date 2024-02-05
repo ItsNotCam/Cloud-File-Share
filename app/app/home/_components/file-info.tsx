@@ -72,9 +72,23 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 		setName(file.NAME)
 	}, [file.NAME])
 
+  const shareFile = (username: string) => {
+    const data = {
+      username: username
+    }
+
+    fetch(`/api/files/${file.ID}/share`, {
+      method: "POST",
+      body: JSON.stringify(data)
+    }).then(resp => console.log(resp))
+  }
+
 	return (
 		<>
-			{managingAccess ? <ManageAccess close={() => setManagingAccess(false)} /> : null}
+			{managingAccess 
+        ? <ManageAccess close={() => setManagingAccess(false)} shareFile={(username) => shareFile(username)}/> 
+        : null
+      }
 			<div className={`file-info-static ${managingAccess ? "cursor-not-allowed" : ""}`}>
 				<div className="file-info-header">
 					<h1 className="font-semibold">

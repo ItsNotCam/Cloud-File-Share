@@ -9,7 +9,7 @@ import { IUIFile } from "../page";
 interface IFileTableProps {
 	setSelected: (index: number) => void,
 	refreshFileInfo: (index: number) => void,
-	setFileUploaded: (index: number) => void,
+	setFileUploaded: (file: IUIFile) => void,
 	setFileID: (index: number, ID: string) => void,
 	files: IUIFile[],
 	selectedFileIdx: number,
@@ -40,7 +40,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 							setSelected={() => props.setSelected(index)}
 							updateFilename={(filename) => updateFilename(index, filename)} 
 							activeUpload={file.isBeingUploaded} 
-							setFileUploaded={() => props.setFileUploaded(index)}
+							setFileUploaded={() => props.setFileUploaded(file)}
 							setFileID={(ID) => props.setFileID(index, ID)}
 						/>
 					</div>
