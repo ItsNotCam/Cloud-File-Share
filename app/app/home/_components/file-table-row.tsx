@@ -103,10 +103,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 			<div className="file-grid__col-3" onClick={() => setEditingFilename(false)}>{toDateString(file.UPLOAD_TIME)}</div>
 			<div className="file-grid__col-4" onClick={() => setEditingFilename(false)}>{calcFileSize(file.SIZE_BYTES)}</div>
 			<div className="file-grid__col-5" onClick={() => setEditingFilename(false)}>
-				{finishedUploading 
-					? <Check />
-					: <FileActions file={file}/>
-				}
+				<FileActions file={file}/>
 			</div>
 		</div>
 	)

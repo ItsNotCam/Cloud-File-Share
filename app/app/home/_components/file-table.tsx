@@ -23,14 +23,11 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 		selectedFileIdx,
 	} = props;
 
-	const [uploadingFiles, setUploadingFiles] = useState<any>()
-	const [filename, setFilename] = useState<string>("")
-
-	const updateFilename = (index: number) => {
+	const updateFilename = (index: number, name: string) => {
 		const file = files[index]
 		fetch(`/api/files/${file.ID}`, {
 			method: "PATCH",
-			body: JSON.stringify({ name: filename })
+			body: JSON.stringify({ name: name })
 		}).then(() => {
 			refreshFileInfo(index)
 		})
@@ -49,7 +46,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 							// uploadProgress={uploadingFiles.get(file.NAME).progress}
 							isSelected={index === selectedFileIdx}
 							setSelected={() => setSelected(index)}
-							updateFilename={() => updateFilename(index)} 
+							updateFilename={(filename) => updateFilename(index, filename)} 
 							uploadRef={props.uploadFileRef}
 						/>
 					</div>
