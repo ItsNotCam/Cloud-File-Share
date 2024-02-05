@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { calcFileSize, toDateString } from '@/lib/util';
 import { FileActions } from "./file-actions";
 import { IUploadingFile } from "../page";
+import { Check } from "@mui/icons-material";
 
 export interface IFileTablRowProps {
 	index: number,
@@ -20,6 +21,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	const [filename, setFilename] = useState<string>("")
 	const [editingFilename, setEditingFilename] = useState<boolean>(false)
+	const [finishedUploading, setFinishedUploading] = useState<boolean>(false)
 
 	const textInputRef = useRef(null)
 
@@ -36,6 +38,17 @@ export default function FileTableRow(props: IFileTablRowProps) {
 		setEditingFilename(false)
 		setFilename(file.NAME)
 	}, [isSelected])
+
+	useEffect(() => {
+		if(file.isBeingUploaded)
+			return
+
+		setFinishedUploading(true)
+		setTimeout(() => {
+			setFinishedUploading(false)
+		}, 2000)
+	}, [file.isBeingUploaded])
+
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Enter") {
@@ -89,7 +102,12 @@ export default function FileTableRow(props: IFileTablRowProps) {
 			<div className="file-grid__col-2" onClick={() => setEditingFilename(false)}>{file.IS_OWNER ? "me" : "~"}</div>
 			<div className="file-grid__col-3" onClick={() => setEditingFilename(false)}>{toDateString(file.UPLOAD_TIME)}</div>
 			<div className="file-grid__col-4" onClick={() => setEditingFilename(false)}>{calcFileSize(file.SIZE_BYTES)}</div>
-			<div className="file-grid__col-5" onClick={() => setEditingFilename(false)}><FileActions file={file}/></div>
+			<div className="file-grid__col-5" onClick={() => setEditingFilename(false)}>
+				{finishedUploading 
+					? <Check />
+					: <FileActions file={file}/>
+				}
+			</div>
 		</div>
 	)
 }
