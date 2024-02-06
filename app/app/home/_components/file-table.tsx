@@ -3,7 +3,7 @@
 import { IDBFile } from "@/lib/db/DBFiles";
 import React, { useState } from 'react';
 import FileTableRow from "./file-table-row";
-import { IFile } from "../page";
+import { IUIFile } from "../page";
 
 
 interface IFileTableProps {
@@ -11,7 +11,7 @@ interface IFileTableProps {
 	refreshFileInfo: (index: number) => void,
 	setFileUploaded: (index: number) => void,
 	setFileID: (index: number, ID: string) => void,
-	files: IFile[],
+	files: IUIFile[],
 	selectedFileIdx: number,
 	infoShown: boolean,
 }

@@ -10,11 +10,11 @@ interface IHomeState {
 	gettingFiles: boolean
 	selectedFileIdx: number
 	showFileInfo: boolean
-	files: IFile[],
+	files: IUIFile[],
 	isHoldingCtrl: boolean
 }
 
-export interface IFile extends IDBFile {
+export interface IUIFile extends IDBFile {
 	isBeingUploaded: boolean,
 	file: File | null
 }
@@ -37,9 +37,9 @@ export default function Home(): JSX.Element {
 		})
 	}, [])
 	
-	const retrieveFiles = async(): Promise<IFile[]> => {
+	const retrieveFiles = async(): Promise<IUIFile[]> => {
 		const js = await fetch("/api/files").then(resp => resp.json())
-		const files: IFile[] = js.files as IFile[]
+		const files: IUIFile[] = js.files as IUIFile[]
 		return files
 	}
 
@@ -48,7 +48,7 @@ export default function Home(): JSX.Element {
 		fetch("/api/files")
 			.then(resp => resp.json())
 			.then(js => {
-				const newJS = js.files as IFile[]
+				const newJS = js.files as IUIFile[]
 				for(let i = 0; i < js.files.length; i++) {
 					newJS[i].isBeingUploaded = false,
 					newJS[i].file = null
@@ -98,7 +98,7 @@ export default function Home(): JSX.Element {
 		const extension = `.${splitFilename.pop()}` || ""
 		const filename = splitFilename.splice(0,file.name.length-1).join(".")
 
-		const newFile: IFile = {
+		const newFile: IUIFile = {
 			DESCRIPTION: "",
 			EXTENSION: extension,
 			ID: uuidv4(),
@@ -141,7 +141,7 @@ export default function Home(): JSX.Element {
 
 	const refreshFiles = async() => {
 		let updatedFiles = await retrieveFiles()
-		let modifiedFiles: IFile[] = []
+		let modifiedFiles: IUIFile[] = []
 		let currentFiles = Array.from(state.files)
 
 		while(currentFiles.length > 0) {

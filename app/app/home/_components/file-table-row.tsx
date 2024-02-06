@@ -2,12 +2,12 @@ import FileIcon from "./file-icon"
 import { useEffect, useRef, useState } from "react"
 import { calcFileSize, toDateString } from '@/lib/util';
 import { FileActions } from "./file-actions";
-import { IFile } from "../page";
+import { IUIFile } from "../page";
 import { Check } from "@mui/icons-material";
 import axios, { AxiosError, AxiosProgressEvent } from "axios";
 
 export interface IFileTablRowProps {
-	file: IFile,
+	file: IUIFile,
 	isSelected: boolean,
 	activeUpload: boolean,
 	updateFilename: (filename: string) => void,

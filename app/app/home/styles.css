@@ -444,3 +444,27 @@ table {
 	flex-direction: row;
 	color: rgb(57, 57, 57);
 }
+
+.manage-access {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	
+	background-color: hsla(0, 0%, 20%, 0.4);
+}
+
+.manage-access > div {
+	width: 600px;
+	height: 600px;
+	border-radius: 20px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}

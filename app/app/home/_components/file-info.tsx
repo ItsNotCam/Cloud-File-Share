@@ -3,6 +3,7 @@ import FileIcon from "./file-icon";
 import { calcFileSize, toDateString } from "@/lib/util";
 import React, { useEffect, useState } from "react";
 import Scrollable from "@/lib/scrollable";
+import ManageAccess from "./manage-access";
 
 const defaultFile: IDBFile = {
 	DESCRIPTION: "",
@@ -25,6 +26,7 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 
 	const [description, setDescription] = useState<string>(file.DESCRIPTION)
 	const [name, setName] = useState<string>(file.NAME)
+	const [managingAccess, setManagingAccess] = useState<boolean>(false)
 
 	const getUnfocus = (e: React.FocusEvent) => {
 		if (description !== file.DESCRIPTION) {
@@ -72,7 +74,8 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 
 	return (
 		<>
-			<div className="file-info-static">
+			{managingAccess ? <ManageAccess close={() => setManagingAccess(false)} /> : null}
+			<div className={`file-info-static ${managingAccess ? "cursor-not-allowed" : ""}`}>
 				<div className="file-info-header">
 					<h1 className="font-semibold">
 						<span>{fileIcon}</span>
@@ -88,7 +91,11 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 							You do not have permission to view sharing information for this item
 						</p>
 					}
-					{file.IS_OWNER ? <button className="access-btn">Manage access</button> : ""}
+					{file.IS_OWNER 
+						? <button className="access-btn" onClick={() => setManagingAccess(true)}>
+								Manage access
+							</button> 
+						: ""}
 				</div>
 				<div className="horizontal-divider"></div>
 				<h1 className="file-info-details-title font-semibold">File Details</h1>

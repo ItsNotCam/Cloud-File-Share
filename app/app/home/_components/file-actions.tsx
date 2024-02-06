@@ -6,7 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import React, { useEffect, useRef, useState } from "react";
 import axios, { AxiosError, AxiosProgressEvent } from "axios";
-import { IFile } from "../page";
+import { IUIFile } from "../page";
 
 export function FileActions(props: { file: IDBFile }): React.ReactNode {
 	return (
@@ -22,8 +22,8 @@ interface IFileActionsBarState {
 }
 
 interface IFileActionsBarProps { 
-	file: IFile, 
-	files: IFile[],
+	file: IUIFile, 
+	files: IUIFile[],
 	refreshFiles: () => void,
 	addFile: (file: File) => void
 	deleteFile: () => void
