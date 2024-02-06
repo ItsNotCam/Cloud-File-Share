@@ -50,7 +50,7 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
     // remove from folder structure
 		try {
 			if(fs.existsSync(PATH)) {
-				fs.rmSync(PATH, { force: true })
+				fs.rm(PATH, () => {})
 			} else {
 				throw {message: `File ${FILE_ID} does not exist`}
 			}

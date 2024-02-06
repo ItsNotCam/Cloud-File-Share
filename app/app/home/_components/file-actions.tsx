@@ -78,7 +78,7 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 			</label>
 			<input 
 				id="files" 
-				// multiple
+				multiple
 				style={{visibility: "hidden", display: "none"}} 
 				type="file" 
 				ref={inputFile} 

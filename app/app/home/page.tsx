@@ -5,6 +5,7 @@ import FileTable from "./_components/file-table"
 import FileInfo from "./_components/file-info"
 import { FileActionsBar } from "./_components/file-actions"
 import {v4 as uuidv4} from 'uuid'
+import {useMutex} from 'react-context-mutex'
 
 interface IHomeState {
 	gettingFiles: boolean
@@ -21,6 +22,9 @@ export interface IUIFile extends IDBFile {
 }
 
 export default function Home(): JSX.Element {
+	const MutexRunner = useMutex();
+	const mutex = new MutexRunner(uuidv4());
+
 	const [state, setState] = useState<IHomeState>({
 		gettingFiles: true,
 		selectedFileIdx: -1,
@@ -130,20 +134,25 @@ export default function Home(): JSX.Element {
 
 			newFiles.push(newFile)
 		}
-		setState(prev => ({
-			...prev,
-			uploadingFiles: state.uploadingFiles.concat(newFiles)
-		}))
+		
+		mutex.run(async () => {
+			try {
+				mutex.lock();
+				setState(prev => ({
+					...prev,
+					uploadingFiles: state.uploadingFiles.concat(newFiles)
+				}))
+			} catch (e) {
+				console.log(e)
+			} finally {
+				mutex.unlock()
+			}
+		});
 	}
 
 	const setFileUploaded = (file: IUIFile, FILE_ID: string) => {
-		// setTimeout(() => {
-		let newUploadingFiles: IUIFile[] = []
-		for(let i = 0; i < state.uploadingFiles.length; i++) {
-			if(state.uploadingFiles[i].ID !== file.ID) {
-				newUploadingFiles = [state.uploadingFiles[i]].concat(newUploadingFiles)
-			}
-		}
+		let newUploadingFiles: IUIFile[] = state.uploadingFiles
+		newUploadingFiles.splice(newUploadingFiles.indexOf(file), 1)
 		file.isBeingUploaded = false;
 		file.file = null
 		file.ID = FILE_ID
@@ -153,7 +162,6 @@ export default function Home(): JSX.Element {
 			uploadingFiles: newUploadingFiles,
 			files: [file].concat(prev.files)
 		}))
-		// }, Math.floor(Math.random() * 1000))
 	}
 
 	const deleteFile = async() => {
