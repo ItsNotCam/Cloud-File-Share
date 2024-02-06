@@ -1,7 +1,6 @@
 // UPLOAD FILE
-import { MAX_STORAGE_BYTES } from "@/lib/constants";
 import { NextRequest, NextResponse } from "next/server";
-import { CreateConnection, QueryGetFirst } from "@/lib/db";
+import { CreateConnection } from "@/lib/db";
 import { rmSync, writeFile } from "fs";
 import {v4 as uuidv4} from 'uuid';
 import mysql from 'mysql2/promise'
@@ -12,7 +11,6 @@ interface IFileInfo {
   EXTENSION: string
   NAME: string
 }
-import { IUserProps } from "@/lib/types";
 import { cookies } from "next/headers";
 import DBAuth from "@/lib/db/DBAuth";
 
@@ -38,28 +36,28 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 		)
 	}
 
-  let SQL: string = `
-    SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
-    FROM FILE_OBJECT AS FO
-      INNER JOIN FILE_INSTANCE AS FI ON FI.FILE_ID=FO.ID
-      INNER JOIN USER ON USER_ID=USER.ID
-    WHERE USER.ID='${USER.ID}'
-    GROUP BY USER.ID;
-  `;
-  
-  const RESP: IUserProps = await QueryGetFirst(connection, SQL)
-  if(RESP != undefined && (file.size + RESP.USED_STORAGE_BYTES) > MAX_STORAGE_BYTES) {
-    return new NextResponse(
-      "Uploading this file exceeded maximum storage",
-      { status: 400 }
-    )
-  }
-
   // Save file to PC
   const PATH = `${process.env.FILES_DIRECTORY}/${FILE_ID}`
   const buffer = await file.arrayBuffer()
     .then(bytes => Buffer.from(bytes))
   await writeFile(PATH, buffer, () => {})
+
+  // let SQL: string = `
+  //   SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
+  //   FROM FILE_OBJECT AS FO
+  //     INNER JOIN FILE_INSTANCE AS FI ON FI.FILE_ID=FO.ID
+  //     INNER JOIN USER ON USER_ID=USER.ID
+  //   WHERE USER.ID='${USER.ID}'
+  //   GROUP BY USER.ID;
+  // `;
+  
+  // const RESP: IUserProps = await QueryGetFirst(connection, SQL)
+  // if(RESP != undefined && (file.size + RESP.USED_STORAGE_BYTES) > MAX_STORAGE_BYTES) {
+  //   return new NextResponse(
+  //     "Uploading this file exceeded maximum storage",
+  //     { status: 400 }
+  //   )
+  // }
   
   // Add entry to database
   const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER.ID, PATH, file.size)
@@ -75,11 +73,12 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
       "Error saving file to the database", { status: 500 }
     )
   }
-  
-  return new NextResponse(
-    `Successfully uploaded file.`,
-    { status: 200 }
-  )
+
+	return NextResponse.json({
+		ID: FILE_ID
+	}, { 
+		status: 200 
+	})
 }
 
 async function getFileInfo(file: File): Promise<IFileInfo> {

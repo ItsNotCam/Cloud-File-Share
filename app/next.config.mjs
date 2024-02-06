@@ -17,6 +17,8 @@ import dotenv from 'dotenv';
 // const dotenv = require('dotenv');
 dotenv.config({path: '../.env'})
 
-const nextConfig = {}
+const nextConfig = {
+	reactStrictMode: false
+}
 
 export default nextConfig;
