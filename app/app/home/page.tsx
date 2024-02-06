@@ -174,10 +174,20 @@ export default function Home(): JSX.Element {
 
 	const refreshFiles = async() => {
 		let updatedFiles = await retrieveFiles()
-		setState(prev => ({
-			...prev,
-			files: updatedFiles
-		}))
+
+		mutex.run(async () => {
+			try {
+				mutex.lock();
+				setState(prev => ({
+					...prev,
+					files: updatedFiles
+				}))
+			} catch (e) {
+				console.log(e)
+			} finally {
+				mutex.unlock()
+			}
+		});
 	}
 
 	const setFileID = (file: IUIFile, ID: string) => {
