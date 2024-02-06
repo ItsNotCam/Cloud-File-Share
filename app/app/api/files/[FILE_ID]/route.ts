@@ -1,5 +1,7 @@
 // FILE ACTIONS
+import DBAuth from '@/lib/db/DBAuth';
 import DBFile from '@/lib/db/DBFiles';
+import Logger from '@/lib/logger';
 import fs from 'fs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server'
@@ -10,28 +12,59 @@ interface IFileIDContext {
 
 // Get file data
 export async function GET(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+	Logger.LogReq(request)
 	const { FILE_ID } = context.params;
+
 	const file = await DBFile.GetFileInfo(FILE_ID, {
     TOKEN: cookies().get("token")?.value
   })
+
+	if(file === undefined) {
+		return NextResponse.json({message: "No file found"}, { status: 401 })
+	}
+
 	return NextResponse.json(file, { status: 200 })
 }
 
 // Delete file from database
 export async function DELETE(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+	Logger.LogReq(request)
 	const { FILE_ID } = context.params
+	const token = cookies().get("token")?.value
+	if(token === undefined) {
+		Logger.LogErr(`User requested ${request.url} without validation`)
+		return NextResponse.json({mesage: "unauthorized"}, {status: 403})
+	}
+
+	const user = await DBAuth.GetUserFromToken(token)
+	if(user === undefined) {
+		Logger.LogErr(`No user found using token ${token}`)
+		return NextResponse.json({message: "unauthorized"}, {status: 403})
+	}
+
   const PATH = await DBFile.DeleteFile(FILE_ID, { 
-    TOKEN: cookies().get("token")?.value,
+    USER_ID: user?.ID,
   })
 
   if(PATH != undefined) {
     // remove from folder structure
-    fs.rmSync(PATH, { force: true })
-    return NextResponse.json({
-      message: "file deleted"
-    }, {
-      status: 200
-    })
+		try {
+			if(fs.existsSync(PATH)) {
+				fs.rmSync(PATH, { force: true })
+			} else {
+				throw {message: `File ${FILE_ID} does not exist`}
+			}
+			return NextResponse.json({ message: "file deleted" }, { status: 200 })
+		} catch(err: any) {
+			Logger.LogErr(`Failed to delete file ${FILE_ID} from storage: ${err.message}`)
+		}
+
+		return NextResponse.json({
+			message: "failed"
+		}, {
+			status: 500
+		})
+		
   }
 
 	return NextResponse.json({
@@ -43,6 +76,7 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 
 // Update file information
 export async function PATCH(request: NextRequest, context: IFileIDContext): Promise<NextResponse> {
+	Logger.LogReq(request)
 	const { FILE_ID } = context.params
 
 	const { description, name } = await request.json() as { 
@@ -71,10 +105,10 @@ export async function PATCH(request: NextRequest, context: IFileIDContext): Prom
 		} else {
 			return NextResponse.json({ message: "No changes were made" }, { status: 200 })
 		}
-	} catch (e: any) {
-    console.log(e.message)
+	} catch (err: any) {
+		Logger.LogErr(err.message)
 		return new NextResponse(
-			e.message, { status: 500 }
+			err.message, { status: 500 }
 		)
 	}
 }

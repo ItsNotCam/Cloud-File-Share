@@ -2,7 +2,6 @@ import { IDBFile } from "@/lib/db/DBFiles";
 import FileIcon from "./file-icon";
 import { calcFileSize, toDateString } from "@/lib/util";
 import React, { useEffect, useState } from "react";
-import Scrollable from "@/lib/scrollable";
 import ManageAccess from "./manage-access";
 
 const defaultFile: IDBFile = {
@@ -83,18 +82,21 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
     }).then(resp => console.log(resp))
   }
 
-	return (
-		<>
+	return (<>
+		<div className="file-info-title">
+			{fileIcon}
+			<h1 className="font-semibold">
+				{file.NAME}{file.EXTENSION}
+			</h1>
+		</div>
+		<div className="horizontal-divider" />
+		<div className="file-info-container ">
 			{managingAccess 
         ? <ManageAccess close={() => setManagingAccess(false)} shareFile={(username) => shareFile(username)}/> 
         : null
       }
-			<div className={`file-info-static ${managingAccess ? "cursor-not-allowed" : ""}`}>
+			<div className={`${managingAccess ? "cursor-not-allowed" : ""}`}>
 				<div className="file-info-header">
-					<h1 className="font-semibold">
-						<span>{fileIcon}</span>
-						<p className="text-lg">{file.NAME}{file.EXTENSION}</p>
-					</h1>
 					<span className="file-info-icon">
 						{fileIcon}
 					</span>
@@ -109,22 +111,22 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 						? <button className="access-btn" onClick={() => setManagingAccess(true)}>
 								Manage access
 							</button> 
-						: ""}
+						: null
+					}
 				</div>
 				<div className="horizontal-divider"></div>
 				<h1 className="file-info-details-title font-semibold">File Details</h1>
 			</div>
-			<Scrollable padding="0 2rem">
-				<div className="file-info-details">
+			<div className="file-info-details">
+				<div>
 					{fileInfo.map((fi, i) =>
 						<p key={`fi${i}`}>
-							<span className="font-semibold">{fi[0]}</span>
-							<br />
-							<span>{fi[1]}</span>
+							<span className="font-semibold text-sm">{fi[0]}</span>
+							<span className="text-sm">{fi[1]}</span>
 						</p>
 					)}
 					<div className="file-info-description">
-						<span className="pb-1.5 font-semibold">Description</span>
+						<span className="font-semibold text-sm">Description</span>
 						<textarea
 							className="text-sm"
 							value={description}
@@ -134,9 +136,9 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 						<span className="text-xs">{descLengthtoStr(description?.length)} / 5,000</span>
 					</div>
 				</div>
-			</Scrollable>
-		</>
-	)
+			</div>
+		</div>
+	</>)
 }
 
 const descLengthtoStr = (l: number) => {
@@ -151,7 +153,7 @@ const descLengthtoStr = (l: number) => {
 function AccessList() {
 	return (
 		<div className="access-list">
-			<p>Me</p>
+			<p className="text-sm">Me</p>
 		</div>
 	)
 }

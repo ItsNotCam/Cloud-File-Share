@@ -1,8 +1,10 @@
 import DBAuth from "@/lib/db/DBAuth";
 import DBUser, { IDBUser } from "@/lib/db/DBUser";
+import Logger from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<Response> {
+  Logger.LogReq(request)
 	const {username, password} = await request.json();
 	const userExists: boolean = await DBUser.CheckUsernameExists(username)
 

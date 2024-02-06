@@ -1,6 +1,7 @@
 import { CreateConnection } from "@/lib/db/util"
+import Logger from "@/lib/logger"
 import { IComment } from "@/lib/types"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 const errMsgs: Map<number, string> = new Map([
   [1216, "File and/or User ID not found"]
@@ -27,7 +28,8 @@ const validateJSON = (comment: IComment): boolean => {
   return true
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  Logger.LogReq(request)
   const js: IComment = await request.json()
   const validJSON: boolean = validateJSON(js)
 

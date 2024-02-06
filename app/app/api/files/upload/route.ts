@@ -13,8 +13,10 @@ interface IFileInfo {
 }
 import { cookies } from "next/headers";
 import DBAuth from "@/lib/db/DBAuth";
+import Logger from "@/lib/logger";
 
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
+	Logger.LogReq(request)
   const data = await request.formData()
   const file: File = data.get('file') as File
   if(!file) {
@@ -41,23 +43,6 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const buffer = await file.arrayBuffer()
     .then(bytes => Buffer.from(bytes))
   await writeFile(PATH, buffer, () => {})
-
-  // let SQL: string = `
-  //   SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
-  //   FROM FILE_OBJECT AS FO
-  //     INNER JOIN FILE_INSTANCE AS FI ON FI.FILE_ID=FO.ID
-  //     INNER JOIN USER ON USER_ID=USER.ID
-  //   WHERE USER.ID='${USER.ID}'
-  //   GROUP BY USER.ID;
-  // `;
-  
-  // const RESP: IUserProps = await QueryGetFirst(connection, SQL)
-  // if(RESP != undefined && (file.size + RESP.USED_STORAGE_BYTES) > MAX_STORAGE_BYTES) {
-  //   return new NextResponse(
-  //     "Uploading this file exceeded maximum storage",
-  //     { status: 400 }
-  //   )
-  // }
   
   // Add entry to database
   const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER.ID, PATH, file.size)

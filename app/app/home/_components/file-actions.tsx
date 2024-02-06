@@ -4,8 +4,8 @@ import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import React, { useEffect, useRef, useState } from "react";
-import axios, { AxiosError, AxiosProgressEvent } from "axios";
+import React, { useRef, useState } from "react";
+import { AxiosProgressEvent } from "axios";
 import { IUIFile } from "../page";
 
 export function FileActions(props: { file: IDBFile }): React.ReactNode {
@@ -16,16 +16,11 @@ export function FileActions(props: { file: IDBFile }): React.ReactNode {
 	)
 }
 
-interface IFileActionsBarState {
-	uploadProgress: number,
-	isUploading: boolean
-}
-
 interface IFileActionsBarProps { 
 	file: IUIFile, 
 	files: IUIFile[],
 	refreshFiles: () => void,
-	addFile: (file: File) => void
+	addFiles: (file: File[]) => void
 	deleteFile: () => void
 }
 
@@ -33,30 +28,12 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 	const {file} = props
 	const inputFile = useRef(null) 
 
-	const [state, setState] = useState<IFileActionsBarState>({
-		uploadProgress: 0,
-		isUploading: false
-	})
-
 	const openUploadDialog = () => {
 		try {
 			(inputFile.current as any).click()
 		} catch {
 			alert("failed to open input dialog")
 		}
-	}
-
-	const handleProgressUpdate = (event: AxiosProgressEvent) => {
-		var ubr = document.getElementById("uploading-bar")
-		const progress: number = event.loaded / (event.total || 9999999) * 100
-		if(ubr) {
-			ubr.style.width = `${progress}%`
-		}
-
-		setState(prev => ({
-			...prev,
-			uploadProgress: progress
-		}))
 	}
 
 	const uploadFile = (event: React.ChangeEvent) => {
@@ -73,32 +50,9 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 			return
 		}
 
-		props.addFile(files[0])
-
-		// setState({ ...state, isUploading: true })
-		// axios.post(`/api/files/upload`, data, {
-		// 	headers: { 'Content-Type': 'multipart/form-data' },
-		// 	onUploadProgress: handleProgressUpdate
-		// }).catch((e: AxiosError) => {
-		// 	alert(`Failed to upload file\n${e.message}\n${e.response?.data}`)
-		// }).finally(() => {
-		// 	setState(prev => ({
-		// 		...prev,
-		// 		isUploading: false,
-		// 		uploadProgress: 0
-		// 	}))
-
-		// 	props.refreshFiles()
-		// 	resetFile()
-		// })
+		props.addFiles(files)
 	}
 	
-	const resetFile = () => {
-		if (inputFile.current) {
-			(inputFile.current as any).value = "";
-		}
-	};
-
 	return (
 		<div className="file-action-wrapper">
 			{
@@ -124,6 +78,7 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 			</label>
 			<input 
 				id="files" 
+				// multiple
 				style={{visibility: "hidden", display: "none"}} 
 				type="file" 
 				ref={inputFile} 

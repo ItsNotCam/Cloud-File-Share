@@ -1,4 +1,3 @@
-import Scrollable from '@/lib/scrollable';
 import Header from './header';
 import './styles.css'
 

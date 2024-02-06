@@ -1,10 +1,10 @@
 import FileIcon from "./file-icon"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { calcFileSize, toDateString } from '@/lib/util';
 import { FileActions } from "./file-actions";
 import { IUIFile } from "../page";
-import { Check } from "@mui/icons-material";
 import axios, { AxiosError, AxiosProgressEvent } from "axios";
+import Logger from "@/lib/logger";
 
 export interface IFileTablRowProps {
 	file: IUIFile,
@@ -12,7 +12,7 @@ export interface IFileTablRowProps {
 	activeUpload: boolean,
 	updateFilename: (filename: string) => void,
 	setSelected: () => void,
-	setFileUploaded: () => void,
+	setFileUploaded: (FILE_ID: string) => void,
 	setFileID: (ID: string) => void
 }
 
@@ -28,7 +28,6 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	// on enter, if this is a file that is marked as being one to upload, do it
 	useEffect(() => {
-		console.log("row mounted " + props.activeUpload)
 		if(props.activeUpload && props.file.file != null) {
 			setIsUploading(true)
 			uploadFile(props.file.file)
@@ -38,12 +37,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 	useEffect(() => {
 		setEditingFilename(false)
 		setFilename(props.file.NAME)
-	}, [props.isSelected])
-
-
-	useEffect(() => {
-		setFilename(props.file.NAME)
-	}, [props.file])
+	}, [props.isSelected, props.file.NAME])
 
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -61,16 +55,13 @@ export default function FileTableRow(props: IFileTablRowProps) {
 	}
 
 	const handleProgressUpdate = (event: AxiosProgressEvent) => {
-		const progress: number = event.loaded / (event.total || 9999999) * 100
-		setUploadProgress(progress)
+		setUploadProgress(event.loaded / (event.total || 9999999) * 100)
 	}
 
 	const uploadFile = (file: File | null) => {
 		if(!file) {
 			return
 		}
-
-		console.log("uploading file...")
 
 		const data: FormData = new FormData()
 		data.set('file', file)
@@ -80,17 +71,18 @@ export default function FileTableRow(props: IFileTablRowProps) {
 			signal: abortController.signal,
 			onUploadProgress: handleProgressUpdate
 		}).then(resp => {
-			props.setFileID(resp.data.ID)
+			// props.setFileID(resp.data.ID)
+			props.setFileUploaded(resp.data.ID)
 		}).catch((e: AxiosError) => {
-			alert(`Failed to upload file\n${e.message}\n${e.response?.data}`)
+			Logger.LogErr(`Failed to upload file\n${e.message}\n${e.response?.data}`)
 		}).finally(() => {
-			props.setFileUploaded()
+			// props.setFileUploaded()
 			setIsUploading(false)
 		})
 	}
 
 	return (
-		<div className={`file-grid__row ${props.isSelected && !isUploading ? "file-grid__row-selected" : ""} ${isUploading ? "cursor-not-allowed" : ""}`}
+		<div className={`file-grid__row ${props.isSelected && !props.file.isBeingUploaded ? "file-grid__row-selected" : ""} ${isUploading ? "cursor-not-allowed" : ""}`}
 			onClick={() => {if (!isUploading ) props.setSelected()}}>
 			{isUploading
 				? <div className="uploading-bar">

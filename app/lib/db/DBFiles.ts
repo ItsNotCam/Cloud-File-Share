@@ -17,10 +17,12 @@ export interface IDBFile {
 }
 
 export default abstract class DBFile {
-	static async GetFileInfo(FILE_ID: string, identifier: {TOKEN?: string, USER_ID?: string}) {
-		const connection = await CreateConnection()
-		if(connection === null)
-			return []
+	static async GetFileInfo(FILE_ID: string, identifier: {TOKEN?: string, USER_ID?: string}): Promise<IDBFile | undefined> {
+		let connection = await CreateConnection() 
+		if(connection === null) {
+			Logger.LogErr("Failed to connect to database")
+			return undefined		
+		}
 
 		const {TOKEN, USER_ID} = identifier;
 		let SQL = ""
@@ -53,13 +55,18 @@ export default abstract class DBFile {
 
 		try {
       let file = await QueryGetFirst(connection, SQL) as IDBFile;
-      file.IS_OWNER = (file.IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
-      return file
+			if(file === undefined) {
+				throw {message: `User ${USER_ID} failed to retrieve file ${FILE_ID} - no such file exists`}
+			} else {
+				file.IS_OWNER = (file.IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
+				return file
+			}
 		} catch (err: any) {
 			Logger.LogErr(err.message)
 		} finally {
-			connection.end()
+			await connection.end()
 		}
+		return undefined
 	}
 
 	static async GetFilesOfUser(identifier: {USER_ID?: string, TOKEN?: string}): Promise<IDBFile[]> {
@@ -108,7 +115,7 @@ export default abstract class DBFile {
 		} catch (err: any) {
 			Logger.LogErr(err.message)
 		} finally {
-			connection.end()
+			await connection.end()
 		}
 		
 		return []
@@ -164,30 +171,27 @@ export default abstract class DBFile {
       WHERE FILE_ID='...' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='...')
     */
     let SQL = `UPDATE FILE_INSTANCE SET`
-    {
-      let updatedFields: string[] = []
-      if(DESCRIPTION) {
-        updatedFields.push(`DESCRIPTION='${DESCRIPTION}'`)
-      }
-      if(NAME) {
-        updatedFields.push(`NAME='${NAME}'`)
-      }
+		let updatedFields: string[] = []
+		if(DESCRIPTION) {
+			updatedFields.push(`DESCRIPTION='${DESCRIPTION}'`)
+		}
+		if(NAME) {
+			updatedFields.push(`NAME='${NAME}'`)
+		}
 
-      SQL += ` ${updatedFields.join(",")} 
-        WHERE FILE_ID='${FILE_ID}' 
-        AND USER_ID=`
+		SQL += ` ${updatedFields.join(",")} 
+			WHERE FILE_ID='${FILE_ID}' 
+			AND USER_ID=`
 
-      if(USER_ID) {
-        SQL += `'${USER_ID}'`
-      } else {
-        SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}')`
-      }
-    }
+		if(USER_ID) {
+			SQL += `'${USER_ID}'`
+		} else {
+			SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}')`
+		}
 
     try {
       const connection = await CreateConnection()
       await connection.execute(SQL)
-      Logger.LogMsg(`Updated file successfully`)
       return true;
     } catch (err: any) {
       Logger.LogErr(`UPDATING FILE FAILED:\n${err.message}`)

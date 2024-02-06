@@ -11,9 +11,10 @@ interface IHomeState {
 	selectedFileIdx: number
 	showFileInfo: boolean
 	files: IUIFile[],
+	uploadingFiles: IUIFile[],
 	isHoldingCtrl: boolean
 }
-
+ 
 export interface IUIFile extends IDBFile {
 	isBeingUploaded: boolean,
 	file: File | null
@@ -25,6 +26,7 @@ export default function Home(): JSX.Element {
 		selectedFileIdx: -1,
 		showFileInfo: true,
 		files: [],
+		uploadingFiles: [],
 		isHoldingCtrl: false
 	})
 
@@ -36,6 +38,13 @@ export default function Home(): JSX.Element {
 			}
 		})
 	}, [])
+
+	useEffect(() => {
+		setState(prev => ({
+			...prev,
+			uploadingFiles: prev.uploadingFiles
+		}))
+	}, [state.uploadingFiles])
 	
 	const retrieveFiles = async(): Promise<IUIFile[]> => {
 		const js = await fetch("/api/files").then(resp => resp.json())
@@ -62,7 +71,8 @@ export default function Home(): JSX.Element {
 			})
 	}
 
-	const setSelected = (index: number) => {
+	const setSelected = (file: IUIFile) => {
+		let index = state.files.indexOf(file)
 		if(state.files[index].isBeingUploaded || index === state.selectedFileIdx) {
 			return
 		}
@@ -72,11 +82,12 @@ export default function Home(): JSX.Element {
 			selectedFileIdx: index
 		}))
 		
-		refreshFileInfo(index)
+		refreshFileInfo(file)
 	}
 
-	const refreshFileInfo = async (index: number) => {
+	const refreshFileInfo = async (file: IUIFile) => {
 		let stateFiles = state.files
+		let index = state.files.indexOf(file)
 
 		const selectedFile = stateFiles[index]
 		const newFile = await fetch(`/api/files/${selectedFile.ID}`)
@@ -93,133 +104,80 @@ export default function Home(): JSX.Element {
 		setState(prev => ({ ...prev, files: stateFiles }))	
 	}
 
-	const addFile = (file: File) => {
-		const splitFilename = file.name.split('.') || ""
-		const extension = `.${splitFilename.pop()}` || ""
-		const filename = splitFilename.splice(0,file.name.length-1).join(".")
+	const addFiles = (filesToAdd: File[]) => {
+		let newFiles: IUIFile[] = []
+		for(let i = 0; i < filesToAdd.length; i++) {
+			let file = filesToAdd[i]
+			const splitFilename = file.name.split('.') || ""
+			const extension = `.${splitFilename.pop()}` || ""
+			const filename = splitFilename.splice(0,file.name.length-1).join(".")
+	
+			const newFile: IUIFile = {
+				DESCRIPTION: "",
+				EXTENSION: extension,
+				ID: uuidv4(),
+				NAME: filename,
+				FILENAME: file.name,
+				SIZE_BYTES: file.size,
+				UPLOAD_TIME: new Date(Date.now()),
+				LAST_DOWNLOAD_TIME: undefined,
+				LAST_DOWNLOAD_USER_ID: undefined,
+				IS_OWNER: true,
+	
+				isBeingUploaded: true,
+				file: file
+			}
 
-		const newFile: IUIFile = {
-			DESCRIPTION: "",
-			EXTENSION: extension,
-			ID: uuidv4(),
-			NAME: filename,
-			FILENAME: file.name,
-			SIZE_BYTES: file.size,
-			UPLOAD_TIME: new Date(Date.now()),
-			LAST_DOWNLOAD_TIME: undefined,
-			LAST_DOWNLOAD_USER_ID: undefined,
-			IS_OWNER: false,
-
-			isBeingUploaded: true,
-			file: file
+			newFiles.push(newFile)
 		}
-		
 		setState(prev => ({
 			...prev,
-			files: [newFile].concat(prev.files)
+			uploadingFiles: state.uploadingFiles.concat(newFiles)
 		}))
 	}
 
-	const setFileUploaded = (file: IUIFile) => {
-    setState(prev => {
-      let theIndex = prev.files.indexOf(file)
-      let newFiles = Array.from(prev.files)
-      newFiles[theIndex].isBeingUploaded = false;
-      return ({
-        ...prev, 
-        files: newFiles
-      })
-      
-    })
+	const setFileUploaded = (file: IUIFile, FILE_ID: string) => {
+		// setTimeout(() => {
+		let newUploadingFiles: IUIFile[] = []
+		for(let i = 0; i < state.uploadingFiles.length; i++) {
+			if(state.uploadingFiles[i].ID !== file.ID) {
+				newUploadingFiles = [state.uploadingFiles[i]].concat(newUploadingFiles)
+			}
+		}
+		file.isBeingUploaded = false;
+		file.file = null
+		file.ID = FILE_ID
+
+		setState(prev => ({
+			...prev, 
+			uploadingFiles: newUploadingFiles,
+			files: [file].concat(prev.files)
+		}))
+		// }, Math.floor(Math.random() * 1000))
 	}
 
 	const deleteFile = async() => {
-		let file = state.files[state.selectedFileIdx]
-    let newFiles: IUIFile[] = []
-    
-    for(let i = 0; i < state.files.length; i++) {
-      if(i !== state.selectedFileIdx)
-        newFiles.push(state.files[i])// = [state.files[i]].concat(newFiles)
-    }
-    console.log(newFiles)
-    
-    setState(prev => ({
-      ...prev,
-      files: newFiles
-    }))
-
+		const file = state.files[state.selectedFileIdx]
 		let URL = `/api/files/${file.ID}${file.IS_OWNER ? "" : "/unshare"}`
 		let method = file.IS_OWNER ? "DELETE" : "POST"
 		await fetch(URL, { method: method })
-
-    console.log("refreshing files")
-		let updatedFiles = await retrieveFiles()
-		let modifiedFiles: IUIFile[] = []
-		let currentFiles = Array.from(state.files)
-
-		while(currentFiles.length > 0) {
-			let currentFile = currentFiles[0]
-			currentFiles = currentFiles.slice(1)
-
-			if(currentFile?.isBeingUploaded) {
-				modifiedFiles.push(currentFile)
-			} else {
-				const f = updatedFiles[0]
-				updatedFiles = updatedFiles.slice(1)
-
-				if(f !== undefined) {
-					modifiedFiles.push(f)
-				}
-			}
-		}
-
-		if(updatedFiles.length > 0) {
-			modifiedFiles = modifiedFiles.concat(updatedFiles)
-		}
-
-    setState(prev => ({
-      ...prev,
-			files: modifiedFiles
-		}))
+		refreshFiles()
 	}
 
 	const refreshFiles = async() => {
 		let updatedFiles = await retrieveFiles()
-		let modifiedFiles: IUIFile[] = []
-		let currentFiles = Array.from(state.files)
-
-		while(currentFiles.length > 0) {
-			let currentFile = currentFiles[0]
-			currentFiles = currentFiles.slice(1)
-
-			if(currentFile?.isBeingUploaded) {
-				modifiedFiles.push(currentFile)
-			} else {
-				const f = updatedFiles[0]
-				updatedFiles = updatedFiles.slice(1)
-
-				if(f !== undefined) {
-					modifiedFiles.push(f)
-				}
-			}
-		}
-
-		if(updatedFiles.length > 0) {
-			modifiedFiles = modifiedFiles.concat(updatedFiles)
-		}
-
-    setState({
-      ...state,
-			files: modifiedFiles
-		})
-	}
-
-	const setFileID = (index: number, ID: string) => {
-		let files = state.files
-		files[index].ID = ID
 		setState(prev => ({
 			...prev,
-			files: files
+			files: updatedFiles
+		}))
+	}
+
+	const setFileID = (file: IUIFile, ID: string) => {
+		let files = state.uploadingFiles
+		files[files.indexOf(file)].ID = ID
+		setState(prev => ({
+			...prev,
+			uploadingFiles: files
 		}))
 	}
 
@@ -232,7 +190,7 @@ export default function Home(): JSX.Element {
 						file={state.files[state.selectedFileIdx]}
 						refreshFiles={refreshFiles}
 						files={state.files}
-						addFile={addFile} 
+						addFiles={addFiles} 
 						deleteFile={deleteFile}/>
 				</div>
 				<div className="table-body">
@@ -248,7 +206,7 @@ export default function Home(): JSX.Element {
 						setSelected={setSelected} 
 						refreshFileInfo={refreshFileInfo}
 						files={state.files} 
-						infoShown={state.showFileInfo}
+						uploadingFiles={state.uploadingFiles}
 						setFileUploaded={setFileUploaded}
 						setFileID={setFileID}
 						/>
@@ -257,7 +215,7 @@ export default function Home(): JSX.Element {
 			<div className={`file-info ${state.showFileInfo ? "" : "width-0"}`}>
 				<FileInfo
 					file={state.files[state.selectedFileIdx]}
-					refreshInfo={() => refreshFileInfo(state.selectedFileIdx)}
+					refreshInfo={() => refreshFileInfo(state.files[state.selectedFileIdx])}
 				/>
 			</div>
 		</div>
