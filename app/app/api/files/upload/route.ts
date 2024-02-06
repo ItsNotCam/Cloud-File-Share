@@ -1,7 +1,7 @@
 // UPLOAD FILE
 import { NextRequest, NextResponse } from "next/server";
 import { CreateConnection } from "@/lib/db";
-import { rmSync, writeFile } from "fs";
+import { rm, rmSync, writeFile } from "fs";
 import {v4 as uuidv4} from 'uuid';
 import mysql from 'mysql2/promise'
 
@@ -42,7 +42,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const PATH = `${process.env.FILES_DIRECTORY}/${FILE_ID}`
   const buffer = await file.arrayBuffer()
     .then(bytes => Buffer.from(bytes))
-  await writeFile(PATH, buffer, () => {})
+  writeFile(PATH, buffer, () => {})
   
   // Add entry to database
   const result: number = await SaveFileToDatabase(connection, FILE_ID, NAME, EXTENSION, USER.ID, PATH, file.size)
@@ -53,7 +53,8 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 		})
 
   if(result === -1) {
-    rmSync(PATH, { force: true })
+		rm(PATH, () => { return "deleted" })
+    // rmSync(PATH, { force: true })
     return new NextResponse(
       "Error saving file to the database", { status: 500 }
     )
