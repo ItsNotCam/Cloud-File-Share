@@ -6,6 +6,8 @@ import ArticleIcon from '@mui/icons-material/Article';
 import DescriptionIcon from '@mui/icons-material/Description';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import TableChartIcon from '@mui/icons-material/TableChart';
+import AudioFileOutlinedIcon from '@mui/icons-material/AudioFileOutlined';
+import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
 
 import ImageIcon from '@mui/icons-material/Image';
 
@@ -48,6 +50,19 @@ export default function FileIcon(props: {extension: string, onClick?: () => void
 
     // PDF
 		[".pdf", <DescriptionIcon style={{color: "#E64F40"}}/>],
+
+		// Audio
+		[".mp3", <AudioFileOutlinedIcon style={{color: "black"}} />],
+		[".wav", <AudioFileOutlinedIcon style={{color: "black"}} />],
+		[".ogg", <AudioFileOutlinedIcon style={{color: "black"}} />],
+
+		// Video
+		[".mp4", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
+		[".ffmpeg", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
+		[".mov", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
+		[".avi", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
+		[".wmv", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
+		[".webm", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
 	])
 
 	const DoNothing = () => {};
