@@ -1,12 +1,13 @@
 # Google Drive Clone Design Documentation
 
-![opera_zIDigTMkBK](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/ddeb643c-c162-4b98-af00-afc73ed0b0cf)
+Mass File Uploading
+![Mass File Uploading](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/ddeb643c-c162-4b98-af00-afc73ed0b0cf)
 
 ## Overview
 
 This document outlines the design and both high level and low level architecture of my Google Drive clone. The project aims to **replicate the fundamental features of Google Drive**. These features include file uploading, file access management between users, and collaborate through shared comments. Developed with TypeScript, NodeJS, NextJS, ReactJS, and MySQL, the entire **application is containerized for easy deployment using Docker Compose.**
 
-**This application is in active development, not all of the features listed below have been implemented** - currently file uploading, file downloading, database integration and access, and most of the API has been implemented. Login and auth have not been implemented.
+**This application is in active development**
 
 ## Tech Stack
 * The frontend is built using **ReactJS with TypeScript**, assisted by NextJS's server side functions and SSR.
@@ -27,7 +28,7 @@ The entire application is **containerized using Docker** and can be deployed eas
 
 ## Database
 The database stores information about **users, files, user-file ownership, and user comments**. The **entity relationsip diagram** is shown below:
-![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/369494b3-6f9a-4c55-8d53-4bca069a6068)
+![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/14aa072f-5c42-4396-8c3b-3828bfe46aac)
 
 ## API Structure
 
@@ -35,15 +36,14 @@ More official API structure documentation coming soon
 
 | **Method** | **Route** | **Function** |
 | ------- | ------------------ | ------------- |
-| **GET** | `/api/admin/users` | get all users |
-| **GET** | `/api/admin/files` | get all files |
 | **POST** | `/api/files/upload` | upload file |
 | **GET / PATCH / DELETE** | `/api/files/[FILE_ID]`| get, update, delete file data |
-| **GET** | `/api/files/user/[user_id]` | get files of user |
 | **GET** | `/api/files/[FILE_ID]/download` | download file |
 | **POST** | `/api/files/[FILE_ID]/share` | grant / revoke access to file |
 | **POST** | `/api/comments` | add comment |
 | **GET** | `/api/comments?user=<user_id>?file=<file_id>` | get comments from user, get comments on file |
 | **GET / PATCH / DELETE** | `/api/comments/[COMMENT_ID]` | get, update, delete comment |
-| **POST** | `/api/users/create` | create user |
+| **POST** | `/api/auth/register` | register a new user |
+| **POST** | `/api/auth/logout` | logout user |
+| **POST** | `/api/auth/login` | login user |
 | **GET / PATCH / DELETE** | `/api/users/[USER_ID]` | get, update, delete user data |
