@@ -1,6 +1,6 @@
 # Google Drive Clone Design Documentation
 
-![gif](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/2380889c-3873-499b-844b-d97c1dba79e1)
+![opera_zIDigTMkBK](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/ddeb643c-c162-4b98-af00-afc73ed0b0cf)
 
 ## Overview
 
