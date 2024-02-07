@@ -16,7 +16,43 @@ export interface IDBFile {
 	IS_OWNER: boolean
 }
 
+interface IFileData {
+  FILENAME: string
+  INTERNAL_FILE_PATH: string
+}
+
+interface IUserIdentifier {
+  token?: string,
+  user_id?: string
+}
+
 export default abstract class DBFile {
+  static async GetFileForDownload(FILE_ID: string, userIdentifier: IUserIdentifier): Promise<IFileData | undefined> {
+    // get file name and internal file path only if the user owns the file
+      const SQL: string = `
+      SELECT CONCAT(NAME, EXTENSION) AS FILENAME, INTERNAL_FILE_PATH 
+      FROM FILE_OBJECT AS FO
+        INNER JOIN FILE_INSTANCE AS FI ON FO.ID=FI.FILE_ID
+        INNER JOIN AUTH ON TOKEN='${userIdentifier.token}'
+      WHERE FO.ID='${FILE_ID}' 
+        AND FI.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${userIdentifier.token}')
+    `
+
+		let {connection,err} = await CreateConnection() 
+		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
+      return await QueryGetFirst(connection, SQL)
+    } catch(err: any) {
+			Logger.LogErr(`Error getting file info for download | ${err.message}`)
+    } finally {
+      connection?.end()
+    }
+
+    return undefined
+   }
+  
 	static async GetFileInfo(FILE_ID: string, identifier: {TOKEN?: string, USER_ID?: string}): Promise<IDBFile | undefined> {
 		const {TOKEN, USER_ID} = identifier;
 		let SQL = ""

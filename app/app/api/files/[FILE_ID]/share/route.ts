@@ -1,4 +1,4 @@
-import { CreateConnection } from "@/lib/db";
+import { CreateConnection } from "@/lib/db/util";
 import { QueryGetFirst } from "@/lib/db/util";
 import Logger from "@/lib/logger";
 import { RowDataPacket } from "mysql2";
@@ -26,8 +26,12 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 		WHERE USER_ID=(${AUTH_TO_ID_SQL}) AND FILE_ID='${FILE_ID}'
 	`
 
-	const connection = await CreateConnection()
+	const {connection, err} = await CreateConnection()
 	try {
+    if(connection === null) {
+      throw {message: err}
+    }
+
 		const fileInfoResp: IOwnershipProps = await QueryGetFirst(connection, SQL)
 		if(fileInfoResp.USERNAME === username)
 			throw "cant share with yourself, idiot"
@@ -51,10 +55,10 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 			}
 		}
 
-	} catch (err) {
-		console.log(err)
+	} catch (err: any) {
+    Logger.LogErr(`Failed to share file | ${err.message}`)
 	} finally {
-		connection.end()
+		connection?.end()
 	}
 
 	return NextResponse.json({
@@ -77,8 +81,12 @@ export async function DELETE(request: NextRequest, context: {params: any}): Prom
 			AND FILE_ID='${FILE_ID}'
 	`
 
-	const connection = await CreateConnection()
+	const {connection,err} = await CreateConnection()
 	try {
+    if(connection === null) {
+      throw {message: err}
+    }
+
 		const resp = await QueryGetFirst(connection, SQL)
 		const isOwner = resp.IS_OWNER.readInt8() === 1
 		if(isOwner) {
@@ -99,10 +107,10 @@ export async function DELETE(request: NextRequest, context: {params: any}): Prom
 			}
 		}
 
-	} catch (err) {
-		console.log(err)
+	} catch (err: any) {
+    Logger.LogErr("Failed to unshare file " + err.messaage)
 	} finally {
-		connection.end()
+		connection?.end()
 	}
 
 	return NextResponse.json({

@@ -1,42 +1,27 @@
 // DOWNLOAD FILE
 "use server"
-
-import { CreateConnection, QueryGetFirst } from '@/lib/db'
-import mysql from 'mysql2/promise'
 import fs, { Stats } from 'fs'
 import { NextRequest, NextResponse } from 'next/server'
 import { ReadableOptions } from 'stream'
 import { cookies } from 'next/headers'
 import Logger from '@/lib/logger'
+import DBFile from '@/lib/db/DBFiles'
 
-interface IFileData {
-  FILENAME: string
-  INTERNAL_FILE_PATH: string
-}
 
 async function DownloadFile(request: NextRequest, context: { params: any }, response: Response): Promise<NextResponse> {
   Logger.LogReq(request)
   const { FILE_ID } = context.params;
 	const token = cookies().get("token")?.value
-
-	// get file name and internal file path only if the user owns the file
-  const SQL: string = `
-		SELECT CONCAT(NAME, EXTENSION) AS FILENAME, INTERNAL_FILE_PATH 
-		FROM FILE_OBJECT AS FO
-			INNER JOIN FILE_INSTANCE AS FI ON FO.ID=FI.FILE_ID
-			INNER JOIN AUTH ON TOKEN='${token}'
-		WHERE FO.ID='${FILE_ID}' 
-			AND FI.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')
-	`
-
-  const connection: mysql.Connection = await CreateConnection()
-  const fileData: IFileData = await QueryGetFirst(connection, SQL)
-	
-  const {FILENAME, INTERNAL_FILE_PATH} = fileData;
-  const data: ReadableStream<Uint8Array> = streamFile(INTERNAL_FILE_PATH);
-  const stats: Stats = await fs.promises.stat(INTERNAL_FILE_PATH); 
-
+  
 	try {
+    const info = await DBFile.GetFileForDownload(FILE_ID, {token: token});
+    if(info === undefined) {
+      throw {message: "file does not exist"}
+    }
+    const {FILENAME, INTERNAL_FILE_PATH} = info
+    const data: ReadableStream<Uint8Array> = streamFile(INTERNAL_FILE_PATH);
+    const stats: Stats = await fs.promises.stat(INTERNAL_FILE_PATH); 
+
 		Logger.LogSuccess(`Sending file: ${FILE_ID}`)
 		return new NextResponse(data, {                                   // Create a new NextResponse for the file with the given stream from the disk
 			status: 200,                                                    // STATUS 200: HTTP - Ok

@@ -1,4 +1,4 @@
-import { CreateConnection, QueryGetFirst } from "@/lib/db";
+import { CreateConnection, QueryGetFirst } from "@/lib/db/util";
 import Logger from "@/lib/logger";
 import { RowDataPacket } from "mysql2/promise";
 import { cookies } from "next/headers";
@@ -9,8 +9,11 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 	const token = cookies().get('token')?.value;
 	const { FILE_ID } = context.params;
 	
-	const connection = await CreateConnection()
+	const {connection, err} = await CreateConnection()
 	try {
+    if(connection === null)
+      throw {messaage: err}
+
 		const USER_SQL = `SELECT USER_ID FROM AUTH WHERE TOKEN='${token}'`
 		const userResp = await QueryGetFirst(connection, USER_SQL)
 		if(userResp.USER_ID === undefined) {
@@ -30,10 +33,10 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 			})
 		}
 
-	} catch (err) {
-		console.log(err)
+	} catch (err: any) {
+    Logger.LogErr(err.message)
 	} finally {
-		connection.end()
+		connection?.end()
 	}
 
 	return NextResponse.json({

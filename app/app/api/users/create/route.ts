@@ -1,8 +1,9 @@
 // User actions
-import { CreateConnection } from "@/lib/db";
+import { CreateConnection } from "@/lib/db/util";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
 import { IUserProps } from "@/lib/types";
+import Logger from "@/lib/logger";
 
 async function CreateUser(request: NextRequest): Promise<NextResponse> {
   const {USERNAME, PASSWORD}: IUserProps = await request.json()
@@ -23,23 +24,22 @@ async function CreateUser(request: NextRequest): Promise<NextResponse> {
     }, { status: 400 })
   }
 
-  const connection: mysql.Connection = await CreateConnection()
+  const {connection, err} = await CreateConnection()
   const SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
 
   try {
+    if(connection === null)
+      throw {message: err}
     await connection.execute(SQL)
-  } catch(err) {
-    const sqlError = err as mysql.QueryError;
-    const errCode: string = sqlError.code;
-    const msg: string = sqlError.message;
+  } catch(err: any) {
+    Logger.LogErr("Failed to create user: " + err.message)
 
-    console.log(errCode)
-    console.log(msg)
-
-    const {message, status} = GetError(sqlError)
+    // const sqlError = err as mysql.QueryError;
+    // const errCode: string = sqlError.code;
+    // const msg: string = sqlError.message;
     return NextResponse.json({
-      message: message
-    }, { status: status })
+      message: "Failed to create user"
+    }, { status: 500 })
   }
   
   return NextResponse.json({ 
