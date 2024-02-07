@@ -3,15 +3,14 @@ RUN apt install curl
 
 WORKDIR /app
 
-COPY package*.json .
+COPY package*.json ./
 RUN npm cache clean --force
 RUN npm install -g npm@latest
 RUN npm i
 
-COPY . .
+COPY . ./
 RUN mkdir /app/data/files -p
 
-VOLUME ["/app"]
 VOLUME ["/data"]
 
 RUN npm run build
