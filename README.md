@@ -1,4 +1,4 @@
-# Google Drive Clone Design Documentation
+# Google Drive Clone
 
 Mass File Uploading
 ![Mass File Uploading](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/ddeb643c-c162-4b98-af00-afc73ed0b0cf)
@@ -27,7 +27,7 @@ The entire application is **containerized using Docker** and can be deployed eas
 # Development Details
 
 ## Database
-The database stores information about **users, files, user-file ownership, and user comments**. The **entity relationsip diagram** is shown below:
+The database stores information about **users, file objects, file instances, authentication, and user comments**. The **entity relationsip diagram** is shown below:
 ![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/face096d-1b14-44f2-bd5a-6c4c321b2721)
 
 ## API Structure
