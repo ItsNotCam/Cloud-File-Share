@@ -250,4 +250,33 @@ export default abstract class DBFile {
 
     return undefined;
   }
+
+	static async SaveFile(FILE_ID: string, NAME: string, 
+		EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<boolean> {
+	
+		let {connection,err} = await CreateConnection() 
+		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
+			let SQL: string = `INSERT INTO FILE_OBJECT VALUES (
+				'${FILE_ID}', '${EXTENSION}', '${PATH}', ${FILE_SIZE}, 
+				DEFAULT, NULL, NULL
+			);`
+			await connection.query(SQL);
+			
+			SQL = `INSERT INTO FILE_INSTANCE VALUES (
+				'${USER_ID}', '${FILE_ID}', NULL, 1, '${NAME}', ""
+			)`;
+			await connection.query(SQL);
+			
+			return true;
+		} catch(err: any) {
+			Logger.LogErr(`Error saving file to database file | ${err.message}`)
+		} finally {
+			connection?.end()
+		}
+		
+		return false;
+	}
 }

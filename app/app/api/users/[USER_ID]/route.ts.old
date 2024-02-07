@@ -1,4 +1,5 @@
 // User actions
+/*
 import { IFileProps, IUserProps } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 import { CreateConnection, QueryGetFirst } from "@/lib/db";
@@ -40,6 +41,7 @@ async function GetUserByID(USER_ID: string): Promise<IUserProps> {
     WHERE USER_ID='${USER_ID}';
   `
   const resp = await QueryGetFirst(connection, USER_SQL)
+
   return resp
 }
 
@@ -62,3 +64,4 @@ export {DeleteUserByID as DELETE, GET}
 function GetFilesFromUserWithID(USER_ID: string): IFileProps[] | PromiseLike<IFileProps[]> {
   throw new Error("Function not implemented.");
 }
+*/
