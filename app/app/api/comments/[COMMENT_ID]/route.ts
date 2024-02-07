@@ -10,9 +10,11 @@
   const DELETE_SQL: string = `DELETE FROM COMMENT WHERE COMMENT_ID='....'`
 }
 
-import { NextResponse } from "next/server"
+import Logger from "@/lib/logger"
+import { NextRequest, NextResponse } from "next/server"
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  Logger.LogReq(request)
   return NextResponse.json({
     message: 'Not Implemented'
   }, {

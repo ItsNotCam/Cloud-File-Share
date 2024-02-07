@@ -1,5 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import { CreateConnection, QueryGetFirst } from './util';
+import Logger from '../logger';
 
 export interface IDBUser {
 	ID: string,
@@ -11,8 +12,10 @@ export interface IDBUser {
 export default abstract class DBUser {
 	static async GetByID(USER_ID: string): Promise<IDBUser | undefined> {
 		let connection = await CreateConnection() 
-		if(connection === null)
-			return undefined
+		if(connection === null) {
+			Logger.LogErr("Failed to connect to database")
+			return undefined;
+		}
 
 		const USER_SQL: string = `
 			SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
@@ -24,7 +27,8 @@ export default abstract class DBUser {
 		try {
 			const resp = await QueryGetFirst(connection, USER_SQL)
 			return resp;
-		} catch (err) {
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return undefined;
 		} finally {
 			connection.end();
@@ -33,16 +37,18 @@ export default abstract class DBUser {
 
 	static async GetByUsername(USERNAME: string): Promise<IDBUser | undefined> {
 		let connection = await CreateConnection() 
-		if(connection === null)
-			return undefined
+		if(connection === null) {
+			Logger.LogErr("Failed to connect to database")
+			return undefined;
+		}
 
 		const USER_SQL: string = `SELECT * FROM USER WHERE USERNAME='${USERNAME}';`
 
 		try {
 			const resp = await QueryGetFirst(connection, USER_SQL)
 			return resp;
-		} catch (err) {
-			console.log(err)
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return undefined;
 		} finally {
 			connection.end();
@@ -51,8 +57,10 @@ export default abstract class DBUser {
 
 	static async Create(USERNAME: string, PASSWORD: string): Promise<IDBUser | undefined> {
 		let connection = await CreateConnection() 
-		if(connection === null)
+		if(connection === null) {
+			Logger.LogErr("Failed to connect to database")
 			return undefined;
+		}
 		
 		try { 
 			const INSERT_SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
@@ -64,33 +72,38 @@ export default abstract class DBUser {
 			}
 
 			return await DBUser.GetByUsername(USERNAME)
-		} catch(err) { 
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return undefined; 
 		} finally {
-			connection.end()
+			await connection.end()
 		}
 	}
 
 	static async Validate(USERNAME: string, PASSWORD: string): Promise<IDBUser | undefined> {
 		let connection = await CreateConnection() 
-		if(connection === null)
+		if(connection === null) {
+			Logger.LogErr("Failed to connect to database")
 			return undefined;
+		}
 		
 		try {
 			const SQL: string = `SELECT * FROM USER WHERE USERNAME='${USERNAME}' AND PASSWORD='${PASSWORD}'`
 			const USER: IDBUser = await QueryGetFirst(connection, SQL);
 			return USER;
-		} catch(err) {
-			return undefined;
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 		} finally {
-			connection.end()
+			await connection.end()
 		}
 	}
 
 	static async DeleteByID(USER_ID: string): Promise<boolean> {
 		let connection = await CreateConnection() 
-		if(connection === null)
-			return false;
+		if(connection === null) {
+			Logger.LogErr("Failed to connect to database")
+			return false
+		}
 
 		try {
 			const OWNER_SQL: string = `DELETE FROM FILE_INSTANCE WHERE USER_ID='${USER_ID}'`
@@ -107,8 +120,8 @@ export default abstract class DBUser {
 			} 
 
 			return true;
-		} catch (err) {
-			console.log(err)
+		} catch (err: any) {
+      Logger.LogErr(err.message)
 			return false;
 		} finally {
 			connection.end()
@@ -116,16 +129,21 @@ export default abstract class DBUser {
 	}
 	
 	static async CheckUsernameExists(USERNAME: string): Promise<boolean> {
-		let connection = await CreateConnection()
+		let connection = await CreateConnection() 
+		if(connection === null) {
+			Logger.LogErr("Failed to connect to database")
+			return false
+		}
 
 		try {
 			const SQL: string = `SELECT COUNT(*) AS COUNT FROM USER WHERE USERNAME='${USERNAME}'`
 			const resp = await QueryGetFirst(connection, SQL) as { COUNT: number }
 			return resp.COUNT > 0;
-		} catch(err) {
+		} catch(err: any) {
+			Logger.LogErr(err.message)
 			return false;
 		} finally {
-			connection.end()
+			await connection.end()
 		}
 	}
 }

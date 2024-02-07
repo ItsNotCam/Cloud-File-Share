@@ -57,7 +57,7 @@ async function GET(request: NextRequest, context: { params: any }): Promise<Next
   return NextResponse.json(js, { status: 200 })
 }
 
-export {DeleteUserByID as DELETE, GET, GetUserByID as GetUserByID, DeleteUserByID as DeleteUserByID}
+export {DeleteUserByID as DELETE, GET}
 
 function GetFilesFromUserWithID(USER_ID: string): IFileProps[] | PromiseLike<IFileProps[]> {
   throw new Error("Function not implemented.");

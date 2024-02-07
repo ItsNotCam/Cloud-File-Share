@@ -21,24 +21,25 @@ services:
       timeout: 2s
       retries: 20
   
+  api:
+    image: cam/gdc_app
+    container_name: gdc_app
+    restart: always
+    env_file: ./.env
+    build: ./app
+    ports: 
+      - '${API_PORT}:${API_PORT}'
+    volumes:
+      - ./app/data/files:/app/data/files:rw  # files
+      # - ./app/src:/app/src         # live dev
+      - ./.env:/app/.env:ro        # env
+    networks:
+      backend:
+        ipv4_address: '${API_HOST}'
+
 volumes:
   mysql_data:
 
-  # api:
-  #   image: cam/gdc_api
-  #   container_name: gdc_api
-  #   restart: always
-  #   env_file: ./.env
-  #   build: ./server
-  #   ports: 
-  #     - '${API_PORT}:${API_PORT}'
-  #   volumes:
-  #     - ./server/app/files:/app/files:rw  # files
-  #     - ./server/app/src:/app/src         # live dev
-  #     - ./.env:/app/.env:ro               # env
-  #   networks:
-  #     backend:
-  #       ipv4_address: '${API_HOST}'
 
   # web:
   #   image: cam/gdc_web

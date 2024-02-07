@@ -1,9 +1,11 @@
 import { CreateConnection, QueryGetFirst } from "@/lib/db";
+import Logger from "@/lib/logger";
 import { RowDataPacket } from "mysql2/promise";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request, context: {params: any}): Promise<NextResponse> {
+export async function POST(request: NextRequest, context: {params: any}): Promise<NextResponse> {
+	Logger.LogReq(request)
 	const token = cookies().get('token')?.value;
 	const { FILE_ID } = context.params;
 	

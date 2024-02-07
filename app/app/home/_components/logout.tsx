@@ -1,16 +1,15 @@
 "use client"
-
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
 
-export default function Logout(): JSX.Element {
+export default function LogoutButton(): JSX.Element {
 	const router = useRouter()
-	useEffect(() => {
+	const logout = () => {
 		fetch("/api/auth/logout", {method: "POST"}).then(() => {
 			router.push("/login")
 			router.refresh()
 		})
-	}, [])
-
-	return <h1>Logging out...</h1>
+	}
+	return (
+		<button className="logout-button" onClick={logout}>Logout</button>
+	)
 }

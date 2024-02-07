@@ -4,16 +4,18 @@
 import { CreateConnection, QueryGetFirst } from '@/lib/db'
 import mysql from 'mysql2/promise'
 import fs, { Stats } from 'fs'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { ReadableOptions } from 'stream'
 import { cookies } from 'next/headers'
+import Logger from '@/lib/logger'
 
 interface IFileData {
   FILENAME: string
   INTERNAL_FILE_PATH: string
 }
 
-async function DownloadFile(request: Request, context: { params: any }, response: Response): Promise<NextResponse> {
+async function DownloadFile(request: NextRequest, context: { params: any }, response: Response): Promise<NextResponse> {
+  Logger.LogReq(request)
   const { FILE_ID } = context.params;
 	const token = cookies().get("token")?.value
 
@@ -34,14 +36,21 @@ async function DownloadFile(request: Request, context: { params: any }, response
   const data: ReadableStream<Uint8Array> = streamFile(INTERNAL_FILE_PATH);
   const stats: Stats = await fs.promises.stat(INTERNAL_FILE_PATH); 
 
-  return new NextResponse(data, {                                   // Create a new NextResponse for the file with the given stream from the disk
-    status: 200,                                                    // STATUS 200: HTTP - Ok
-    headers: new Headers({                                          // Headers
-        "content-disposition": `attachment; filename=${FILENAME}`,  // State that this is a file attachment
-        "content-type": "application/iso",                          // Set the file type to an iso
-        "content-length": `${stats.size}`                           // State the file size
-    }),
-  });
+	try {
+		Logger.LogSuccess(`Sending file: ${FILE_ID}`)
+		return new NextResponse(data, {                                   // Create a new NextResponse for the file with the given stream from the disk
+			status: 200,                                                    // STATUS 200: HTTP - Ok
+			headers: new Headers({                                          // Headers
+					"content-disposition": `attachment; filename=${FILENAME}`,  // State that this is a file attachment
+					"content-type": "application/iso",                          // Set the file type to an iso
+					"content-length": `${stats.size}`                           // State the file size
+			}),
+		});
+	} catch (err: any) {
+		Logger.LogErr("Sending file failed: " + err.message)
+	}
+
+	return NextResponse.json({ message: "failed to upload" }, { status: 500 })
 }
 
 // Thanks https://github.com/vercel/next.js/discussions/15453#discussioncomment-6748645

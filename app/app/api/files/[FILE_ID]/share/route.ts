@@ -1,8 +1,9 @@
 import { CreateConnection } from "@/lib/db";
 import { QueryGetFirst } from "@/lib/db/util";
+import Logger from "@/lib/logger";
 import { RowDataPacket } from "mysql2";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 interface IOwnershipProps {
 	USERNAME: string, 
@@ -11,7 +12,8 @@ interface IOwnershipProps {
 	DESCRIPTION: string
 }
 
-export async function POST(request: Request, context: {params: any}): Promise<NextResponse> {
+export async function POST(request: NextRequest, context: {params: any}): Promise<NextResponse> {
+	Logger.LogReq(request)
 	const token = cookies().get('token')?.value;
 	const { username } = await request.json() as {username: string}
 	const { FILE_ID } = context.params;
@@ -62,7 +64,8 @@ export async function POST(request: Request, context: {params: any}): Promise<Ne
 	})
 }
 
-export async function DELETE(request: Request, context: {params: any}): Promise<NextResponse> {
+export async function DELETE(request: NextRequest, context: {params: any}): Promise<NextResponse> {
+	Logger.LogReq(request)
 	const token = cookies().get('token')?.value;
 	const { username } = await request.json() as {username: string}
 	const { FILE_ID } = context.params;

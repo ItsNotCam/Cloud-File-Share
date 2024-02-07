@@ -1,123 +1,70 @@
-import './_file-table.css'
+// import './_file-table.css'
 
-import { IDBFile } from "@/lib/db/DBFiles";
-import { FileActions } from "./file-actions";
-import FileIcon from './file-icon';
-import { calcFileSize, toDateString } from '@/lib/util';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import FileTableRow from "./file-table-row";
+import { IUIFile } from "../page";
+
 
 interface IFileTableProps {
-	setSelected: (index: number) => void,
-	refreshFileInfo: (index: number) => void,
-	files: IDBFile[],
+	setSelected: (file: IUIFile) => void,
+	refreshFileInfo: (file: IUIFile) => void,
+	setFileUploaded: (file: IUIFile, FILE_ID: string) => void,
+	setFileID: (file: IUIFile, ID: string) => void,
+	files: IUIFile[],
+	uploadingFiles: IUIFile[],
 	selectedFileIdx: number,
 }
 
 export default function FileTable(props: IFileTableProps): React.ReactNode {
-	let {
-		setSelected,
-		refreshFileInfo,
-		files,
-		selectedFileIdx
-	} = props;
-
-	const [editingFilename, setEditingFilename] = useState<boolean>(false)
-	const [filename, setFilename] = useState<string>("")
-	
-	useEffect(() => {
-		setEditingFilename(false);
-	}, [selectedFileIdx])
-
-	const tryEditFilename = (index: number) => {
-		if (selectedFileIdx === index && !editingFilename) {
-			setFilename(files[index].NAME)
-			setEditingFilename(true)
-		}
-	}
-
-	const handleKeyDown = (event: React.KeyboardEvent) => {
-		switch(event.key) {
-			case "Enter": updateFilename()
-			case "Escape": resetFilename()
-		}
-	}
-
-	const updateFilename = (index?: number) => {
-		let idx = index ?? selectedFileIdx;
-		const file = files[idx]
-		
-		setEditingFilename(false)
-		if (file.NAME === filename)
-			return;
-		
-		file.NAME = filename;
+	const updateFilename = (file: IUIFile, name: string) => {
 		fetch(`/api/files/${file.ID}`, {
 			method: "PATCH",
-			body: JSON.stringify({
-				name: filename
-			})
+			body: JSON.stringify({ name: name })
 		}).then(() => {
-			refreshFileInfo(idx)
+			props.refreshFileInfo(file)
 		})
 	}
 
-	const resetFilename = (index?: number) => {
-		let idx = index ?? selectedFileIdx;
-		const file = files[idx]
-		setEditingFilename(false)
-		setFilename(file.NAME)
+	const trySetSelected = (file: IUIFile) => {
+		if(!file.isBeingUploaded)
+			props.setSelected(file)
 	}
 
-	const getRowCSSClasses = (index: number): string => {
-		let classes: string = "text-left file-table-row font-light"
-		if (selectedFileIdx === index) {
-			classes = classes.concat(" file-table-row-selected")
-		}
-
-		return classes
-	}
-
-	return (
-		<table className="file-table">
-			<thead>
-				<tr className="text-left">
-					<th className="w-3/5">Name</th>
-					<th className='file-table-1'>Owner</th>
-					<th className='file-table-2'>Uploaded</th>
-					<th className='file-table-3'>File Size</th>
-					<th className="w-2"></th>
-				</tr>
-			</thead>
-			<tbody>
-				{files.map((file, i) => (
-					<tr key={file.ID} className={getRowCSSClasses(i)} onClick={() => setSelected(i)}>
-						<td className={`name-field ${i === selectedFileIdx ? "cursor-text" : ""}`}>
-							<FileIcon extension={file.EXTENSION} />
-							<div onClick={() => tryEditFilename(i)}>
-								{editingFilename && selectedFileIdx === i
-									? (
-										<input type="text"
-											className="filename-input"
-											value={filename}
-											onChange={(e) => setFilename(e.target.value)}
-											onBlur={() => resetFilename(i)}
-											onKeyDown={handleKeyDown} 
-										/>
-									) : (
-										<span>
-											{`${file.NAME}${file.EXTENSION}`}
-										</span>
-									)
-								}
-							</div>
-						</td>
-						<td className="text-left">{file.IS_OWNER ? "me" : "~"}</td>
-						<td className="text-left">{toDateString(file.UPLOAD_TIME)}</td>
-						<td className="text-left">{calcFileSize(file.SIZE_BYTES)}</td>
-						<td><FileActions file={file} /></td>
-					</tr>
-				))}
-			</tbody>
-		</table>
+	return(
+		<div className="file-grid">
+			<div className="h-full">
+				{props.uploadingFiles.length > 0
+					? props.uploadingFiles.map((file, index) => (
+						<div key={file.ID} onClick={() => trySetSelected(file)}>
+							<FileTableRow 
+								file={file}
+								isSelected={index === props.selectedFileIdx}
+								setSelected={() => props.setSelected(file)}
+								updateFilename={(filename) => updateFilename(file, filename)} 
+								activeUpload={file.isBeingUploaded} 
+								setFileUploaded={(FILE_ID) => props.setFileUploaded(file, FILE_ID)}
+								setFileID={(ID) => props.setFileID(file, ID)}
+							/>
+						</div>
+					)) : null
+				}
+				{props.files.length < 1 
+					? "No files yet :)" 
+					: props.files.map((file, index) => (
+					<div key={file.ID} onClick={() => trySetSelected(file)}>
+						<FileTableRow 
+							file={file}
+							isSelected={index === props.selectedFileIdx}
+							setSelected={() => props.setSelected(file)}
+							updateFilename={(filename) => updateFilename(file, filename)} 
+							activeUpload={file.isBeingUploaded} 
+							setFileUploaded={(FILE_ID) => props.setFileUploaded(file, FILE_ID)}
+							setFileID={(ID) => props.setFileID(file, ID)}
+						/>
+					</div>
+				))
+				}
+			</div>
+		</div>
 	)
 }

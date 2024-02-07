@@ -10,8 +10,8 @@ export default function RootLayout({
 }>) {
   return (
 		<WithAuth>
-			<Header />
-			{children}
+		 	<Header />
+		 	{children}
 		</WithAuth>
 	)
 }

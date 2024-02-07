@@ -13,14 +13,12 @@ export default nextConfig;*/
 /** @type {import('next').NextConfig} */
 
 // TEMPORARY
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 // const dotenv = require('dotenv');
-dotenv.config({path: '../.env'})
+// dotenv.config({path: '../.env'})
 
 const nextConfig = {
-	experimental: {
-    serverActions: true,
-  },
-};
+	reactStrictMode: false
+}
 
 export default nextConfig;
