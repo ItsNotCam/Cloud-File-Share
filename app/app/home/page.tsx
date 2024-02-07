@@ -1,6 +1,6 @@
 "use client"
 import { IDBFile } from "@/lib/db/DBFiles"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import FileTable from "./_components/file-table"
 import FileInfo from "./_components/file-info"
 import { FileActionsBar } from "./_components/file-actions"
@@ -43,12 +43,12 @@ export default function Home(): JSX.Element {
 		})
 	}, [])
 
-	useEffect(() => {
-		setState(prev => ({
-			...prev,
-			uploadingFiles: prev.uploadingFiles
-		}))
-	}, [state.uploadingFiles])
+	// useEffect(() => {
+	// 	setState(prev => ({
+	// 		...prev,
+	// 		uploadingFiles: prev.uploadingFiles
+	// 	}))
+	// }, [state.uploadingFiles])
 	
 	const retrieveFiles = async(): Promise<IUIFile[]> => {
 		const js = await fetch("/api/files").then(resp => resp.json())
@@ -140,7 +140,7 @@ export default function Home(): JSX.Element {
 				mutex.lock();
 				setState(prev => ({
 					...prev,
-					uploadingFiles: state.uploadingFiles.concat(newFiles)
+					uploadingFiles: prev.uploadingFiles.concat(newFiles)
 				}))
 			} catch (e) {
 				console.log(e)

@@ -11,58 +11,60 @@ import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined
 
 import ImageIcon from '@mui/icons-material/Image';
 
+import {v4 as uuidv4} from 'uuid'
+
 export default function FileIcon(props: {extension: string, onClick?: () => void}): JSX.Element {
 	const iconMap = new Map([
 		// archives
-		[".7z", <FolderZipIcon style={{color: "#737373"}} />],
-		[".zip", <FolderZipIcon style={{color: "#737373"}} />],
-		[".tar", <FolderZipIcon style={{color: "#737373"}} />],
-		[".gz", <FolderZipIcon style={{color: "#737373"}} />],
+		[".7z", <FolderZipIcon key={uuidv4()}style={{color: "#737373"}} />],
+		[".zip", <FolderZipIcon key={uuidv4()}style={{color: "#737373"}} />],
+		[".tar", <FolderZipIcon key={uuidv4()}style={{color: "#737373"}} />],
+		[".gz", <FolderZipIcon key={uuidv4()}style={{color: "#737373"}} />],
 
 		// images
-		[".png", <ImageIcon style={{color: "#d93025"}}/>],
-		[".jpg", <ImageIcon style={{color: "#d93025"}}/>],
-		[".jpeg", <ImageIcon style={{color: "#d93025"}}/>],
-		[".bmp", <ImageIcon style={{color: "#d93025"}}/>],
-		[".gif", <ImageIcon style={{color: "#d93025"}}/>],
-		[".tiff", <ImageIcon style={{color: "#d93025"}}/>],
-		[".psd", <ImageIcon style={{color: "#d93025"}}/>],
+		[".png", <ImageIcon key={uuidv4()}style={{color: "#d93025"}}/>],
+		[".jpg", <ImageIcon key={uuidv4()}style={{color: "#d93025"}}/>],
+		[".jpeg", <ImageIcon key={uuidv4()}style={{color: "#d93025"}}/>],
+		[".bmp", <ImageIcon key={uuidv4()}style={{color: "#d93025"}}/>],
+		[".gif", <ImageIcon key={uuidv4()}style={{color: "#d93025"}}/>],
+		[".tiff", <ImageIcon key={uuidv4()}style={{color: "#d93025"}}/>],
+		[".psd", <ImageIcon key={uuidv4()}style={{color: "#d93025"}}/>],
 		
 		// Executables
-		[".exe", <QueuePlayNextIcon style={{color: "#4285f4"}}/>],
-		[".msi", <QueuePlayNextIcon style={{color: "#4285f4"}}/>],
+		[".exe", <QueuePlayNextIcon key={uuidv4()}style={{color: "#4285f4"}}/>],
+		[".msi", <QueuePlayNextIcon key={uuidv4()}style={{color: "#4285f4"}}/>],
 		
 		// 3D
-		[".blend", <ViewInArOutlinedIcon style={{color: "darkorange"}}/>],
-		[".fbx", <ViewInArOutlinedIcon />],
-		[".obj", <ViewInArOutlinedIcon />],
+		[".blend", <ViewInArOutlinedIcon key={uuidv4()}style={{color: "darkorange"}}/>],
+		[".fbx", <ViewInArOutlinedIcon key={uuidv4()}/>],
+		[".obj", <ViewInArOutlinedIcon key={uuidv4()}/>],
     
     // Documents
-		[".doc", <ArticleIcon style={{color: "blue"}}/>],
-		[".docx", <ArticleIcon style={{color: "blue"}}/>],
-		[".txt", <ArticleIcon style={{color: "blue"}}/>],
+		[".doc", <ArticleIcon key={uuidv4()}style={{color: "blue"}}/>],
+		[".docx", <ArticleIcon key={uuidv4()}style={{color: "blue"}}/>],
+		[".txt", <ArticleIcon key={uuidv4()}style={{color: "blue"}}/>],
 
     // Data
-		[".json", <DataObjectIcon style={{color: "#45BA63"}}/>],
-		[".csv", <TableChartIcon style={{color: "#45BA63"}}/>],
-		[".xls", <TableChartIcon style={{color: "#45BA63"}}/>],
-		[".xlsx", <TableChartIcon style={{color: "#45BA63"}}/>],
+		[".json", <DataObjectIcon key={uuidv4()}style={{color: "#45BA63"}}/>],
+		[".csv", <TableChartIcon key={uuidv4()}style={{color: "#45BA63"}}/>],
+		[".xls", <TableChartIcon key={uuidv4()}style={{color: "#45BA63"}}/>],
+		[".xlsx", <TableChartIcon key={uuidv4()}style={{color: "#45BA63"}}/>],
 
     // PDF
-		[".pdf", <DescriptionIcon style={{color: "#E64F40"}}/>],
+		[".pdf", <DescriptionIcon key={uuidv4()}style={{color: "#E64F40"}}/>],
 
 		// Audio
-		[".mp3", <AudioFileOutlinedIcon style={{color: "black"}} />],
-		[".wav", <AudioFileOutlinedIcon style={{color: "black"}} />],
-		[".ogg", <AudioFileOutlinedIcon style={{color: "black"}} />],
+		[".mp3", <AudioFileOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
+		[".wav", <AudioFileOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
+		[".ogg", <AudioFileOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
 
 		// Video
-		[".mp4", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
-		[".ffmpeg", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
-		[".mov", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
-		[".avi", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
-		[".wmv", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
-		[".webm", <OndemandVideoOutlinedIcon style={{color: "black"}} />],
+		[".mp4", <OndemandVideoOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
+		[".ffmpeg", <OndemandVideoOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
+		[".mov", <OndemandVideoOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
+		[".avi", <OndemandVideoOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
+		[".wmv", <OndemandVideoOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
+		[".webm", <OndemandVideoOutlinedIcon key={uuidv4()}style={{color: "black"}} />],
 	])
 
 	const DoNothing = () => {};
