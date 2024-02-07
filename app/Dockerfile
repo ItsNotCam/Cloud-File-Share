@@ -9,6 +9,10 @@ RUN npm install -g npm@latest
 RUN npm i
 
 COPY . .
+RUN mkdir /app/data/files -p
 
 VOLUME ["/app"]
-ENTRYPOINT npm run dev
+VOLUME ["/data"]
+
+RUN npm run build
+ENTRYPOINT npm run start

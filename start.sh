@@ -1,6 +1,8 @@
-sudo docker-compose up -d --build
 mkdir -p app/data/files
+sudo docker-compose up -d --build
 
-cd app
-npm i
-npm run dev
+# if [ $1 == "dev" ]; then
+# 	cd app
+# 	npm i
+# 	npm run dev
+# fi
