@@ -28,7 +28,7 @@ The entire application is **containerized using Docker** and can be deployed eas
 
 ## Database
 The database stores information about **users, files, user-file ownership, and user comments**. The **entity relationsip diagram** is shown below:
-![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/14aa072f-5c42-4396-8c3b-3828bfe46aac)
+![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/face096d-1b14-44f2-bd5a-6c4c321b2721)
 
 ## API Structure
 
