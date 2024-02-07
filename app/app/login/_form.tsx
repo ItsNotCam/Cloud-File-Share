@@ -1,4 +1,6 @@
 "use client"
+import './_login.css'
+
 import Link from "next/link";
 import { useRouter } from "next/navigation"
 import { FormEvent, useState } from "react"
@@ -9,12 +11,12 @@ export default function LoginForm(): JSX.Element {
 	const [validating, setValidating] = useState<boolean>(false);
 	const [err, setErr] = useState<boolean>(false);
 
-	function login(event: FormEvent<HTMLFormElement>) {
+	async function login(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 
 		const { username, password } = event.target as unknown as {
-			username: {value: string},
-			password: {value: string}
+			username: { value: string },
+			password: { value: string }
 		}
 
 		const data = {
@@ -24,46 +26,50 @@ export default function LoginForm(): JSX.Element {
 
 		setValidating(true);
 
-		fetch('/api/auth/login', {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(data)
-		})
-		.then(resp => {
-			if(resp.status === 200){
-				return resp.json()
+		try {
+			const resp = await fetch('/api/auth/login', {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data)
+			})
+
+			const js: { message: string, token: string } = await resp.json()
+			if (resp.status === 200) {
+				new Cookies().set("token", js.token)
+				router.push('/home')
 			} else {
-				throw resp.status
+				setErr(true);
+				setTimeout(() => setErr(false), 2000)
 			}
-		})
-		.then(data => {
-			const cookies = new Cookies()
-			cookies.set("token", data.token)
-			router.push('/home')
-		})
-		.catch(err => {
+		} catch (err: any) {
 			console.log(err)
-			setErr(true);
-			setTimeout(() => setErr(false), 2000)
-		})
-		.finally(() => {
-			router.refresh()
 			setValidating(false)
-		})
+			setErr(true);
+		} finally {
+			router.refresh()
+			setTimeout(() => {
+				setValidating(false)
+				setErr(false)
+			}, 500)
+		}
 	}
 
 	return (<>
-		<h1 className={`validating ${validating ? "show-valid" : ""}`}>
-			Logging In
-		</h1>
-		<h1 className={`validating ${err} ? "show-valid" : ""`}>
-			Failed to Log In
-		</h1>
-		<form onSubmit={login}>
-			<input className="username" type="text" name="username" placeholder="Username" required />
-			<input className="password" type="password" name="password" placeholder="Password" required/>
-			<Link href="/register">Register</Link> 
-			<input className="submit" type="submit" name="Login" title="Login" value="Login" />
-		</form>
+		<span className="login-msgs" style={{display: (validating || err) ? "block" : "none"}}>
+			<span className={validating ? "" : "hide"}>
+				Logging In
+			</span>
+			<span className={err ? "" : "hide"}>
+				Failed to Log In
+			</span>
+		</span>
+		<div className="login-form" style={{pointerEvents: validating ? "none" : "all"}}>
+			<form onSubmit={login}>
+				<input className="username" type="text" name="username" placeholder="Username" required />
+				<input className="password" type="password" name="password" placeholder="Password" required />
+				<Link href="/register">Register</Link>
+				<input className="login-submit" type="submit" name="Login" title="Login" value="Login" />
+			</form>
+		</div>
 	</>)
 }

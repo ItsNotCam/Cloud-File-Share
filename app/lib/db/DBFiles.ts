@@ -173,7 +173,7 @@ export default abstract class DBFile {
       
       UPDATE FILE_INSTANCE
       SET DESCRIPTION='...', NAME='...'
-      WHERE FILE_ID='...' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='...')
+      WHERE FILE_ID='...' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE [TOKEN/USER_ID]='...')
     */
     let SQL = `UPDATE FILE_INSTANCE SET`
 		let updatedFields: string[] = []

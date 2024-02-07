@@ -48,7 +48,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 						</div>
 					)) : null
 				}
-				{props.files.length < 1 
+				{props.files.length < 1 && props.uploadingFiles.length < 1
 					? "No files yet :)" 
 					: props.files.map((file, index) => (
 					<div key={file.ID} onClick={() => trySetSelected(file)}>

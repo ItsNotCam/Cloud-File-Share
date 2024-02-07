@@ -51,10 +51,10 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 		try {
 			if(fs.existsSync(PATH)) {
 				fs.rm(PATH, () => {})
+				return NextResponse.json({ message: "file deleted" }, { status: 200 })
 			} else {
 				throw {message: `File ${FILE_ID} does not exist`}
 			}
-			return NextResponse.json({ message: "file deleted" }, { status: 200 })
 		} catch(err: any) {
 			Logger.LogErr(`Failed to delete file ${FILE_ID} from storage: ${err.message}`)
 		}
@@ -64,7 +64,6 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 		}, {
 			status: 500
 		})
-		
   }
 
 	return NextResponse.json({
@@ -95,20 +94,20 @@ export async function PATCH(request: NextRequest, context: IFileIDContext): Prom
         NAME: name?.substring(0,64)
       }
 
-      await DBFile.UpdateFileInfo(FILE_ID, identifier, info)
-
-			return NextResponse.json({ 
-				message: "updated file"
-			}, { 
-        status: 200 
-      })
-		} else {
-			return NextResponse.json({ message: "No changes were made" }, { status: 200 })
+      const success = await DBFile.UpdateFileInfo(FILE_ID, identifier, info)
+			if(success) {
+				return NextResponse.json({ 
+					message: "updated file"
+				}, { 
+					status: 200 
+				})
+			}
 		}
 	} catch (err: any) {
-		Logger.LogErr(err.message)
+		Logger.LogErr(`Failed to update file information: ${err.message}`)
 		return new NextResponse(
 			err.message, { status: 500 }
 		)
 	}
+	return NextResponse.json({ message: "No changes were made" }, { status: 200 })
 }

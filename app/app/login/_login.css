@@ -1,0 +1,78 @@
+.login-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+
+	background-color: white;
+	padding: 2rem;
+	border-radius: 20px;
+
+	position: relative;
+}
+
+.login-container h1 {
+	font-size: 2.5rem;
+}
+
+.login-form {
+	display: flex;
+	flex-direction: column;
+}
+
+.login-form form {
+	display: flex;
+	flex-direction: column;
+	margin-inline: 4rem;
+	justify-content: center;
+	align-items: center;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+	border: 2px solid #686868;
+	margin: 0.5rem;
+	padding: 0.25rem;
+	border-radius: 5px;
+}
+
+.login-form input::placeholder ::-moz-placeholder {
+	color: white;
+}
+
+.centered-container {
+	min-height: 100vh;
+	min-width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.login-submit {
+	/* background-color: orange; */
+	border: 2px solid #686868;
+	width: 50%;
+	margin-top: 1rem;
+	padding-block: 0.5rem;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.login-msgs {
+	display: flex;
+	position: absolute;	
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	margin: 5rem;
+	background-color: rgba(30, 77, 234, 0.8);
+	width: 10rem;
+	height: 10rem;
+	border-radius: 50%;
+	color: white;
+}
+
+.hide {
+	display: none;
+}
