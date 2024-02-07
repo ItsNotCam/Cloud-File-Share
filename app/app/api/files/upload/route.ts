@@ -1,11 +1,10 @@
 // UPLOAD FILE
 import { NextRequest, NextResponse } from "next/server";
 import { CreateConnection } from "@/lib/db";
-import { rm, rmSync, writeFile } from "fs";
-import {v4 as uuidv4} from 'uuid';
+import { rm, writeFile } from "fs";
 import mysql from 'mysql2/promise'
 
-interface IFileInfo {
+export interface IFileInfo {
   FILE_ID: string
   FILENAME: string
   EXTENSION: string
@@ -14,6 +13,7 @@ interface IFileInfo {
 import { cookies } from "next/headers";
 import DBAuth from "@/lib/db/DBAuth";
 import Logger from "@/lib/logger";
+import { getFileInfo } from "@/lib/util";
 
 async function UploadFile(request: NextRequest): Promise<NextResponse> {
 	Logger.LogReq(request)
@@ -66,19 +66,6 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 		status: 200 
 	})
 }
-
-async function getFileInfo(file: File): Promise<IFileInfo> {
-  const regex = new RegExp(/(.*)(\.\w*)$|(.*)$/g)
-  const match = regex.exec(file.name)
-  const [FILENAME, NAME, EXTENSION] = match ?? ["", file.name, file.name]
-  return {
-    FILE_ID: uuidv4(),
-    FILENAME: FILENAME,
-    EXTENSION: EXTENSION,
-    NAME: NAME
-  }
-}
-
 
 async function SaveFileToDatabase(connection: mysql.Connection, FILE_ID: string, NAME: string, 
   EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number) {

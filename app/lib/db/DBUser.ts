@@ -11,12 +11,6 @@ export interface IDBUser {
 
 export default abstract class DBUser {
 	static async GetByID(USER_ID: string): Promise<IDBUser | undefined> {
-		let connection = await CreateConnection() 
-		if(connection === null) {
-			Logger.LogErr("Failed to connect to database")
-			return undefined;
-		}
-
 		const USER_SQL: string = `
 			SELECT USER.*, SUM(SIZE_BYTES) AS USED_STORAGE_BYTES
 			FROM FILE_OBJECT
@@ -24,126 +18,116 @@ export default abstract class DBUser {
 				INNER JOIN USER ON USER_ID=USER.ID
 			WHERE USER_ID='${USER_ID}';
 		`
+		
+		let {connection,err} = await CreateConnection() 
 		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
 			const resp = await QueryGetFirst(connection, USER_SQL)
 			return resp;
 		} catch (err: any) {
-      Logger.LogErr(err.message)
-			return undefined;
+			Logger.LogErr(`Error getting user by id ${USER_ID} | ${err.message}`)
 		} finally {
-			connection.end();
+			connection?.end();
 		}
+		return undefined;
 	}
 
 	static async GetByUsername(USERNAME: string): Promise<IDBUser | undefined> {
-		let connection = await CreateConnection() 
-		if(connection === null) {
-			Logger.LogErr("Failed to connect to database")
-			return undefined;
-		}
-
 		const USER_SQL: string = `SELECT * FROM USER WHERE USERNAME='${USERNAME}';`
 
+		let {connection,err} = await CreateConnection() 
 		try {
-			const resp = await QueryGetFirst(connection, USER_SQL)
-			return resp;
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
+			return await QueryGetFirst(connection, USER_SQL)
 		} catch (err: any) {
-      Logger.LogErr(err.message)
-			return undefined;
+			Logger.LogErr(`Error getting user by username \'${USERNAME}\' | ${err.message}`)
 		} finally {
-			connection.end();
+			connection?.end();
 		}
+
+		return undefined;
 	}
 
 	static async Create(USERNAME: string, PASSWORD: string): Promise<IDBUser | undefined> {
-		let connection = await CreateConnection() 
-		if(connection === null) {
-			Logger.LogErr("Failed to connect to database")
-			return undefined;
-		}
-		
-		try { 
+		let {connection,err} = await CreateConnection() 
+		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
 			const INSERT_SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
 			const resp: ResultSetHeader[] = await connection.execute(INSERT_SQL) as ResultSetHeader[]
 
 			const affectedRows: number = resp[0].affectedRows;
 			if(affectedRows < 1) {
-				return undefined;
+				throw {message: "No rows were updated"};
 			}
 
 			return await DBUser.GetByUsername(USERNAME)
 		} catch (err: any) {
-      Logger.LogErr(err.message)
-			return undefined; 
+			Logger.LogErr(`Error creating user | ${err.message}`)
 		} finally {
-			await connection.end()
+			await connection?.end()
 		}
+		return undefined; 
 	}
 
 	static async Validate(USERNAME: string, PASSWORD: string): Promise<IDBUser | undefined> {
-		let connection = await CreateConnection() 
-		if(connection === null) {
-			Logger.LogErr("Failed to connect to database")
-			return undefined;
-		}
-		
+		let {connection,err} = await CreateConnection() 
 		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
 			const SQL: string = `SELECT * FROM USER WHERE USERNAME='${USERNAME}' AND PASSWORD='${PASSWORD}'`
 			const USER: IDBUser = await QueryGetFirst(connection, SQL);
 			return USER;
 		} catch (err: any) {
-      Logger.LogErr(err.message)
+			Logger.LogErr(`Error validating user | ${err.message}`)
 		} finally {
-			await connection.end()
+			await connection?.end()
 		}
 	}
 
 	static async DeleteByID(USER_ID: string): Promise<boolean> {
-		let connection = await CreateConnection() 
-		if(connection === null) {
-			Logger.LogErr("Failed to connect to database")
-			return false
-		}
-
+		let {connection,err} = await CreateConnection() 
 		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
 			const OWNER_SQL: string = `DELETE FROM FILE_INSTANCE WHERE USER_ID='${USER_ID}'`
 			const USER_SQL: string = `DELETE FROM USER WHERE ID='${USER_ID}'`
 			const COMMENT_SQL: string = `DELETE FROM COMMENT WHERE USER_ID='${USER_ID}'`
 		
-			const commentRes: number = await connection.execute(COMMENT_SQL).then(_ => 0).catch(e => e.errno)
-			const ownerRes: number = await connection.execute(OWNER_SQL).then(_ => 0).catch(e => e.errno)
-			const userRes: number = await connection.execute(USER_SQL).then(_ => 0).catch(e => e.errno)
-
-			if(ownerRes !== 0 || userRes !== 0 || commentRes !== 0) {
-				connection.end()
-				return false;
-			} 
+			await connection.execute(COMMENT_SQL)
+			await connection.execute(OWNER_SQL)
+			await connection.execute(USER_SQL)
 
 			return true;
 		} catch (err: any) {
-      Logger.LogErr(err.message)
-			return false;
+			Logger.LogErr(`Error deleting user | ${err.message}`)
 		} finally {
-			connection.end()
+			connection?.end()
 		}
+		return false;
 	}
 	
 	static async CheckUsernameExists(USERNAME: string): Promise<boolean> {
-		let connection = await CreateConnection() 
-		if(connection === null) {
-			Logger.LogErr("Failed to connect to database")
-			return false
-		}
-
+		let {connection,err} = await CreateConnection() 
 		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
 			const SQL: string = `SELECT COUNT(*) AS COUNT FROM USER WHERE USERNAME='${USERNAME}'`
 			const resp = await QueryGetFirst(connection, SQL) as { COUNT: number }
 			return resp.COUNT > 0;
 		} catch(err: any) {
-			Logger.LogErr(err.message)
-			return false;
+			Logger.LogErr(`Error checking if username exists | ${err.message}`)
 		} finally {
-			await connection.end()
+			await connection?.end()
 		}
+		return false;
 	}
 }

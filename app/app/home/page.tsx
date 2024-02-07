@@ -6,6 +6,7 @@ import FileInfo from "./_components/file-info"
 import { FileActionsBar } from "./_components/file-actions"
 import {v4 as uuidv4} from 'uuid'
 import {useMutex} from 'react-context-mutex'
+import { getFileInfo } from "@/lib/util"
 
 interface IHomeState {
 	gettingFiles: boolean
@@ -43,13 +44,6 @@ export default function Home(): JSX.Element {
 		})
 	}, [])
 
-	// useEffect(() => {
-	// 	setState(prev => ({
-	// 		...prev,
-	// 		uploadingFiles: prev.uploadingFiles
-	// 	}))
-	// }, [state.uploadingFiles])
-	
 	const retrieveFiles = async(): Promise<IUIFile[]> => {
 		const js = await fetch("/api/files").then(resp => resp.json())
 		const files: IUIFile[] = js.files as IUIFile[]
@@ -108,20 +102,18 @@ export default function Home(): JSX.Element {
 		setState(prev => ({ ...prev, files: stateFiles }))	
 	}
 
-	const addFiles = (filesToAdd: File[]) => {
+	const addFiles = async(filesToAdd: File[]) => {
 		let newFiles: IUIFile[] = []
 		for(let i = 0; i < filesToAdd.length; i++) {
 			let file = filesToAdd[i]
-			const splitFilename = file.name.split('.') || ""
-			const extension = `.${splitFilename.pop()}` || ""
-			const filename = splitFilename.splice(0,file.name.length-1).join(".")
-	
+			
+  		const {FILENAME, EXTENSION, NAME} = await getFileInfo(file)
 			const newFile: IUIFile = {
 				DESCRIPTION: "",
-				EXTENSION: extension,
+				EXTENSION: EXTENSION,
 				ID: uuidv4(),
-				NAME: filename,
-				FILENAME: file.name,
+				NAME: NAME,
+				FILENAME: FILENAME,
 				SIZE_BYTES: file.size,
 				UPLOAD_TIME: new Date(Date.now()),
 				LAST_DOWNLOAD_TIME: undefined,

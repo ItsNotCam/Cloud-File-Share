@@ -1,6 +1,7 @@
 import DBAuth from "@/lib/db/DBAuth";
 import DBUser, { IDBUser } from "@/lib/db/DBUser";
 import Logger from "@/lib/logger";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -22,6 +23,11 @@ export async function POST(request: NextRequest): Promise<Response> {
 	}
 
 	const token = await DBAuth.GenerateToken(newUser.ID);
-	Logger.LogSuccess(`User ${newUser.ID} created with username ${newUser.USERNAME}`)
+	if(token === null) {
+		Logger.LogErr(`Failed to generate token for user ${newUser.ID}`)
+		return NextResponse.json({ message: "failed to generate token" }, { status: 500 })
+	}
+
+	Logger.LogSuccess(`User ${newUser.ID} \'${newUser.USERNAME}\' registered`)
 	return NextResponse.json({ token: token }, { status: 200 })
 }

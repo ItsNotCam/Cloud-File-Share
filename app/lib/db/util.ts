@@ -1,18 +1,24 @@
 import mysql from 'mysql2/promise'
-import { IDBUser } from './DBUser';
-import DBAuth from './DBAuth';
-import { cookies } from 'next/headers';
+import Logger from '../logger';
 
 const { DB_HOST, DB_USER, DB_PASS, MYSQL_ROOT_DATABASE: DB_NAME } = process.env;
 
-export async function CreateConnection(multipleStatements?: boolean): Promise<mysql.Connection> {
-  return await mysql.createConnection({
-    host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASS,
-    database: DB_NAME,
-    multipleStatements: multipleStatements !== undefined && multipleStatements
-  })
+export async function CreateConnection(multipleStatements?: boolean): Promise<{connection: mysql.Connection | null, err: string | undefined}> {
+	try {
+		const connection = await mysql.createConnection({
+			host: DB_HOST,
+			user: DB_USER,
+			password: DB_PASS,
+			database: DB_NAME,
+			multipleStatements: multipleStatements !== undefined && multipleStatements
+		})
+		return {connection: connection, err: undefined}
+	} catch(err: any) {
+		return {
+			connection: null,
+			err: err.message
+		}
+	}
 }
 
 export async function QueryGetFirst(connection: mysql.Connection, SQL: string): Promise<any> {
@@ -22,11 +28,3 @@ export async function QueryGetFirst(connection: mysql.Connection, SQL: string): 
     .then(value => value[1][0]);
 }
 
-export async function authenticate(): Promise<IDBUser | undefined> {
-	const token = cookies().get("token")
-	if(token === undefined)
-		return undefined
-		
-	const user: IDBUser | undefined = await DBAuth.GetUserFromToken(token.value)
-	return user;
-}

@@ -18,12 +18,6 @@ export interface IDBFile {
 
 export default abstract class DBFile {
 	static async GetFileInfo(FILE_ID: string, identifier: {TOKEN?: string, USER_ID?: string}): Promise<IDBFile | undefined> {
-		let connection = await CreateConnection() 
-		if(connection === null) {
-			Logger.LogErr("Failed to connect to database")
-			return undefined		
-		}
-
 		const {TOKEN, USER_ID} = identifier;
 		let SQL = ""
 
@@ -53,7 +47,12 @@ export default abstract class DBFile {
 			`
 		}
 
+		let {connection,err} = await CreateConnection() 
 		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
+
       let file = await QueryGetFirst(connection, SQL) as IDBFile;
 			if(file === undefined) {
 				throw {message: `User ${USER_ID} failed to retrieve file ${FILE_ID} - no such file exists`}
@@ -62,18 +61,14 @@ export default abstract class DBFile {
 				return file
 			}
 		} catch (err: any) {
-			Logger.LogErr(err.message)
+			Logger.LogErr(`Error getting file info | ${err.message}`)
 		} finally {
-			await connection.end()
+			await connection?.end()
 		}
 		return undefined
 	}
 
 	static async GetFilesOfUser(identifier: {USER_ID?: string, TOKEN?: string}): Promise<IDBFile[]> {
-		const connection = await CreateConnection()
-		if(connection === null)
-			return []
-
 		const {USER_ID, TOKEN}  = identifier
 
 		let SQL: string = ""
@@ -104,7 +99,11 @@ export default abstract class DBFile {
 			`
 		}
 
+		let {connection,err} = await CreateConnection() 
 		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
 			const resp = await connection.query(SQL)
 			const files: IDBFile[] = resp[0] as IDBFile[]
 			for(let i = 0; i < files.length; i++) {
@@ -113,9 +112,9 @@ export default abstract class DBFile {
 
 			return files
 		} catch (err: any) {
-			Logger.LogErr(err.message)
+			Logger.LogErr(`Error getting user ${USER_ID}'s file info | ${err.message}`)
 		} finally {
-			await connection.end()
+			await connection?.end()
 		}
 		
 		return []
@@ -124,11 +123,6 @@ export default abstract class DBFile {
   static async UserIsOwner(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string }): Promise<boolean> {
     const {USER_ID, TOKEN} = identifier
 
-    if(!USER_ID && !TOKEN) {
-      return false;
-    }
-
-    const connection = await CreateConnection()
     let SQL = `
       SELECT COUNT(*) AS COUNT
       FROM FILE_INSTANCE
@@ -140,8 +134,19 @@ export default abstract class DBFile {
       SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}' LIMIT 1)`
     }
 
-    const resp = await QueryGetFirst(connection, SQL)
-    return resp.COUNT > 0;
+		let {connection,err} = await CreateConnection() 
+		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
+			const resp = await QueryGetFirst(connection, SQL)
+			return resp.COUNT > 0;
+		} catch (err: any) {
+			Logger.LogErr(`Error checking if user is owner | ${err.message}`)
+		} finally {
+			connection?.end()
+		}
+		return false
   }
 
   static async UpdateFileInfo(
@@ -154,11 +159,11 @@ export default abstract class DBFile {
     const {DESCRIPTION, NAME} = info
 
     if(!TOKEN && !USER_ID) {
-      return false;
+      throw {message: "No user identifier submitted"};
     }
-
+		
     if(!DESCRIPTION && !NAME) {
-      return false;
+			throw {message: "No fields were sent to be updated"};
     }
 
     /*
@@ -189,20 +194,29 @@ export default abstract class DBFile {
 			SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}')`
 		}
 
-    try {
-      const connection = await CreateConnection()
+		let {connection,err} = await CreateConnection() 
+		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
       await connection.execute(SQL)
       return true;
     } catch (err: any) {
-      Logger.LogErr(`UPDATING FILE FAILED:\n${err.message}`)
-    }
+			Logger.LogErr(`Error updating file info | ${err.message}`)
+    } finally {
+			connection?.end()
+		}
     return false;
   }
 
   static async DeleteFile(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string }): Promise<string | undefined> {
-    const connection = await CreateConnection()
     const {USER_ID, TOKEN} = identifier
-    try {
+    
+		let {connection,err} = await CreateConnection() 
+		try {
+			if(connection === null) {
+				throw {message: `Failed to connect to database => ${err}`}
+			}
       // get the file path of the saved file
       const validateUser = await DBFile.UserIsOwner(FILE_ID,{
         USER_ID: USER_ID,
@@ -210,7 +224,7 @@ export default abstract class DBFile {
       })
 
       if(!validateUser)
-        throw "unauthorized"
+        throw {message: "user is not the owner of the file"}
 
       const SQL: string = `
         SELECT INTERNAL_FILE_PATH 
@@ -226,11 +240,12 @@ export default abstract class DBFile {
       await connection.execute(COMM_SQL)
       let FILE_SQL: string = `DELETE FROM FILE_OBJECT WHERE ID='${FILE_ID}'`
       await connection.execute(FILE_SQL)
+
       return PATH;
     } catch(err: any) {
-      Logger.LogErr("ERROR DELETING FILE: " + err.message)
+			Logger.LogErr(`Error deleting file | ${err.message}`)
     } finally {
-      connection.end()
+      connection?.end()
     }
 
     return undefined;
