@@ -25,6 +25,7 @@ export async function QueryGetFirst(connection: mysql.Connection, SQL: string): 
   return await connection.query(SQL)
     .then(resp => resp.entries())
     .then(entries => entries.next().value)
-    .then(value => value[1][0]);
+    .then(value => value[1][0])
+		.catch(err => Logger.LogErr(`Error querying database ${err.message}`))
 }
 
