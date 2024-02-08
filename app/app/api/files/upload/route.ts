@@ -1,6 +1,7 @@
 // UPLOAD FILE
 import { NextRequest, NextResponse } from "next/server";
 import { rm, writeFile } from "fs";
+import {v4 as uuidv4} from 'uuid'
 
 export interface IFileInfo {
   FILE_ID: string
@@ -37,7 +38,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 	}
 
   // Save file to PC
-  const PATH = `${process.env.FILES_DIRECTORY}/${FILE_ID}`
+  const PATH = `${process.env.FILES_DIRECTORY}/${uuidv4()}`
   const buffer = await file.arrayBuffer()
     .then(bytes => Buffer.from(bytes))
   writeFile(PATH, buffer, () => {})
