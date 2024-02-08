@@ -30,7 +30,7 @@ services:
     ports: 
       - '${API_PORT}:${API_PORT}'
     volumes:
-      - ./app/data/files:/app/data/files:rw
+      - ./data:/app/data/files:rw
       - ./.env:/app/.env:ro
     networks:
       backend:
