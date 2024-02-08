@@ -1,4 +1,5 @@
 **/.venv
+data/
 app/data
 db/mysql_data*
 **/__pycache__
