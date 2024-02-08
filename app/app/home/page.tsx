@@ -18,8 +18,8 @@ interface IHomeState {
 }
  
 export interface IUIFile extends IDBFile {
-	isBeingUploaded: boolean,
-	file: File | null
+	isBeingUploaded?: boolean,
+	file?: File | null
 }
 
 export default function Home(): JSX.Element {
