@@ -1,4 +1,4 @@
-mkdir -p app/data/files
+mkdir -p /data
 sudo docker-compose up -d --build
 
 # if [ $1 == "dev" ]; then

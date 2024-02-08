@@ -30,9 +30,8 @@ services:
     ports: 
       - '${API_PORT}:${API_PORT}'
     volumes:
-      - ./app/data/files:/app/data/files:rw  # files
-      # - ./app/src:/app/src         # live dev
-      - ./.env:/app/.env:ro        # env
+      - ./app/data/files:/app/data/files:rw
+      - ./.env:/app/.env:ro
     networks:
       backend:
         ipv4_address: '${API_HOST}'

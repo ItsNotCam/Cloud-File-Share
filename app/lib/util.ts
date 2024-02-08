@@ -32,7 +32,7 @@ export async function getFileInfo(file: File): Promise<IFileInfo> {
 	return {
 		FILE_ID: uuidv4(),
 		FILENAME: FILENAME,
-		EXTENSION: EXTENSION,
+		EXTENSION: EXTENSION.toLowerCase(),
 		NAME: NAME
 	};
 }
