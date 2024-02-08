@@ -2,15 +2,26 @@ import { NextRequest } from "next/server";
 
 export default abstract class Logger {
   static async LogReq(request: NextRequest): Promise<void> {
-    const { url, cookies, nextUrl, ip, method } = request
+    let { url, cookies, nextUrl, ip, method } = request
 		const date: Date = new Date(Date.now())
 
 		let color = ""
 		switch(method) {
-			case "GET": color = "\x1b[32m"; break;
-			case "POST": color = "\x1b[36m"; break;
-			case "PATCH": color = "\x1b[33m"; break;
-			case "DELETE": color = "\x1b[35m"; break;
+			case "GET": 
+        color = "\x1b[32m"; 
+        break;
+			case "POST": 
+        color = "\x1b[36m"; 
+        method = "PST"
+        break;
+			case "PATCH": 
+        color = "\x1b[33m"; 
+        method = "PUT"
+        break;
+      case "DELETE": 
+        color = "\x1b[35m"; 
+        method = "DEL"
+        break;
 		}
 
 		console.log(`📩 ${Logger.toReadableDate(date)} | ${color}${method}\x1b[0m => ${url}`)
@@ -32,8 +43,16 @@ export default abstract class Logger {
   }
 
 	private static toReadableDate(dt: Date): string {
-		const date = `${dt.getMonth()+1}/${dt.getDate()}/${dt.getFullYear()}`
-		const time = `${dt.getHours()}:${dt.getMinutes()}:${dt.getSeconds()}`
+    const month = `${dt.getMonth()+1}`.padStart(2, "0");
+    const dtDate = `${dt.getDate()}`.padStart(2, "0");
+    const year = dt.getFullYear()
+
+    const hours = `${dt.getHours()}`.padStart(2,"0")
+    const minutes = `${dt.getMinutes()}`.padStart(2,"0")
+    const seconds = `${dt.getSeconds()}`.padStart(2,"0")
+
+		const date = `${month}/${dtDate}/${year}`
+		const time = `${hours}:${minutes}:${seconds}`
 		return  `${date} ${time}`
 	}
 } 

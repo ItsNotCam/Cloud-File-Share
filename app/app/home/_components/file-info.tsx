@@ -84,7 +84,7 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 
 	return (<>
 		<div className="file-info-title">
-			{fileIcon}
+			<span>{fileIcon}</span>
 			<h1 className="font-semibold">
 				{file.NAME}{file.EXTENSION}
 			</h1>

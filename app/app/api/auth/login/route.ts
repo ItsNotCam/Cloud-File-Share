@@ -21,5 +21,5 @@ export async function POST(request: NextRequest): Promise<Response> {
 	}
 
 	Logger.LogSuccess(`User ${foundUser.ID} \'${foundUser.USERNAME}\' logged in`)
-	return NextResponse.json({ status: "authenticated", token: token }, { status: 200 })
+	return NextResponse.json({ status: "authenticated", username: foundUser.USERNAME, token: token }, { status: 200 })
 }
