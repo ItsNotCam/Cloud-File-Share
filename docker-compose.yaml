@@ -39,30 +39,6 @@ services:
 volumes:
   mysql_data:
 
-
-  # web:
-  #   image: cam/gdc_web
-  #   container_name: gdc_web
-  #   restart: always
-  #   env_file: ./.env
-  #   build: ./web
-  #   ports:
-  #     - '${WEB_PORT}:3000'
-  #   networks:
-  #     backend:
-  #       ipv4_address: '${WEB_HOST}'
-  #   volumes:
-  #     - type: bind
-  #       source: ./web/app/src
-  #       target: /app/src
-  #     - type: bind
-  #       source: ./web/app/public
-  #       target: /app/public
-  #     # - ./app/node_modules
-  #     # - ./app/.next
-  #     # - ./web/app/src:/app/src:ro
-  #     - ./.env:/app/.env:ro
-
 networks:
   backend:
     ipam:
