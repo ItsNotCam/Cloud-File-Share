@@ -4,8 +4,7 @@ import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import React, { useRef, useState } from "react";
-import { AxiosProgressEvent } from "axios";
+import React, { useRef } from "react";
 import { IUIFile } from "../page";
 
 export function FileActions(props: { file: IDBFile }): React.ReactNode {
@@ -21,7 +20,7 @@ interface IFileActionsBarProps {
 	files: IUIFile[],
 	refreshFiles: () => void,
 	addFiles: (file: File[]) => void
-	deleteFile: () => void
+	deleteFile: () => void,
 }
 
 export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
