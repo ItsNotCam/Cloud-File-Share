@@ -17,8 +17,8 @@ export default async function Header(): Promise<JSX.Element> {
 		<header>
 			<nav className="bg-default">
 				<h1>😊 
-					<span className="font-light">Welcome,</span> 
-					<span className="font-semibold">{username}</span>
+					<span className="font-light">Welcome, </span> 
+					<span className="font-semibold">{` ${username}`}</span>
 				</h1>
 				<LogoutButton />
 			</nav>
