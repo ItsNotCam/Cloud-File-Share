@@ -30,13 +30,13 @@ export default abstract class DBFile {
   static async GetFileForDownload(FILE_ID: string, userIdentifier: IUserIdentifier): Promise<IFileData | undefined> {
     // get file name and internal file path only if the user owns the file
       const SQL: string = `
-      SELECT CONCAT(NAME, EXTENSION) AS FILENAME, INTERNAL_FILE_PATH 
-      FROM FILE_OBJECT AS FO
-        INNER JOIN FILE_INSTANCE AS FI ON FO.ID=FI.FILE_ID
-        INNER JOIN AUTH ON TOKEN='${userIdentifier.token}'
-      WHERE FO.ID='${FILE_ID}' 
-        AND FI.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${userIdentifier.token}')
-    `
+        SELECT CONCAT(NAME, EXTENSION) AS FILENAME, INTERNAL_FILE_PATH 
+        FROM FILE_OBJECT AS FO
+          INNER JOIN FILE_INSTANCE AS FI ON FO.ID=FI.FILE_ID
+          INNER JOIN AUTH ON TOKEN='${userIdentifier.token}'
+        WHERE FO.ID='${FILE_ID}' 
+          AND FI.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${userIdentifier.token}')
+      `
 
 		let {connection,err} = await CreateConnection() 
 		try {
@@ -69,7 +69,7 @@ export default abstract class DBFile {
 					INNER JOIN AUTH ON AUTH.USER_ID=U.ID
 				WHERE AUTH.TOKEN='${TOKEN}' AND FO.ID='${FILE_ID}';
 			`
-		} else {
+		} else if(USER_ID !== undefined) {
 			SQL = `
 				SELECT 
 					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION) AS FILENAME, FI.DESCRIPTION, 
@@ -195,11 +195,13 @@ export default abstract class DBFile {
     const {DESCRIPTION, NAME} = info
 
     if(!TOKEN && !USER_ID) {
-      throw {message: "No user identifier submitted"};
+      return false
+      // throw {message: "No user identifier submitted"};
     }
 		
     if(!DESCRIPTION && !NAME) {
-			throw {message: "No fields were sent to be updated"};
+      return false;
+			// throw {message: "No fields were sent to be updated"};
     }
 
     /*
