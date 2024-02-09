@@ -1,5 +1,5 @@
 // User actions
-import { CreateConnection } from "@/lib/db/util";
+import { CreateConnection } from "@/lib/db/DBUtil";
 import { NextRequest, NextResponse } from "next/server";
 import mysql from 'mysql2/promise'
 import { IUserProps } from "@/lib/types";

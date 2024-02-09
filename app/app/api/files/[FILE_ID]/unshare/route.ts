@@ -1,4 +1,4 @@
-import { CreateConnection, QueryGetFirst } from "@/lib/db/util";
+import { CreateConnection, QueryGetFirst } from "@/lib/db/DBUtil";
 import Logger from "@/lib/logger";
 import { RowDataPacket } from "mysql2/promise";
 import { cookies } from "next/headers";

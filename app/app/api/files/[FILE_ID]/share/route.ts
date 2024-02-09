@@ -1,5 +1,5 @@
-import { CreateConnection } from "@/lib/db/util";
-import { QueryGetFirst } from "@/lib/db/util";
+import { CreateConnection } from "@/lib/db/DBUtil";
+import { QueryGetFirst } from "@/lib/db/DBUtil";
 import Logger from "@/lib/logger";
 import { RowDataPacket } from "mysql2";
 import { cookies } from "next/headers";

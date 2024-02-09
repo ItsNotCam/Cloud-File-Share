@@ -1,5 +1,4 @@
 import DBAuth from "@/lib/db/DBAuth";
-import DBUser, { IDBUser } from "@/lib/db/DBUser";
 import { NextRequest, NextResponse } from "next/server";
 
 import { cookies } from 'next/headers'

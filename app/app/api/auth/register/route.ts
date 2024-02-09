@@ -1,7 +1,6 @@
 import DBAuth from "@/lib/db/DBAuth";
 import DBUser, { IDBUser } from "@/lib/db/DBUser";
 import Logger from "@/lib/logger";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<Response> {
