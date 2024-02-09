@@ -1,4 +1,5 @@
 import { IFileInfo } from "@/app/api/files/upload/route"
+import fs from "fs"
 import {v4 as uuidv4} from 'uuid'
 
 export const calcFileSize = (bytes: number): string => {
@@ -36,3 +37,15 @@ export async function getFileInfo(file: File): Promise<IFileInfo> {
 		NAME: NAME
 	};
 }
+export const FSSaveFile = async (file: File, PATH: string): Promise<boolean> => {
+	const uploadStream = fs.createWriteStream(PATH);
+	await file.stream().pipeTo(new WritableStream({
+		write(chunk) {
+			uploadStream.write(chunk);
+		}
+	})).finally(() => {
+		uploadStream.close();
+	});
+
+	return true;
+};
