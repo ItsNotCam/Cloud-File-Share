@@ -103,6 +103,7 @@ export default abstract class DBFile {
 					FROM USER
 					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
 					WHERE FILE_INSTANCE.FILE_ID='${file.ID}'
+					ORDER BY IS_OWNER
 				` 
 				
 				file.SHARED_USERS = []

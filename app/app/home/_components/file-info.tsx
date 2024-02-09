@@ -155,11 +155,12 @@ const descLengthtoStr = (l: number) => {
 }
 
 function AccessList(props: { owners: string[] }) {
+	const ownersStr = props.owners.slice(1).join(", ")
 	return (
 		<div className="access-list">
 			<p className="text-sm">Me</p>
 			<div className="vertical-line" />
-			{props.owners.map(owner => <p key={uuidv4()}>{owner}</p>)}
+			<p>{ownersStr}</p>
 		</div>
 	)
 }
