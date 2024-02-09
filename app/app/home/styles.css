@@ -500,3 +500,25 @@ table {
 	justify-content: center;
 	align-items: center;
 }
+
+.access-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.access-list h1 {
+	font-size: 1.2rem;
+}
+
+.access-list p {
+	font-size: 0.95rem;
+}
+
+.vertical-line {
+	width: 2px;
+	height: 1.5rem;
+	background-color: var(--color-dark);
+}

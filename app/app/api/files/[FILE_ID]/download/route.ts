@@ -54,5 +54,4 @@ function streamFile(path: string, options?: ReadableOptions): ReadableStream<Uin
   });
 }
 
-
 export {DownloadFile as GET}

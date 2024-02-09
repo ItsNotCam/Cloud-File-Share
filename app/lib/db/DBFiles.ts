@@ -12,8 +12,9 @@ export interface IDBFile {
 	UPLOAD_TIME: Date,
 	LAST_DOWNLOAD_TIME: Date | undefined,
 	LAST_DOWNLOAD_USER_ID: string | undefined,
+	IS_OWNER: boolean,
 
-	IS_OWNER: boolean
+	SHARED_USERS: string[]
 }
 
 interface IFileData {
@@ -94,6 +95,20 @@ export default abstract class DBFile {
 				throw {message: `User ${USER_ID} failed to retrieve file ${FILE_ID} - no such file exists`}
 			} else {
 				file.IS_OWNER = (file.IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
+
+				// get all users of file
+				let USERS_SQL: string = `
+					SELECT USERNAME
+					FROM USER
+					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
+					WHERE FILE_INSTANCE.FILE_ID='${file.ID}'AND FILE_INSTANCE.IS_OWNER=0
+				` 
+				
+				file.SHARED_USERS = []
+				const userResp = await connection.query(USERS_SQL)
+				const entry = await userResp.entries().next()
+				entry.value[1].map((v: any) => file.SHARED_USERS?.push(v["USERNAME"]))
+
 				return file
 			}
 		} catch (err: any) {
@@ -107,9 +122,9 @@ export default abstract class DBFile {
 	static async GetFilesOfUser(identifier: {USER_ID?: string, TOKEN?: string}): Promise<IDBFile[]> {
 		const {USER_ID, TOKEN}  = identifier
 
-		let SQL: string = ""
+		let DATA_SQL: string = ""
 		if(USER_ID !== undefined) {
-			SQL = `
+			DATA_SQL = `
 				SELECT 
 					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION), FI.DESCRIPTION, 
 					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
@@ -121,7 +136,7 @@ export default abstract class DBFile {
 				ORDER BY FO.UPLOAD_TIME DESC;
 			` 
 		} else if(TOKEN !== undefined) {
-			SQL = `
+			DATA_SQL = `
 				SELECT 
 					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION), FI.DESCRIPTION, 
 					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
@@ -140,10 +155,24 @@ export default abstract class DBFile {
 			if(connection === null) {
 				throw {message: `Failed to connect to database => ${err}`}
 			}
-			const resp = await connection.query(SQL)
+
+			const resp = await connection.query(DATA_SQL)
 			const files: IDBFile[] = resp[0] as IDBFile[]
 			for(let i = 0; i < files.length; i++) {
 				files[i].IS_OWNER = (files[i].IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
+				
+				// get all users of file
+				let USERS_SQL: string = `
+					SELECT USERNAME
+					FROM USER
+					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
+					WHERE FILE_INSTANCE.FILE_ID='${files[i].ID}'AND FILE_INSTANCE.IS_OWNER=0
+				` 
+				
+				files[i].SHARED_USERS = []
+				const userResp = await connection.query(USERS_SQL)
+				const entry = await userResp.entries().next()
+				entry.value[1].map((v: any) => files[i].SHARED_USERS?.push(v["USERNAME"]))
 			}
 
 			return files
@@ -310,7 +339,7 @@ export default abstract class DBFile {
 			
 			return true;
 		} catch(err: any) {
-			Logger.LogErr(`Error saving file to database file | ${err.message}`)
+			Logger.LogErr(`Error saving file to database | ${err.message}`)
 		} finally {
 			connection?.end()
 		}

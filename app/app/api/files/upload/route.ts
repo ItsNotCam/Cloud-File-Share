@@ -7,7 +7,6 @@ import DBAuth from "@/lib/db/DBAuth";
 import Logger from "@/lib/logger";
 import { getFileInfo } from "@/lib/util";
 import DBFile from "@/lib/db/DBFiles";
-import { FSSaveFile } from "@/lib/util";
 
 export interface IFileInfo {
   FILE_ID: string
@@ -62,5 +61,20 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 		status: 200 
 	})
 }
+
+
+export const FSSaveFile = async (file: File, PATH: string): Promise<boolean> => {
+	const uploadStream = fs.createWriteStream(PATH);
+	await file.stream().pipeTo(new WritableStream({
+		write(chunk) {
+			uploadStream.write(chunk);
+		}
+	})).finally(() => {
+		uploadStream.close();
+	});
+
+	return true;
+};
+
 
 export {UploadFile as POST}

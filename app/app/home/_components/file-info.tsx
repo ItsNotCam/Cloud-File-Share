@@ -4,6 +4,8 @@ import { calcFileSize, toDateString } from "@/lib/util";
 import React, { useEffect, useState } from "react";
 import ManageAccess from "./manage-access";
 
+import {v4 as uuidv4} from 'uuid'
+
 const defaultFile: IDBFile = {
 	DESCRIPTION: "",
 	EXTENSION: "",
@@ -14,7 +16,8 @@ const defaultFile: IDBFile = {
 	LAST_DOWNLOAD_USER_ID: "",
 	NAME: "",
 	SIZE_BYTES: 0,
-	UPLOAD_TIME: new Date()
+	UPLOAD_TIME: new Date(),
+	SHARED_USERS: []
 }
 
 const MAX_DESCRIPTION_LENGTH: number = 5000;
@@ -102,7 +105,7 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 					</span>
 					<p className="file-access-text font-semibold">Who has access</p>
 					{file.IS_OWNER
-						? <AccessList />
+						? <AccessList owners={file.SHARED_USERS || []}/>
 						: <p className="font-light text-sm text-left w-5/6 mb-5">
 							You do not have permission to view sharing information for this item
 						</p>
@@ -150,10 +153,18 @@ const descLengthtoStr = (l: number) => {
 	}
 }
 
-function AccessList() {
+function AccessList(props: { owners: string[] }) {
+	const ownerStr = props.owners.join(", ")
 	return (
 		<div className="access-list">
 			<p className="text-sm">Me</p>
+			{props.owners.length > 0 
+				? <>
+						<div className="vertical-line" />
+						<p>{ownerStr}</p>
+					</>
+				: null
+			}
 		</div>
 	)
 }

@@ -1,7 +1,7 @@
 import moment from "moment";
 import { IDBUser } from "./DBUser";
 import { CreateConnection, QueryGetFirst } from "./util";
-import { v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import Logger from "../logger";
 import { cookies } from "next/headers";
 
@@ -15,7 +15,7 @@ export default abstract class DBAuth {
 			const DELSQL: string = `DELETE FROM AUTH WHERE USER_ID='${ID}'`
 			await connection.execute(DELSQL)
 
-			const token: string = v4()
+			const token: string = uuidv4()
 			const expireDate = moment(Date.now()).add(30, 'm').toDate();
 			const expireSQL = `${expireDate.getFullYear()}-${expireDate.getMonth()+1}-${expireDate.getDate()} ${expireDate.getHours()}:${expireDate.getMinutes()}:${expireDate.getSeconds()}`
 

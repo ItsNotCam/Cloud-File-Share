@@ -119,7 +119,8 @@ export default function Home(): JSX.Element {
 				LAST_DOWNLOAD_TIME: undefined,
 				LAST_DOWNLOAD_USER_ID: undefined,
 				IS_OWNER: true,
-	
+				SHARED_USERS: [],
+				
 				isBeingUploaded: true,
 				file: file
 			}
