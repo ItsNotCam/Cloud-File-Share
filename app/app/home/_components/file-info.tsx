@@ -17,7 +17,8 @@ const defaultFile: IDBFile = {
 	NAME: "",
 	SIZE_BYTES: 0,
 	UPLOAD_TIME: new Date(),
-	SHARED_USERS: []
+	SHARED_USERS: [],
+	OWNER_USERNAME: ""
 }
 
 const MAX_DESCRIPTION_LENGTH: number = 5000;
@@ -62,7 +63,7 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 	const fileInfo = [
 		["Type", file.EXTENSION || "none"],
 		["Size", `${calcFileSize(file.SIZE_BYTES)}`],
-		["Owner", file.IS_OWNER ? "me" : "someone else"],
+		["Owner", file.IS_OWNER ? "me" : file.OWNER_USERNAME],
 		["Uploaded", toDateString(file.UPLOAD_TIME)]
 	]
 
@@ -154,17 +155,11 @@ const descLengthtoStr = (l: number) => {
 }
 
 function AccessList(props: { owners: string[] }) {
-	const ownerStr = props.owners.join(", ")
 	return (
 		<div className="access-list">
 			<p className="text-sm">Me</p>
-			{props.owners.length > 0 
-				? <>
-						<div className="vertical-line" />
-						<p>{ownerStr}</p>
-					</>
-				: null
-			}
+			<div className="vertical-line" />
+			{props.owners.map(owner => <p key={uuidv4()}>{owner}</p>)}
 		</div>
 	)
 }

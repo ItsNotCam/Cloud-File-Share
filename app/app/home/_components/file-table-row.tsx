@@ -9,7 +9,7 @@ import Logger from "@/lib/logger";
 export interface IFileTablRowProps {
 	file: IUIFile,
 	isSelected: boolean,
-	activeUpload: boolean,
+	activeUpload?: boolean,
 	updateFilename: (filename: string) => void,
 	setSelected: () => void,
 	setFileUploaded: (FILE_ID: string) => void,
@@ -28,7 +28,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	// on enter, if this is a file that is marked as being one to upload, do it
 	useEffect(() => {
-		if(props.activeUpload && props.file.file != null) {
+		if(props.activeUpload && props.file?.file != null) {
 			setIsUploading(true)
 			uploadFile(props.file.file)
 		}
@@ -111,7 +111,7 @@ export default function FileTableRow(props: IFileTablRowProps) {
 					}
 				</div>
 			</div>
-			<div className="file-grid__col-2" onClick={() => setEditingFilename(false)}>{props.file.IS_OWNER ? "me" : "~"}</div>
+			<div className="file-grid__col-2" onClick={() => setEditingFilename(false)}>{props.file.IS_OWNER ? "me" : props.file.OWNER_USERNAME}</div>
 			<div className="file-grid__col-3" onClick={() => setEditingFilename(false)}>{toDateString(props.file.UPLOAD_TIME)}</div>
 			<div className="file-grid__col-4" onClick={() => setEditingFilename(false)}>{calcFileSize(props.file.SIZE_BYTES)}</div>
 			<div className="file-grid__col-5" onClick={() => setEditingFilename(false)} style={{pointerEvents: isUploading ? "none" : "all"}}>

@@ -14,6 +14,7 @@ export interface IDBFile {
 	LAST_DOWNLOAD_USER_ID: string | undefined,
 	IS_OWNER: boolean,
 
+	OWNER_USERNAME: string,
 	SHARED_USERS: string[]
 }
 
@@ -98,16 +99,23 @@ export default abstract class DBFile {
 
 				// get all users of file
 				let USERS_SQL: string = `
-					SELECT USERNAME
+					SELECT USERNAME, IS_OWNER
 					FROM USER
 					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
-					WHERE FILE_INSTANCE.FILE_ID='${file.ID}'AND FILE_INSTANCE.IS_OWNER=0
+					WHERE FILE_INSTANCE.FILE_ID='${file.ID}'
 				` 
 				
 				file.SHARED_USERS = []
 				const userResp = await connection.query(USERS_SQL)
 				const entry = await userResp.entries().next()
-				entry.value[1].map((v: any) => file.SHARED_USERS?.push(v["USERNAME"]))
+				entry.value[1].map((v: any) => {
+					file.SHARED_USERS?.push(v["USERNAME"])
+					
+					const owner = (v["IS_OWNER"] as any).readInt8()
+					if(owner === 1) {
+						file.OWNER_USERNAME = v["USERNAME"]
+					}
+				})
 
 				return file
 			}
@@ -163,16 +171,23 @@ export default abstract class DBFile {
 				
 				// get all users of file
 				let USERS_SQL: string = `
-					SELECT USERNAME
+					SELECT USERNAME, IS_OWNER
 					FROM USER
 					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
-					WHERE FILE_INSTANCE.FILE_ID='${files[i].ID}'AND FILE_INSTANCE.IS_OWNER=0
+					WHERE FILE_INSTANCE.FILE_ID='${files[i].ID}'
 				` 
 				
 				files[i].SHARED_USERS = []
 				const userResp = await connection.query(USERS_SQL)
 				const entry = await userResp.entries().next()
-				entry.value[1].map((v: any) => files[i].SHARED_USERS?.push(v["USERNAME"]))
+				entry.value[1].map((v: any) => {
+					files[i].SHARED_USERS?.push(v["USERNAME"])
+
+					const owner = (v["IS_OWNER"] as any).readInt8()
+					if(owner === 1) {
+						files[i].OWNER_USERNAME = v["USERNAME"]
+					}
+				})
 			}
 
 			return files

@@ -109,5 +109,6 @@ export async function PATCH(request: NextRequest, context: IFileIDContext): Prom
 			err.message, { status: 500 }
 		)
 	}
+	
 	return NextResponse.json({ message: "No changes were made" }, { status: 200 })
 }
