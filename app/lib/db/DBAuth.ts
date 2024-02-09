@@ -1,6 +1,6 @@
 import moment from "moment";
 import { IDBUser } from "./DBUser";
-import { CreateConnection, QueryGetFirst } from "./util";
+import { CreateConnection, QueryGetFirst } from "./DBUtil";
 import { v4 as uuidv4 } from 'uuid';
 import Logger from "../logger";
 import { cookies } from "next/headers";

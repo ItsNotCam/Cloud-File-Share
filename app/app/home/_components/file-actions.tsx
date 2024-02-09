@@ -86,11 +86,3 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 		</div>
 	)
 }
-
-const LoadingBar = (props: {progress: number}): JSX.Element => {
-	return (
-		<div className="progress-wrapper">
-			<div className="progress" style={{width: `${props.progress}%`, opacity: props.progress === 0 ? 0 : 1}} />
-		</div>
-	)
-}

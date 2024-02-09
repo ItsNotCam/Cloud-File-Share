@@ -1,6 +1,6 @@
 import { QueryGetFirst } from "../db"
 import Logger from "../logger"
-import { CreateConnection } from "./util"
+import { CreateConnection } from "./DBUtil"
 
 export interface IDBFile {
 	ID: string,

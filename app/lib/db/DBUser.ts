@@ -1,5 +1,5 @@
 import { ResultSetHeader } from 'mysql2';
-import { CreateConnection, QueryGetFirst } from './util';
+import { CreateConnection, QueryGetFirst } from './DBUtil';
 import Logger from '../logger';
 
 export interface IDBUser {
