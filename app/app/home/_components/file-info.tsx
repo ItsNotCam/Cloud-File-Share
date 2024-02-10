@@ -4,37 +4,57 @@ import { calcFileSize, toDateString } from "@/lib/util";
 import React, { useEffect, useState } from "react";
 import ManageAccess from "./manage-access";
 import { DEFAULT_FILE } from "../page";
+import { IUIFile } from "../page";
 
 
 const MAX_DESCRIPTION_LENGTH: number = 5000;
 
-export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void }): JSX.Element {
-	let file: IDBFile = props.file === undefined ? DEFAULT_FILE : props.file
+export default function FileInfo(props: { 
+  file: IUIFile, 
+  setFileInfo: (file: IUIFile, newFile: IUIFile) => void }
+): JSX.Element {
+	let file: IUIFile = props.file === undefined ? (DEFAULT_FILE as IUIFile) : props.file
 	const fileIcon: JSX.Element = FileIcon({ extension: file.EXTENSION })
 
 	const [description, setDescription] = useState<string>(file.DESCRIPTION)
 	const [name, setName] = useState<string>(file.NAME)
 	const [managingAccess, setManagingAccess] = useState<boolean>(false)
 
-	const getUnfocus = (e: React.FocusEvent) => {
-		if (description !== file.DESCRIPTION) {
-			fetch(`/api/files/${file.ID}`, {
-				method: "PATCH",
-				body: JSON.stringify({
-					description: description
-				})
-			}).then(() => props.refreshInfo())
-		}
+  useEffect(() => {
+    let filename = `${file.NAME}${file.EXTENSION}`
+    if(file.NAME === undefined && file.EXTENSION === undefined) {
+      filename = "Select a file"
+    }
+    setName(filename)
+  }, [])
 
-		if (name !== file.NAME) {
-			console.log("ok")
-			fetch(`/api/files/${file.ID}`, {
-				method: "PATCH",
-				body: JSON.stringify({
-					name: name
-				})
-			}).then(() => props.refreshInfo())
-		}
+	useEffect(() => {
+		setDescription(file.DESCRIPTION)
+	}, [file.DESCRIPTION])
+
+	useEffect(() => {
+    let filename = `${file.NAME}${file.EXTENSION}`
+    if(file.NAME === undefined && file.EXTENSION === undefined) {
+      filename = "Select a file"
+    }
+    setName(filename)
+	}, [file.NAME])
+
+
+	const getUnfocus = (e: React.FocusEvent) => {
+    fetch(`/api/files/${file.ID}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        description: description
+      })
+    })
+    .then(resp => {
+      if(resp.status === 200)
+        return resp.json()
+      throw {message: "Action Failed"}
+    })
+    .then((js) => props.setFileInfo(file, js.file))
+    .catch(err => console.log(err.message))
 	}
 
 	const updateDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -47,15 +67,6 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 		["Owner", file.IS_OWNER ? "me" : (file.OWNER_USERNAME || "N/A")],
 		["Uploaded", file.UPLOAD_TIME ? toDateString(file.UPLOAD_TIME) : "N/A"]
 	]
-
-	useEffect(() => {
-		setDescription(file.DESCRIPTION)
-	}, [file.DESCRIPTION])
-
-	useEffect(() => {
-		setName(file.NAME)
-	}, [file.NAME])
-
   const shareFile = (username: string) => {
     const data = {
       username: username
@@ -66,17 +77,12 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
       body: JSON.stringify(data)
     }).then(resp => console.log(resp))
   }
-
-	let filename = `${file.NAME}${file.EXTENSION}`
-	if(file.NAME === undefined && file.EXTENSION === undefined) {
-		filename = "Select a file"
-	}
 	
 	return (<>
 		<div className="file-info-title">
 			<span>{fileIcon}</span>
 			<h1 className="font-semibold">
-				{filename}
+				{name}
 			</h1>
 		</div>
 		<div className="horizontal-divider" />

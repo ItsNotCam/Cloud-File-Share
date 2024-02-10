@@ -99,8 +99,6 @@ export default function Home(): JSX.Element {
 			...prev,
 			selectedFile: file
 		}))
-		
-		refreshFileInfo(file)
 	}
 
 	const refreshFileInfo = async (file: IUIFile) => {
@@ -172,17 +170,35 @@ export default function Home(): JSX.Element {
 		}))
 	}
 
+  const setFileInfo = (file: IUIFile, newFile: IUIFile): void => {
+    const foundFileIdx = state.files.indexOf(file)
+    if(foundFileIdx >= 0) {
+      let stateFiles = state.files
+      stateFiles[foundFileIdx] = newFile
+      setState({
+        ...state,
+        files: stateFiles
+      })
+    }
+  }
+
 	const deleteFile = async() => {
 		let URL = `/api/files/${state.selectedFile.ID}${state.selectedFile.IS_OWNER ? "" : "/unshare"}`
 		let method = state.selectedFile.IS_OWNER ? "DELETE" : "POST"
-		await fetch(URL, { method: method })
+		const resp = await fetch(URL, { method: method })
+    const js = await resp.json()
 
-		setState({
-			...state,
-			selectedFile: {} as IUIFile
-		})
+    if(js) {
+      setState(prev => ({
+        ...prev,
+        files: js.files
+      }))
+    }
 
-		refreshFiles()
+		setState(prev => ({
+			...prev,
+			selectedFile: {} as IUIFile,
+		}))
 	}
 
 	const refreshFiles = async() => {
@@ -254,6 +270,7 @@ export default function Home(): JSX.Element {
 					<FileTable 
 						selectedFile={state.selectedFile} 
 						setSelectedFile={setSelectedFile} 
+            setFileInfo={setFileInfo}
 						refreshFileInfo={refreshFileInfo}
 						files={state.files} 
 						uploadingFiles={state.uploadingFiles}
@@ -265,7 +282,7 @@ export default function Home(): JSX.Element {
 			<div className={`file-info ${state.showFileInfo ? "" : "width-0"}`}>
 				<FileInfo
 					file={state.selectedFile}
-					refreshInfo={() => refreshFileInfo(state.selectedFile)}
+					setFileInfo={setFileInfo}
 				/>
 			</div>
 		</div>

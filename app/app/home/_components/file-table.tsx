@@ -10,6 +10,7 @@ interface IFileTableProps {
 	refreshFileInfo: (file: IUIFile) => void,
 	setFileUploaded: (file: IUIFile, FILE_ID: string) => void,
 	setFileID: (file: IUIFile, ID: string) => void,
+  setFileInfo: (file: IUIFile, newFile: IUIFile) => void,
 	files: IUIFile[],
 	uploadingFiles: IUIFile[],
 	selectedFile: IUIFile,
@@ -19,10 +20,17 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 	const updateFilename = (file: IUIFile, name: string) => {
 		fetch(`/api/files/${file.ID}`, {
 			method: "PATCH",
-			body: JSON.stringify({ name: name })
-		}).then(() => {
-			props.refreshFileInfo(file)
+			body: JSON.stringify({ 
+        name: name 
+      })
 		})
+    .then(resp => {
+      if(resp.status === 200)
+        return resp.json()
+      throw {message: "Updating filename failed"}
+    })
+    .then(js => props.setFileInfo(file, js.file))
+    .catch(err => console.log(err.message))
 	}
 
 	const trySetSelected = (file: IUIFile) => {
@@ -50,15 +58,15 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 				}
 
 				{ // show no files yet text
-					props.files.length < 1 && props.uploadingFiles.length < 1 
+					props.files?.length < 1 && props.uploadingFiles?.length < 1 
 						? <div className="flex w-full h-full justify-center mt-8">
                 <h1 className="text-md">No Files Yet</h1>
               </div>
 						: null
 				}
 
-				{props.files.length > 0
-					? props.files.map((file, index) => (
+				{props.files?.length > 0
+					? props.files.map(file => (
 						<div key={file.ID} onClick={() => trySetSelected(file)}>
 							<FileTableRow 
 								file={file}

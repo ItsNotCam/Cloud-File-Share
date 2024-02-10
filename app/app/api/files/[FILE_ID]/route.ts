@@ -1,6 +1,6 @@
 // FILE ACTIONS
 import DBAuth from '@/lib/db/DBAuth';
-import DBFile from '@/lib/db/DBFiles';
+import DBFile, { IDBFile } from '@/lib/db/DBFiles';
 import Logger from '@/lib/logger';
 import fs from 'fs';
 import { cookies } from 'next/headers';
@@ -43,7 +43,7 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 	}
 
   const PATH = await DBFile.DeleteFile(FILE_ID, { 
-    USER_ID: user?.ID,
+    USER_ID: user.ID,
   })
 
   if(PATH != undefined) {
@@ -51,7 +51,15 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 		try {
 			if(fs.existsSync(PATH)) {
 				fs.rm(PATH, () => {})
-				return NextResponse.json({ message: "file deleted" }, { status: 200 })
+
+        const newFiles = await DBFile.GetFilesOfUser({USER_ID: user.ID})
+
+				return NextResponse.json({ 
+          message: "file deleted" ,
+          files: newFiles
+        }, { 
+          status: 200 
+        })
 			} else {
 				throw {message: `File ${FILE_ID} does not exist`}
 			}
@@ -94,10 +102,11 @@ export async function PATCH(request: NextRequest, context: IFileIDContext): Prom
         NAME: name?.substring(0,64)
       }
 
-      const success = await DBFile.UpdateFileInfo(FILE_ID, identifier, info)
-			if(success) {
+      const updatedFile: IDBFile | undefined = await DBFile.UpdateFileInfo(FILE_ID, identifier, info)
+			if(updatedFile) {
 				return NextResponse.json({ 
-					message: "updated file"
+					message: "updated file",
+          file: updatedFile
 				}, { 
 					status: 200 
 				})

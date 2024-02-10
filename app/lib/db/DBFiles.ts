@@ -209,7 +209,15 @@ export default abstract class DBFile {
 		let DATA_SQL: string = ""
 		if (USER_ID !== undefined) {
 			DATA_SQL = `
-				 
+				SELECT 
+					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION), FI.DESCRIPTION, 
+					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
+					FI.IS_OWNER, FI.PARENT_FOLDER_ID
+				FROM FILE_INSTANCE AS FI
+					INNER JOIN USER AS U ON U.ID = USER_ID 
+					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
+				WHERE U.ID='${USER_ID}'
+				ORDER BY FO.UPLOAD_TIME DESC;
 			`
 		} else if (TOKEN !== undefined) {
 			DATA_SQL = `
@@ -301,18 +309,16 @@ export default abstract class DBFile {
 		FILE_ID: string,
 		identifier: { TOKEN?: string, USER_ID?: string },
 		info: { DESCRIPTION?: string, NAME?: string }
-	): Promise<boolean> {
+	): Promise<IDBFile | undefined> {
 		const { TOKEN, USER_ID } = identifier
 		const { DESCRIPTION, NAME } = info
 
 		if (!TOKEN && !USER_ID) {
-			return false
-			// throw {message: "No user identifier submitted"};
+			return undefined
 		}
 
 		if (!DESCRIPTION && !NAME) {
-			return false;
-			// throw {message: "No fields were sent to be updated"};
+			return undefined;
 		}
 
 		/*
@@ -349,13 +355,15 @@ export default abstract class DBFile {
 				throw { message: `Failed to connect to database => ${err}` }
 			}
 			await connection.execute(SQL)
-			return true;
+      
+			return this.GetFileInfo(FILE_ID, identifier);
 		} catch (err: any) {
 			Logger.LogErr(`Error updating file info | ${err.message}`)
 		} finally {
 			connection?.end()
 		}
-		return false;
+
+		return undefined;
 	}
 
 	static async DeleteFile(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string }): Promise<string | undefined> {
