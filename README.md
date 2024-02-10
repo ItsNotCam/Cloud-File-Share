@@ -1,7 +1,8 @@
 # Google Drive Clone
 
-Mass File Uploading
-![Mass File Uploading](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/ddeb643c-c162-4b98-af00-afc73ed0b0cf)
+Preview
+
+![image](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/417e04e0-494e-4854-b889-4123b180db45)
 
 ## Overview
 
