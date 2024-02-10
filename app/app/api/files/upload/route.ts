@@ -63,7 +63,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 }
 
 
-export const FSSaveFile = async (file: File, PATH: string): Promise<boolean> => {
+const FSSaveFile = async (file: File, PATH: string): Promise<boolean> => {
 	const uploadStream = fs.createWriteStream(PATH);
 	await file.stream().pipeTo(new WritableStream({
 		write(chunk) {

@@ -7,12 +7,16 @@ import { FileActionsBar } from "./_components/file-actions"
 import {v4 as uuidv4} from 'uuid'
 import {useMutex} from 'react-context-mutex'
 import { getFileInfo } from "@/lib/util"
+import { TreeRoot } from "./_components/tree"
+import { IFolderProps } from "@/lib/db/DBFiles"
 
 interface IHomeState {
 	gettingFiles: boolean
 	selectedFileIdx: number
+	selectedFolder: IFolderProps | undefined
 	showFileInfo: boolean
 	files: IUIFile[],
+	folders: IFolderProps,
 	uploadingFiles: IUIFile[],
 	isHoldingCtrl: boolean
 }
@@ -29,8 +33,10 @@ export default function Home(): JSX.Element {
 	const [state, setState] = useState<IHomeState>({
 		gettingFiles: true,
 		selectedFileIdx: -1,
+		selectedFolder: undefined,
 		showFileInfo: true,
 		files: [],
+		folders: {} as IFolderProps,
 		uploadingFiles: [],
 		isHoldingCtrl: false
 	})
@@ -62,7 +68,8 @@ export default function Home(): JSX.Element {
 				}
 				setState(prev => ({
 					...prev,
-					files: js.files
+					files: js.files,
+					folders: js.folders
 				}))
 			}).finally(() => {
 				setState(prev => ({...prev, gettingFiles: false}))
@@ -193,11 +200,23 @@ export default function Home(): JSX.Element {
 		}))
 	}
 
+	const setSelectedFolder = (id: IFolderProps) => {
+		setState(prev => ({
+			...prev,
+			selectedFolder: id
+		}))
+	}
+
+	const folderName = state.selectedFolder === undefined
+		? "My Files"
+		: state.selectedFolder.NAME;
+
 	return (
 		<div className={`main-container ${state.showFileInfo ? "" : "gap-0"}`}>
+			<TreeRoot folders={state.folders} selectedFolder={state.selectedFolder} setSelectedFolder={setSelectedFolder}/>
 			<div className="table">
 				<div className="table-header">
-					<h1 className="text-3xl font-semibold">My Files</h1>
+					<h1 className="text-3xl font-semibold text-ellipsis w-full overflow-hidden">{folderName}</h1>
 					<FileActionsBar 
 						file={state.files[state.selectedFileIdx]}
 						refreshFiles={refreshFiles}

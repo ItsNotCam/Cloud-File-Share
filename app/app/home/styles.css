@@ -522,3 +522,69 @@ table {
 	height: 1.5rem;
 	background-color: var(--color-dark);
 }
+
+.folder-structure {
+	font-size: 0.9rem;
+	width: 100%;
+	gap: 0.25rem;
+	display: flex;
+	flex-direction: column;
+	/* overflow: hidden !important; */
+	padding-block: 0.2rem;
+	opacity: 1;
+}
+
+.folder-structure[aria-hidden="true"] {
+	display: none;
+}
+
+.folder-structure {
+	border-radius: 10rem;
+	max-width: 100%;
+	position: relative;
+}
+
+.folder-structure:hover {
+	background-color: var(--color-light);
+	/* background-color: var(--color-info-light); */
+}
+
+.folder-structure > div:nth-child(1) {
+	display: flex;
+	flex-direction: row;
+	cursor: default;
+	overflow: hidden;
+	gap: 0.5rem;
+	padding-block: 0.2rem;
+	height: 1.5rem;
+}
+
+.folder-name span {
+	padding-left: 0.35rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-right: 1.25rem;
+	height: 100%;
+	width: 100%;
+}
+
+.folder-wrapper {
+	padding-top: 1rem;
+	padding-inline: 1rem;
+	width: 25rem;
+	text-overflow: ellipsis;
+	height: 100%;
+	/* width: 100%; */
+}
+
+.folder-name {
+	position: "absolute";
+	display: flex;
+	overflow: hidden;
+	padding-inline: 1rem;
+}
+
+.folder-selected,
+.folder-selected:hover {
+	background-color: var(--color-info-light);
+}

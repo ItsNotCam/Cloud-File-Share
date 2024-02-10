@@ -11,8 +11,11 @@ export async function GET(request: NextRequest, response: NextResponse): Promise
 	}
 
 	const files = await DBFiles.GetFilesOfUser({TOKEN: token.value})
+	const folders = await DBFiles.GetFoldersOfUser({TOKEN: token.value})
+
 	return NextResponse.json({
-		files: files
+		files: files,
+		folders: folders
 	}, {
 		status: 200
 	})
