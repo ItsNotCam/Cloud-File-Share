@@ -72,7 +72,7 @@ export default abstract class DBUser {
 			}
 
 			const FOLDER_SQL: string = `INSERT INTO DIRECTORY VALUES (
-				DEFAULT, DEFAULT, '${user?.ID}', 'Home', DEFAULT
+				DEFAULT, NULL, '${user?.ID}', 'Home', DEFAULT
 			)`
 			const folderResp: ResultSetHeader[] = await connection.execute(FOLDER_SQL) as ResultSetHeader[]
 			affectedRows = folderResp[0].affectedRows;

@@ -7,7 +7,7 @@ import { FileActionsBar } from "./_components/file-actions"
 import {v4 as uuidv4} from 'uuid'
 import {useMutex} from 'react-context-mutex'
 import { getFileInfo } from "@/lib/util"
-import { FolderRoot } from "./_components/tree"
+import { FolderRoot } from "./_components/folders"
 import { IFolderProps } from "@/lib/db/DBFiles"
 
 

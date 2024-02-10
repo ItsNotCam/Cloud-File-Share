@@ -43,7 +43,7 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 		await FSSaveFile(file, PATH)
 
 		// Add entry to database
-		const success = DBFile.SaveFile(FILE_ID, NAME, EXTENSION, USER.ID, PATH, file.size)
+		const success = await DBFile.SaveFile(FILE_ID, NAME, EXTENSION, USER.ID, PATH, file.size)
 
 		if(!success) {
 			fs.rm(PATH, () => { return "deleted" })

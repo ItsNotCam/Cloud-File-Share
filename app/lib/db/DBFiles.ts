@@ -415,7 +415,12 @@ export default abstract class DBFile {
 			await connection.query(SQL);
 
 			SQL = `INSERT INTO FILE_INSTANCE VALUES (
-				'${USER_ID}', '${FILE_ID}', NULL, 1, '${NAME}', ""
+				'${USER_ID}', 
+        '${FILE_ID}', 
+        (SELECT ID FROM DIRECTORY WHERE PARENT_ID IS NULL AND USER_ID='${USER_ID}'), 
+        1, 
+        '${NAME}', 
+        ""
 			)`;
 			await connection.query(SQL);
 

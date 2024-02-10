@@ -51,7 +51,9 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 
 				{ // show no files yet text
 					props.files.length < 1 && props.uploadingFiles.length < 1 
-						? "No Files Yet" 
+						? <div className="flex w-full h-full justify-center mt-8">
+                <h1 className="text-md">No Files Yet</h1>
+              </div>
 						: null
 				}
 

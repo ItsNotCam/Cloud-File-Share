@@ -10,14 +10,14 @@ export const FolderRoot = (props: {
 	selectedFolder: IFolderProps | undefined, 
 	setSelectedFolder: (folder: IFolderProps) => void 
 }): JSX.Element => {
-	if (props.folders.CHILDREN === undefined) {
+	if (props.folders?.CHILDREN === undefined) {
 		return (
 			<div className="folder-wrapper"><h1>loading...</h1></div>)
 	}
 
 	return (
 		<div className="folder-wrapper">
-			{props.folders.CHILDREN.map((folder: IFolderProps) =>
+			{props.folders?.CHILDREN.map((folder: IFolderProps) =>
 				<Folder 
 					item={folder} 
 					indent={0} 
