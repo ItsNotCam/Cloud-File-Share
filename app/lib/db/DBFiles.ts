@@ -13,6 +13,7 @@ export interface IDBFile {
 	LAST_DOWNLOAD_TIME: Date | undefined,
 	LAST_DOWNLOAD_USER_ID: string | undefined,
 	IS_OWNER: boolean,
+	PARENT_FOLDER_ID: string,
 
 	OWNER_USERNAME: string,
 	SHARED_USERS: string[]
@@ -31,8 +32,8 @@ interface IFileData {
 }
 
 interface IUserIdentifier {
-	token?: string,
-	user_id?: string
+	TOKEN?: string,
+	USER_ID?: string
 }
 
 export default abstract class DBFile {
@@ -42,9 +43,9 @@ export default abstract class DBFile {
         SELECT CONCAT(NAME, EXTENSION) AS FILENAME, INTERNAL_FILE_PATH 
         FROM FILE_OBJECT AS FO
           INNER JOIN FILE_INSTANCE AS FI ON FO.ID=FI.FILE_ID
-          INNER JOIN AUTH ON TOKEN='${userIdentifier.token}'
+          INNER JOIN AUTH ON TOKEN='${userIdentifier.TOKEN}'
         WHERE FO.ID='${FILE_ID}'
-          AND FI.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${userIdentifier.token}')
+          AND FI.USER_ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${userIdentifier.TOKEN}')
       `
 
 		let { connection, err } = await CreateConnection()
@@ -62,7 +63,9 @@ export default abstract class DBFile {
 		return undefined
 	}
 
-	static async GetFileInfo(FILE_ID: string, identifier: { TOKEN?: string, USER_ID?: string }): Promise<IDBFile | undefined> {
+	static async GetFileInfo(
+		FILE_ID: string, identifier: { TOKEN?: string, USER_ID?: string }): Promise<IDBFile | undefined> 
+	{
 		const { TOKEN, USER_ID } = identifier;
 		let SQL = ""
 
@@ -71,7 +74,7 @@ export default abstract class DBFile {
 				SELECT 
 					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION) AS FILENAME, FI.DESCRIPTION, 
 					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
-					FI.IS_OWNER
+					FI.IS_OWNER, FI.PARENT_FOLDER_ID
 				FROM FILE_INSTANCE AS FI
 					INNER JOIN USER AS U ON U.ID = USER_ID 
 					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
@@ -83,7 +86,7 @@ export default abstract class DBFile {
 				SELECT 
 					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION) AS FILENAME, FI.DESCRIPTION, 
 					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
-					FI.IS_OWNER
+					FI.IS_OWNER, FI.PARENT_FOLDER_ID
 				FROM FILE_INSTANCE AS FI
 					INNER JOIN USER AS U ON U.ID = USER_ID 
 					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
@@ -135,6 +138,71 @@ export default abstract class DBFile {
 		return undefined
 	}
 
+	static async GetFilesInFolder(identifier: { USER_ID?: string, TOKEN?: string }, FOLDER_ID: string): Promise<IDBFile[]> {
+		const { USER_ID, TOKEN } = identifier
+
+		let DATA_SQL: string = ""
+		if (USER_ID !== undefined) {
+			DATA_SQL = `
+				 
+			`
+		} else if (TOKEN !== undefined) {
+			DATA_SQL = `
+				SELECT 
+					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION), FI.DESCRIPTION, 
+					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
+					FI.IS_OWNER, FI.PARENT_FOLDER_ID
+				FROM FILE_INSTANCE AS FI
+					INNER JOIN USER AS U ON U.ID = USER_ID 
+					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
+					INNER JOIN AUTH ON AUTH.USER_ID=U.ID
+				WHERE AUTH.TOKEN='${TOKEN}' AND FI.PARENT_FOLDER_ID='${FOLDER_ID}'
+				ORDER BY FO.UPLOAD_TIME DESC;
+			`
+		}
+
+		let { connection, err } = await CreateConnection()
+		try {
+			if (connection === null) {
+				throw { message: `Failed to connect to database => ${err}` }
+			}
+
+			const resp = await connection.query(DATA_SQL)
+			const files: IDBFile[] = resp[0] as IDBFile[]
+			for (let i = 0; i < files.length; i++) {
+				files[i].IS_OWNER = (files[i].IS_OWNER as any).readInt8() // i have it as a bit in the database so i have to read the output here
+
+				// get all users of file
+				let USERS_SQL: string = `
+					SELECT USERNAME, IS_OWNER
+					FROM USER
+					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
+					WHERE FILE_INSTANCE.FILE_ID='${files[i].ID}'
+					ORDER BY IS_OWNER DESC
+				`
+
+				files[i].SHARED_USERS = []
+				const userResp = await connection.query(USERS_SQL)
+				const entry = await userResp.entries().next()
+				entry.value[1].map((v: any) => {
+					files[i].SHARED_USERS?.push(v["USERNAME"])
+					const owner = (v["IS_OWNER"] as any).readInt8()
+					if (owner === 1) {
+						files[i].OWNER_USERNAME = v["USERNAME"]
+					}
+				})
+			}
+
+			return files
+		} catch (err: any) {
+			Logger.LogErr(`Error getting user ${USER_ID}'s file info | ${err.message}`)
+		} finally {
+			await connection?.end()
+		}
+
+		return []
+	}
+
 	static async GetFilesOfUser(identifier: { USER_ID?: string, TOKEN?: string }): Promise<IDBFile[]> {
 		const { USER_ID, TOKEN } = identifier
 
@@ -148,7 +216,7 @@ export default abstract class DBFile {
 				SELECT 
 					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION), FI.DESCRIPTION, 
 					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
-					FI.IS_OWNER
+					FI.IS_OWNER, FI.PARENT_FOLDER_ID
 				FROM FILE_INSTANCE AS FI
 					INNER JOIN USER AS U ON U.ID = USER_ID 
 					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
@@ -420,4 +488,22 @@ export default abstract class DBFile {
 
 		return undefined
 	}
+
+	/*
+	static async UserHasAccessToFile(
+		FILE_ID: string, 
+		identifier: { TOKEN?: string, USER_ID?: string }): Promise<boolean> 
+	{
+		// const SQL = `SELECT COUNT(*) AS COUNT FROM ${}`
+		return false
+	}	
+
+	static async MoveFileToFolder(
+		identifier: {USER_ID?: string, TOKEN?: string}, 
+		FILE_ID: string, 
+		NEW_FOLDER_ID: string
+	){
+		const isOwner: boolean = await this.UserHasAccessToFile(FILE_ID, identifier)
+	}
+	*/
 }

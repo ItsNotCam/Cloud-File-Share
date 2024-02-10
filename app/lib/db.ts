@@ -5,14 +5,13 @@ var { DB_HOST, DB_USER, DB_PASS, MYSQL_ROOT_DATABASE: DB_NAME } = process.env;
 
 export async function CreateConnection(multipleStatements?: boolean): Promise<mysql.Connection | null> {
 	try {
-		const connection = await mysql.createConnection({
+		return await mysql.createConnection({
 			host: DB_HOST,
 			user: DB_USER,
 			password: DB_PASS,
 			database: DB_NAME,
 			multipleStatements: multipleStatements !== undefined && multipleStatements
 		})
-		return connection
 	} catch(err: any) {
 		Logger.LogErr(`Failed to connect to database: | ${err.message}`)
 		return null

@@ -5,19 +5,20 @@ import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import { IFolderProps } from "@/lib/db/DBFiles";
 
-export const TreeRoot = (props: { 
+export const FolderRoot = (props: { 
 	folders: IFolderProps, 
 	selectedFolder: IFolderProps | undefined, 
 	setSelectedFolder: (folder: IFolderProps) => void 
 }): JSX.Element => {
 	if (props.folders.CHILDREN === undefined) {
-		return (<h1>loading...</h1>)
+		return (
+			<div className="folder-wrapper"><h1>loading...</h1></div>)
 	}
 
 	return (
 		<div className="folder-wrapper">
 			{props.folders.CHILDREN.map((folder: IFolderProps) =>
-				<Tree 
+				<Folder 
 					item={folder} 
 					indent={0} 
 					key={folder.ID} 
@@ -29,7 +30,7 @@ export const TreeRoot = (props: {
 	)
 }
 
-const Tree = (props: { 
+const Folder = (props: { 
 	item: IFolderProps, 
 	indent: number, 
 	selectedFolder: IFolderProps | undefined, 
@@ -38,8 +39,11 @@ const Tree = (props: {
 	const { indent } = props
 	const [isDroppedDown, setIsDroppedDown] = useState<boolean>(false)
 
+	const isSelected = props.selectedFolder?.ID === props.item.ID
+	const hasChildren = props.item.CHILDREN.length > 0
+
 	return (<>
-		<div className={`folder-structure ${props.selectedFolder?.ID === props.item.ID ? "folder-selected" : ""}`}>
+		<div className={`folder-structure ${isSelected ? "folder-selected" : ""}`}>
 			<div style={{position: "relative"}}>
 				<div className="folder-name" style={{ 
 					left: `${indent * 1.5}rem`, 
@@ -48,20 +52,20 @@ const Tree = (props: {
 				}}
 				onClick={() => props.setSelectedFolder(props.item)}
 				>
-					{isDroppedDown && props.item.CHILDREN.length > 0
+					{isDroppedDown && hasChildren
 						? (
 						<FolderOpenOutlinedIcon 
 								style={{ color: props.item.COLOR || "#737373" }} 
 								fontSize="small"
-								className="cursor-pointer"
-								onClick={() => { props.item.CHILDREN.length > 0 && setIsDroppedDown(!isDroppedDown) }}
+								className={`${hasChildren ? "cursor-pointer" : ""}`}
+								onClick={() => { hasChildren && setIsDroppedDown(!isDroppedDown) }}
 							/>
 						) : (
 							<FolderIcon 
 								style={{ color: props.item.COLOR || "#737373" }} 
 								fontSize="small"
-								className="cursor-pointer"
-								onClick={() => { props.item.CHILDREN.length > 0 && setIsDroppedDown(!isDroppedDown) }}
+								className={`${hasChildren ? "cursor-pointer" : ""}`}
+								onClick={() => { hasChildren && setIsDroppedDown(!isDroppedDown) }}
 							/>
 						)
 					}
@@ -73,7 +77,7 @@ const Tree = (props: {
 		</div>
 		<div className={`${isDroppedDown ? "" : "hidden"}`}>
 			{props.item.CHILDREN.map((item: IFolderProps) =>
-				<Tree 
+				<Folder 
 					item={item} 
 					indent={indent + 1} 
 					key={item.ID} 

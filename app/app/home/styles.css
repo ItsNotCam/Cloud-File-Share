@@ -474,7 +474,8 @@ table {
 .file-action-wrapper {
 	display: flex;
 	flex-direction: row;
-	color: rgb(57, 57, 57);
+	color: #545454;
+	/* gap: 1rem; */
 }
 
 .manage-access {

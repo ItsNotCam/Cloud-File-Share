@@ -10,8 +10,9 @@ export async function GET(request: NextRequest, response: NextResponse): Promise
 		return NextResponse.json({message: "not logged in"}, {status: 403})
 	}
 
-	const files = await DBFiles.GetFilesOfUser({TOKEN: token.value})
-	const folders = await DBFiles.GetFoldersOfUser({TOKEN: token.value})
+	// const { folderID } = await request.json() as {  folderID?: string }
+	let files = await DBFiles.GetFilesOfUser({TOKEN: token.value})
+	let folders = await DBFiles.GetFoldersOfUser({TOKEN: token.value})
 
 	return NextResponse.json({
 		files: files,

@@ -14,7 +14,7 @@ async function DownloadFile(request: NextRequest, context: { params: any }, resp
 	const token = cookies().get("token")?.value
   
 	try {
-    const info = await DBFile.GetFileForDownload(FILE_ID, {token: token});
+    const info = await DBFile.GetFileForDownload(FILE_ID, {TOKEN: token});
     if(info === undefined) {
       throw {message: "file does not exist"}
     }

@@ -3,28 +3,13 @@ import FileIcon from "./file-icon";
 import { calcFileSize, toDateString } from "@/lib/util";
 import React, { useEffect, useState } from "react";
 import ManageAccess from "./manage-access";
+import { DEFAULT_FILE } from "../page";
 
-import {v4 as uuidv4} from 'uuid'
-
-const defaultFile: IDBFile = {
-	DESCRIPTION: "",
-	EXTENSION: "",
-	FILENAME: "Select a file :)",
-	ID: "",
-	IS_OWNER: true,
-	LAST_DOWNLOAD_TIME: new Date(),
-	LAST_DOWNLOAD_USER_ID: "",
-	NAME: "",
-	SIZE_BYTES: 0,
-	UPLOAD_TIME: new Date(),
-	SHARED_USERS: [],
-	OWNER_USERNAME: ""
-}
 
 const MAX_DESCRIPTION_LENGTH: number = 5000;
 
 export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void }): JSX.Element {
-	let file: IDBFile = props.file === undefined ? defaultFile : props.file
+	let file: IDBFile = props.file === undefined ? DEFAULT_FILE : props.file
 	const fileIcon: JSX.Element = FileIcon({ extension: file.EXTENSION })
 
 	const [description, setDescription] = useState<string>(file.DESCRIPTION)
@@ -57,10 +42,10 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 	}
 
 	const fileInfo = [
-		["Type", file.EXTENSION || "none"],
-		["Size", `${calcFileSize(file.SIZE_BYTES)}`],
-		["Owner", file.IS_OWNER ? "me" : file.OWNER_USERNAME],
-		["Uploaded", toDateString(file.UPLOAD_TIME)]
+		["Type", file.EXTENSION || "N/A"],
+		["Size", `${calcFileSize(file.SIZE_BYTES || 0)}`],
+		["Owner", file.IS_OWNER ? "me" : (file.OWNER_USERNAME || "N/A")],
+		["Uploaded", file.UPLOAD_TIME ? toDateString(file.UPLOAD_TIME) : "N/A"]
 	]
 
 	useEffect(() => {
@@ -82,11 +67,16 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
     }).then(resp => console.log(resp))
   }
 
+	let filename = `${file.NAME}${file.EXTENSION}`
+	if(file.NAME === undefined && file.EXTENSION === undefined) {
+		filename = "Select a file"
+	}
+	
 	return (<>
 		<div className="file-info-title">
 			<span>{fileIcon}</span>
 			<h1 className="font-semibold">
-				{file.NAME}{file.EXTENSION}
+				{filename}
 			</h1>
 		</div>
 		<div className="horizontal-divider" />
@@ -106,9 +96,9 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 					<p className="file-access-text font-semibold">Who has access</p>
 					{file.IS_OWNER
 						? <AccessList owners={file.SHARED_USERS || []}/>
-						: <p className="font-light text-sm text-left w-5/6 mb-5">
-							You do not have permission to view sharing information for this item
-						</p>
+						: <p className="font-light text-sm text-left w-5/6">
+								You do not have permission to view sharing information for this item
+							</p>
 					}
 					{file.IS_OWNER 
 						? <button className="access-btn" onClick={() => setManagingAccess(true)}>
@@ -135,8 +125,12 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 							value={description}
 							onChange={updateDescription}
 							onBlur={getUnfocus}
+							disabled={file.DESCRIPTION === undefined}
 						/>
-						<span className="text-xs">{descLengthtoStr(description?.length)} / 5,000</span>
+						<span className="text-xs">{
+							description ? descLengthtoStr(description?.length) : 0
+						} / 5,000
+						</span>
 					</div>
 				</div>
 			</div>
@@ -158,7 +152,7 @@ function AccessList(props: { owners: string[] }) {
 	return (
 		<div className="access-list">
 			<p className="text-sm">Me</p>
-			<div className="vertical-line" />
+			{ props.owners.length > 1 && <div className="vertical-line" /> }
 			<p>{ownersStr}</p>
 		</div>
 	)

@@ -1,6 +1,6 @@
 // import './_file-table.css'
 
-import React, { useState } from 'react';
+import React from 'react';
 import FileTableRow from "./file-table-row";
 import { IUIFile } from "../page";
 

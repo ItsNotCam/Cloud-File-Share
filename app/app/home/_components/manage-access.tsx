@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react"
+import React, { useState } from "react"
 
 export default function ManageAccess(props: { close: () => void, shareFile: (username: string) => void }): JSX.Element {
 	const [username, setUsername] = useState<string>("")

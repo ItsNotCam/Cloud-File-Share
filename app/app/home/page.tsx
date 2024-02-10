@@ -7,8 +7,26 @@ import { FileActionsBar } from "./_components/file-actions"
 import {v4 as uuidv4} from 'uuid'
 import {useMutex} from 'react-context-mutex'
 import { getFileInfo } from "@/lib/util"
-import { TreeRoot } from "./_components/tree"
+import { FolderRoot } from "./_components/tree"
 import { IFolderProps } from "@/lib/db/DBFiles"
+
+
+export const DEFAULT_FILE: IDBFile = {
+	DESCRIPTION: "",
+	EXTENSION: "",
+	FILENAME: "Select a file :)",
+	ID: "",
+	IS_OWNER: true,
+	LAST_DOWNLOAD_TIME: new Date(Date.now()),
+	LAST_DOWNLOAD_USER_ID: "",
+	NAME: "",
+	SIZE_BYTES: 0,
+	UPLOAD_TIME: new Date(Date.now()),
+	SHARED_USERS: [] as string[],
+	PARENT_FOLDER_ID: "000000000000000000000000000000000000",
+	OWNER_USERNAME: ""
+}
+
 
 interface IHomeState {
 	gettingFiles: boolean
@@ -35,9 +53,9 @@ export default function Home(): JSX.Element {
 		selectedFile: {} as IUIFile,
 		selectedFolder: undefined,
 		showFileInfo: true,
-		files: [],
+		files: [] as IUIFile[],
 		folders: {} as IFolderProps,
-		uploadingFiles: [],
+		uploadingFiles: [] as IUIFile[],
 		isHoldingCtrl: false
 	})
 
@@ -89,8 +107,7 @@ export default function Home(): JSX.Element {
 		let stateFiles = state.files
 		let index = state.files.indexOf(file)
 
-		const selectedFile = stateFiles[index]
-		const newFile = await fetch(`/api/files/${selectedFile.ID}`)
+		const newFile = await fetch(`/api/files/${file.ID}`)
 			.then(file => file.json())
 			.catch(err => {
 				console.log(err.message)
@@ -110,20 +127,15 @@ export default function Home(): JSX.Element {
 			let file = filesToAdd[i]
 			
   		const {FILENAME, EXTENSION, NAME} = await getFileInfo(file)
-			const newFile: IUIFile = {
-				DESCRIPTION: "",
+			let newFile: IUIFile = {
+				...DEFAULT_FILE,
 				EXTENSION: EXTENSION,
 				ID: uuidv4(),
 				NAME: NAME,
 				FILENAME: FILENAME,
 				SIZE_BYTES: file.size,
 				UPLOAD_TIME: new Date(Date.now()),
-				LAST_DOWNLOAD_TIME: undefined,
-				LAST_DOWNLOAD_USER_ID: undefined,
 				IS_OWNER: true,
-				SHARED_USERS: [],
-				OWNER_USERNAME: "",
-				
 				isBeingUploaded: true,
 				file: file
 			}
@@ -213,20 +225,23 @@ export default function Home(): JSX.Element {
 
 	return (
 		<div className={`main-container ${state.showFileInfo ? "" : "gap-0"}`}>
-			<TreeRoot 
+			<FolderRoot 
 				folders={state.folders} 
 				selectedFolder={state.selectedFolder} 
 				setSelectedFolder={setSelectedFolder}
 			/>
 			<div className="table">
 				<div className="table-header">
-					<h1 className="text-3xl font-semibold text-ellipsis w-full overflow-hidden">{folderName}</h1>
+					<h1 className="text-3xl font-semibold text-ellipsis w-full overflow-hidden">
+						{folderName}
+					</h1>
 					<FileActionsBar 
 						file={state.selectedFile}
 						refreshFiles={refreshFiles}
 						files={state.files}
 						addFiles={addFiles} 
-						deleteFile={deleteFile}/>
+						deleteFile={deleteFile}
+					/>
 				</div>
 				<div className="table-body">
 					<div className="file-grid__row-header">
@@ -244,7 +259,7 @@ export default function Home(): JSX.Element {
 						uploadingFiles={state.uploadingFiles}
 						setFileUploaded={setFileUploaded}
 						setFileID={setFileID}
-						/>
+					/>
 				</div>
 			</div>
 			<div className={`file-info ${state.showFileInfo ? "" : "width-0"}`}>
