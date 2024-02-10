@@ -56,10 +56,6 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 		setDescription(e.target.value.substring(0, MAX_DESCRIPTION_LENGTH))
 	}
 
-	const updateName = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setName(e.target.value)
-	}
-
 	const fileInfo = [
 		["Type", file.EXTENSION || "none"],
 		["Size", `${calcFileSize(file.SIZE_BYTES)}`],
@@ -96,7 +92,10 @@ export default function FileInfo(props: { file: IDBFile, refreshInfo: () => void
 		<div className="horizontal-divider" />
 		<div className="file-info-container ">
 			{managingAccess 
-        ? <ManageAccess close={() => setManagingAccess(false)} shareFile={(username) => shareFile(username)}/> 
+        ? <ManageAccess 
+						close={() => setManagingAccess(false)} 
+						shareFile={(username) => shareFile(username)}
+					/> 
         : null
       }
 			<div className={`${managingAccess ? "cursor-not-allowed" : ""}`}>

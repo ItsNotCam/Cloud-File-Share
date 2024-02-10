@@ -183,7 +183,6 @@ export default abstract class DBFile {
 				const entry = await userResp.entries().next()
 				entry.value[1].map((v: any) => {
 					files[i].SHARED_USERS?.push(v["USERNAME"])
-
 					const owner = (v["IS_OWNER"] as any).readInt8()
 					if (owner === 1) {
 						files[i].OWNER_USERNAME = v["USERNAME"]
@@ -414,7 +413,6 @@ export default abstract class DBFile {
 				current.COLOR = row.COLOR
 			})
 
-			console.log(folders)
 			return folders
 		} catch (err: any) {
 			Logger.LogErr(`Error getting folders => ${err.message}`)

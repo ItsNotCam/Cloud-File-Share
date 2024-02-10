@@ -6,13 +6,13 @@ import { IUIFile } from "../page";
 
 
 interface IFileTableProps {
-	setSelected: (file: IUIFile) => void,
+	setSelectedFile: (file: IUIFile) => void,
 	refreshFileInfo: (file: IUIFile) => void,
 	setFileUploaded: (file: IUIFile, FILE_ID: string) => void,
 	setFileID: (file: IUIFile, ID: string) => void,
 	files: IUIFile[],
 	uploadingFiles: IUIFile[],
-	selectedFileIdx: number,
+	selectedFile: IUIFile,
 }
 
 export default function FileTable(props: IFileTableProps): React.ReactNode {
@@ -27,7 +27,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 
 	const trySetSelected = (file: IUIFile) => {
 		if(!file.isBeingUploaded)
-			props.setSelected(file)
+			props.setSelectedFile(file)
 	}
 
 	return(
@@ -38,8 +38,8 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 						<div key={file.ID} onClick={() => trySetSelected(file)}>
 							<FileTableRow 
 								file={file}
-								isSelected={index === props.selectedFileIdx}
-								setSelected={() => props.setSelected(file)}
+								isSelected={props.selectedFile.ID === file.ID}
+								setSelected={() => props.setSelectedFile(file)}
 								updateFilename={(filename) => updateFilename(file, filename)} 
 								activeUpload={file.isBeingUploaded} 
 								setFileUploaded={(FILE_ID) => props.setFileUploaded(file, FILE_ID)}
@@ -60,8 +60,8 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 						<div key={file.ID} onClick={() => trySetSelected(file)}>
 							<FileTableRow 
 								file={file}
-								isSelected={index === props.selectedFileIdx}
-								setSelected={() => props.setSelected(file)}
+								isSelected={props.selectedFile.ID === file.ID}
+								setSelected={() => props.setSelectedFile(file)}
 								updateFilename={(filename) => updateFilename(file, filename)} 
 								activeUpload={file.isBeingUploaded} 
 								setFileUploaded={(FILE_ID) => props.setFileUploaded(file, FILE_ID)}

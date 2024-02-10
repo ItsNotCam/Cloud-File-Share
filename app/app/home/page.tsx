@@ -12,7 +12,7 @@ import { IFolderProps } from "@/lib/db/DBFiles"
 
 interface IHomeState {
 	gettingFiles: boolean
-	selectedFileIdx: number
+	selectedFile: IUIFile
 	selectedFolder: IFolderProps | undefined
 	showFileInfo: boolean
 	files: IUIFile[],
@@ -32,7 +32,7 @@ export default function Home(): JSX.Element {
 
 	const [state, setState] = useState<IHomeState>({
 		gettingFiles: true,
-		selectedFileIdx: -1,
+		selectedFile: {} as IUIFile,
 		selectedFolder: undefined,
 		showFileInfo: true,
 		files: [],
@@ -45,7 +45,7 @@ export default function Home(): JSX.Element {
 		fetchFiles()
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") {
-				state.selectedFileIdx === -1
+				state.selectedFile === {} as IUIFile
 			}
 		})
 	}, [])
@@ -76,15 +76,10 @@ export default function Home(): JSX.Element {
 			})
 	}
 
-	const setSelected = (file: IUIFile) => {
-		let index = state.files.indexOf(file)
-		if(state.files[index].isBeingUploaded || index === state.selectedFileIdx) {
-			return
-		}
-
+	const setSelectedFile = (file: IUIFile) => {
 		setState(prev => ({
 			...prev,
-			selectedFileIdx: index
+			selectedFile: file
 		}))
 		
 		refreshFileInfo(file)
@@ -166,10 +161,15 @@ export default function Home(): JSX.Element {
 	}
 
 	const deleteFile = async() => {
-		const file = state.files[state.selectedFileIdx]
-		let URL = `/api/files/${file.ID}${file.IS_OWNER ? "" : "/unshare"}`
-		let method = file.IS_OWNER ? "DELETE" : "POST"
+		let URL = `/api/files/${state.selectedFile.ID}${state.selectedFile.IS_OWNER ? "" : "/unshare"}`
+		let method = state.selectedFile.IS_OWNER ? "DELETE" : "POST"
 		await fetch(URL, { method: method })
+
+		setState({
+			...state,
+			selectedFile: {} as IUIFile
+		})
+
 		refreshFiles()
 	}
 
@@ -213,12 +213,16 @@ export default function Home(): JSX.Element {
 
 	return (
 		<div className={`main-container ${state.showFileInfo ? "" : "gap-0"}`}>
-			<TreeRoot folders={state.folders} selectedFolder={state.selectedFolder} setSelectedFolder={setSelectedFolder}/>
+			<TreeRoot 
+				folders={state.folders} 
+				selectedFolder={state.selectedFolder} 
+				setSelectedFolder={setSelectedFolder}
+			/>
 			<div className="table">
 				<div className="table-header">
 					<h1 className="text-3xl font-semibold text-ellipsis w-full overflow-hidden">{folderName}</h1>
 					<FileActionsBar 
-						file={state.files[state.selectedFileIdx]}
+						file={state.selectedFile}
 						refreshFiles={refreshFiles}
 						files={state.files}
 						addFiles={addFiles} 
@@ -233,8 +237,8 @@ export default function Home(): JSX.Element {
 						<div className="file-grid__col-5"></div>
 					</div>
 					<FileTable 
-						selectedFileIdx={state.selectedFileIdx} 
-						setSelected={setSelected} 
+						selectedFile={state.selectedFile} 
+						setSelectedFile={setSelectedFile} 
 						refreshFileInfo={refreshFileInfo}
 						files={state.files} 
 						uploadingFiles={state.uploadingFiles}
@@ -245,8 +249,8 @@ export default function Home(): JSX.Element {
 			</div>
 			<div className={`file-info ${state.showFileInfo ? "" : "width-0"}`}>
 				<FileInfo
-					file={state.files[state.selectedFileIdx]}
-					refreshInfo={() => refreshFileInfo(state.files[state.selectedFileIdx])}
+					file={state.selectedFile}
+					refreshInfo={() => refreshFileInfo(state.selectedFile)}
 				/>
 			</div>
 		</div>

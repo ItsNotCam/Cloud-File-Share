@@ -71,18 +71,23 @@ export default function FileTableRow(props: IFileTablRowProps) {
 			signal: abortController.signal,
 			onUploadProgress: handleProgressUpdate
 		}).then(resp => {
-			// props.setFileID(resp.data.ID)
 			props.setFileUploaded(resp.data.ID)
 		}).catch((e: AxiosError) => {
 			Logger.LogErr(`Failed to upload file\n${e.message}\n${e.response?.data}`)
 		}).finally(() => {
-			// props.setFileUploaded()
 			setIsUploading(false)
 		})
 	}
 
 	return (
-		<div className={`file-grid__row ${props.isSelected && !props.file.isBeingUploaded ? "file-grid__row-selected" : ""} ${isUploading ? "cursor-not-allowed" : ""}`}
+		<div className={`file-grid__row 
+			${props.isSelected && !props.file.isBeingUploaded 
+				? "file-grid__row-selected" 
+				: ""
+			} ${isUploading 
+				? "cursor-not-allowed" 
+				: ""}`
+			}
 			onClick={() => {if (!isUploading ) props.setSelected()}}>
 			{isUploading
 				? <div className="uploading-bar">
@@ -111,10 +116,25 @@ export default function FileTableRow(props: IFileTablRowProps) {
 					}
 				</div>
 			</div>
-			<div className="file-grid__col-2" onClick={() => setEditingFilename(false)}>{props.file.IS_OWNER ? "me" : props.file.OWNER_USERNAME}</div>
-			<div className="file-grid__col-3" onClick={() => setEditingFilename(false)}>{toDateString(props.file.UPLOAD_TIME)}</div>
-			<div className="file-grid__col-4" onClick={() => setEditingFilename(false)}>{calcFileSize(props.file.SIZE_BYTES)}</div>
-			<div className="file-grid__col-5" onClick={() => setEditingFilename(false)} style={{pointerEvents: isUploading ? "none" : "all"}}>
+			<div className="file-grid__col-2" 
+				onClick={() => setEditingFilename(false)}
+			>
+				{props.file.IS_OWNER ? "me" : props.file.OWNER_USERNAME}
+			</div>
+			<div className="file-grid__col-3" 
+				onClick={() => setEditingFilename(false)}
+			>
+				{toDateString(props.file.UPLOAD_TIME)}
+			</div>
+			<div className="file-grid__col-4" 
+				onClick={() => setEditingFilename(false)}
+			>
+				{calcFileSize(props.file.SIZE_BYTES)}
+			</div>
+			<div className="file-grid__col-5" 
+				onClick={() => setEditingFilename(false)} 
+				style={{pointerEvents: isUploading ? "none" : "all"}}
+			>
 				<FileActions file={props.file} />
 			</div>
 		</div>
