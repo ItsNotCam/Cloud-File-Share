@@ -59,14 +59,28 @@ export default abstract class DBUser {
 				throw {message: `Failed to connect to database => ${err}`}
 			}
 			const INSERT_SQL: string = `INSERT INTO USER VALUES (DEFAULT, '${USERNAME}', '${PASSWORD}', DEFAULT)`
-			const resp: ResultSetHeader[] = await connection.execute(INSERT_SQL) as ResultSetHeader[]
-
-			const affectedRows: number = resp[0].affectedRows;
+			const userResp: ResultSetHeader[] = await connection.execute(INSERT_SQL) as ResultSetHeader[]
+			
+			let affectedRows: number = userResp[0].affectedRows;
 			if(affectedRows < 1) {
 				throw {message: "No rows were updated"};
 			}
 
-			return await DBUser.GetByUsername(USERNAME)
+			const user = await DBUser.GetByUsername(USERNAME)
+			if(user === undefined) {
+				throw {message: `Failed to get user by username ${USERNAME}`}
+			}
+
+			const FOLDER_SQL: string = `INSERT INTO DIRECTORY VALUES (
+				DEFAULT, DEFAULT, '${user?.ID}', 'Home', DEFAULT
+			)`
+			const folderResp: ResultSetHeader[] = await connection.execute(FOLDER_SQL) as ResultSetHeader[]
+			affectedRows = folderResp[0].affectedRows;
+			if(affectedRows < 1) {
+				throw {message: 'Failed to create user root folder'}
+			}
+
+			return user
 		} catch (err: any) {
 			Logger.LogErr(`Error creating user | ${err.message}`)
 		} finally {
