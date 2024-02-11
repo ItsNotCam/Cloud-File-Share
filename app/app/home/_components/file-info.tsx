@@ -3,9 +3,24 @@ import FileIcon from "./file-icon";
 import { calcFileSize, toDateString } from "@/lib/util";
 import React, { useEffect, useState } from "react";
 import ManageAccess from "./manage-access";
-import { DEFAULT_FILE } from "../page";
 import { IUIFile } from "../page";
 
+
+const DEFAULT_FILE: IDBFile = {
+	DESCRIPTION: "",
+	EXTENSION: "",
+	FILENAME: "Select a file :)",
+	ID: "",
+	IS_OWNER: true,
+	LAST_DOWNLOAD_TIME: new Date(Date.now()),
+	LAST_DOWNLOAD_USER_ID: "",
+	NAME: "",
+	SIZE_BYTES: 0,
+	UPLOAD_TIME: new Date(Date.now()),
+	SHARED_USERS: [] as string[],
+	PARENT_FOLDER_ID: "000000000000000000000000000000000000",
+	OWNER_USERNAME: ""
+}
 
 const MAX_DESCRIPTION_LENGTH: number = 5000;
 

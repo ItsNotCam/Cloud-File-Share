@@ -11,7 +11,7 @@ import { FolderRoot } from "./_components/folders"
 import { IFolderProps } from "@/lib/db/DBFiles"
 
 
-export const DEFAULT_FILE: IDBFile = {
+const DEFAULT_FILE: IDBFile = {
 	DESCRIPTION: "",
 	EXTENSION: "",
 	FILENAME: "Select a file :)",

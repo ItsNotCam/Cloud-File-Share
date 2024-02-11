@@ -417,8 +417,9 @@ export default abstract class DBFile {
 	}
 
 	static async SaveFile(FILE_ID: string, NAME: string,
-		EXTENSION: string, USER_ID: string, PATH: string, FILE_SIZE: number): Promise<boolean> {
-
+		EXTENSION: string, USER_ID: string, PATH: string, 
+    FILE_SIZE: number
+  ): Promise<boolean> {
 		let { connection, err } = await CreateConnection()
 		try {
 			if (connection === null) {
