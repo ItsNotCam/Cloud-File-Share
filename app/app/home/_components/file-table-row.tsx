@@ -125,7 +125,11 @@ export default function FileTableRow(props: IFileTablRowProps) {
 		>
 			{isUploading
 				? <div className="uploading-bar">
-					<div className="uploading-bar-progress" id="uploading-bar" style={{ width: `${uploadProgress}%` }} />
+					<div 
+						className={`uploading-bar-progress ${uploadProgress > 99.9999 ? "uploading-bar-progress__pending" : ""} `} 
+						id="uploading-bar" 
+						style={{ width: `${uploadProgress}%` }} 
+					/>
 				</div>
 				: null
 			}

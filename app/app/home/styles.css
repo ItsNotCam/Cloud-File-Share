@@ -468,6 +468,11 @@ table {
 	transition: width 0.2s;
 }
 
+.uploading-bar-progress__pending {
+	background-color: hsla(31, 57%, 54%, 0.21);
+	/* background-color: hsla(120, 44%, 51%, 0.21); */
+}
+
 @keyframes widthLol {
 	from {
 		width: 0
