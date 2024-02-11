@@ -42,18 +42,14 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 		return NextResponse.json({message: "unauthorized"}, {status: 403})
 	}
 
-  const PATH = await DBFile.DeleteFile(FILE_ID, { 
-    USER_ID: user.ID,
-  })
-
+  const PATH = await DBFile.DeleteFile(FILE_ID, { USER_ID: user.ID })
   if(PATH != undefined) {
     // remove from folder structure
 		try {
 			if(fs.existsSync(PATH)) {
-				fs.rm(PATH, () => {})
+				fs.rmSync(PATH)
 
         const newFiles = await DBFile.GetFilesOfUser({USER_ID: user.ID})
-
 				return NextResponse.json({ 
           message: "file deleted" ,
           files: newFiles
@@ -64,7 +60,7 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 				throw {message: `File ${FILE_ID} does not exist`}
 			}
 		} catch(err: any) {
-			Logger.LogErr(`Failed to delete file ${FILE_ID} from storage: ${err.message}`)
+			Logger.LogErr(`Failed to delete file ${FILE_ID}: ${err.message}`)
 		}
 
 		return NextResponse.json({
@@ -98,8 +94,8 @@ export async function PATCH(request: NextRequest, context: IFileIDContext): Prom
       }
 
       const info = {
-        DESCRIPTION: description?.substring(0, 5000),
-        NAME: name?.substring(0,64)
+        DESCRIPTION: description?.substring(0, 5000).replaceAll('\'', '\"'),
+        NAME: name?.substring(0,64).replaceAll('\'', '\"')
       }
 
       const updatedFile: IDBFile | undefined = await DBFile.UpdateFileInfo(FILE_ID, identifier, info)

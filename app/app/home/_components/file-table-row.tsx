@@ -42,10 +42,10 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Enter") {
-			setEditingFilename(false)
-
       if(props.file.NAME !== filename)
-			  props.updateFilename(filename)
+        props.updateFilename(filename)
+
+			setEditingFilename(false)
 		}
 	}
 
@@ -71,7 +71,8 @@ export default function FileTableRow(props: IFileTablRowProps) {
 			headers: { 'Content-Type': 'multipart/form-data' },
 			signal: abortController.signal,
 			onUploadProgress: handleProgressUpdate
-		}).then(resp => {
+		})
+    .then(resp => {
 			props.setFileUploaded(resp.data.ID)
 		}).catch((e: AxiosError) => {
 			Logger.LogErr(`Failed to upload file\n${e.message}\n${e.response?.data}`)
@@ -107,7 +108,9 @@ export default function FileTableRow(props: IFileTablRowProps) {
 						? <input type="text"
 							className="filename-input"
 							value={filename}
-							onChange={(e) => setFilename(e.target.value)}
+							onChange={(e) => setFilename(
+                e.target.value.substring(0,64).replaceAll("\'", "\"")
+              )}
 							onBlur={() => setFilename(props.file.NAME)}
 							onKeyDown={handleKeyDown}
 						/>

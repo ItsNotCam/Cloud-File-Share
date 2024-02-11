@@ -124,11 +124,11 @@ export default function Home(): JSX.Element {
 		for(let i = 0; i < filesToAdd.length; i++) {
 			let file = filesToAdd[i]
 			
-  		const {FILENAME, EXTENSION, NAME} = await getFileInfo(file)
+  		const {FILENAME, EXTENSION, NAME, FILE_ID} = await getFileInfo(file)
 			let newFile: IUIFile = {
 				...DEFAULT_FILE,
 				EXTENSION: EXTENSION,
-				ID: uuidv4(),
+				ID: FILE_ID,
 				NAME: NAME,
 				FILENAME: FILENAME,
 				SIZE_BYTES: file.size,
@@ -168,6 +168,8 @@ export default function Home(): JSX.Element {
 			uploadingFiles: newUploadingFiles,
 			files: [file].concat(prev.files)
 		}))
+
+    refreshFiles()
 	}
 
   const setFileInfo = (file: IUIFile, newFile: IUIFile): void => {
@@ -175,10 +177,11 @@ export default function Home(): JSX.Element {
     if(foundFileIdx >= 0) {
       let stateFiles = state.files
       stateFiles[foundFileIdx] = newFile
-      setState({
-        ...state,
-        files: stateFiles
-      })
+      setState(prev => ({
+        ...prev,
+        files: stateFiles,
+        selectedFile: state.selectedFile === file ? newFile : state.selectedFile
+      }))
     }
   }
 

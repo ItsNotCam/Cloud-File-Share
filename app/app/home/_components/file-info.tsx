@@ -17,29 +17,11 @@ export default function FileInfo(props: {
 	const fileIcon: JSX.Element = FileIcon({ extension: file.EXTENSION })
 
 	const [description, setDescription] = useState<string>(file.DESCRIPTION)
-	const [name, setName] = useState<string>(file.NAME)
 	const [managingAccess, setManagingAccess] = useState<boolean>(false)
-
-  useEffect(() => {
-    let filename = `${file.NAME}${file.EXTENSION}`
-    if(file.NAME === undefined && file.EXTENSION === undefined) {
-      filename = "Select a file"
-    }
-    setName(filename)
-  }, [])
 
 	useEffect(() => {
 		setDescription(file.DESCRIPTION)
 	}, [file.DESCRIPTION])
-
-	useEffect(() => {
-    let filename = `${file.NAME}${file.EXTENSION}`
-    if(file.NAME === undefined && file.EXTENSION === undefined) {
-      filename = "Select a file"
-    }
-    setName(filename)
-	}, [file.NAME])
-
 
 	const getUnfocus = (e: React.FocusEvent) => {
     fetch(`/api/files/${file.ID}`, {
@@ -58,7 +40,7 @@ export default function FileInfo(props: {
 	}
 
 	const updateDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setDescription(e.target.value.substring(0, MAX_DESCRIPTION_LENGTH))
+		setDescription(e.target.value.substring(0, MAX_DESCRIPTION_LENGTH).replaceAll('\'', "\""))
 	}
 
 	const fileInfo = [
@@ -68,13 +50,9 @@ export default function FileInfo(props: {
 		["Uploaded", file.UPLOAD_TIME ? toDateString(file.UPLOAD_TIME) : "N/A"]
 	]
   const shareFile = (username: string) => {
-    const data = {
-      username: username
-    }
-
     fetch(`/api/files/${file.ID}/share`, {
       method: "POST",
-      body: JSON.stringify(data)
+      body: JSON.stringify({ username: username })
     }).then(resp => console.log(resp))
   }
 	
@@ -82,7 +60,7 @@ export default function FileInfo(props: {
 		<div className="file-info-title">
 			<span>{fileIcon}</span>
 			<h1 className="font-semibold">
-				{name}
+				{file.NAME}{file.EXTENSION}
 			</h1>
 		</div>
 		<div className="horizontal-divider" />

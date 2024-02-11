@@ -70,7 +70,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 						<div key={file.ID} onClick={() => trySetSelected(file)}>
 							<FileTableRow 
 								file={file}
-								isSelected={props.selectedFile.ID === file.ID}
+								isSelected={props.selectedFile?.ID === file?.ID}
 								setSelected={() => props.setSelectedFile(file)}
 								updateFilename={(filename) => updateFilename(file, filename)} 
 								activeUpload={file.isBeingUploaded} 

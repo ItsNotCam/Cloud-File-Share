@@ -144,7 +144,15 @@ export default abstract class DBFile {
 		let DATA_SQL: string = ""
 		if (USER_ID !== undefined) {
 			DATA_SQL = `
-				 
+				SELECT 
+					FO.ID, FI.NAME, FO.EXTENSION, CONCAT(FI.NAME, FO.EXTENSION), FI.DESCRIPTION, 
+					FO.SIZE_BYTES, FO.UPLOAD_TIME, FO.LAST_DOWNLOAD_TIME, FO.LAST_DOWNLOAD_USER_ID,
+					FI.IS_OWNER, FI.PARENT_FOLDER_ID
+				FROM FILE_INSTANCE AS FI
+					INNER JOIN USER AS U ON U.ID = USER_ID 
+					INNER JOIN FILE_OBJECT AS FO ON FO.ID = FILE_ID	
+				WHERE U.ID='${USER_ID}' AND FI.PARENT_FOLDER_ID='${FOLDER_ID}'
+				ORDER BY FO.UPLOAD_TIME DESC;
 			`
 		} else if (TOKEN !== undefined) {
 			DATA_SQL = `
@@ -324,11 +332,10 @@ export default abstract class DBFile {
 		/*
 			GENERATE SQL QUERY
 	  
-			All of this will end up with something like:
-		  
+      -- RESULT --
 			UPDATE FILE_INSTANCE
 			SET DESCRIPTION='...', NAME='...'
-			WHERE FILE_ID='...' AND USER_ID=(SELECT USER_ID FROM AUTH WHERE [TOKEN/USER_ID]='...')
+			WHERE FILE_ID='...' AND USER_ID = [USER_ID] || (SELECT USER_ID FROM AUTH WHERE TOKEN='...')
 		*/
 		let SQL = `UPDATE FILE_INSTANCE SET`
 		let updatedFields: string[] = []
@@ -349,14 +356,15 @@ export default abstract class DBFile {
 			SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}')`
 		}
 
+    /* END GENERATE SQL QUERY */
+
 		let { connection, err } = await CreateConnection()
 		try {
 			if (connection === null) {
 				throw { message: `Failed to connect to database => ${err}` }
 			}
 			await connection.execute(SQL)
-      
-			return this.GetFileInfo(FILE_ID, identifier);
+			return await this.GetFileInfo(FILE_ID, identifier);
 		} catch (err: any) {
 			Logger.LogErr(`Error updating file info | ${err.message}`)
 		} finally {
@@ -375,12 +383,12 @@ export default abstract class DBFile {
 				throw { message: `Failed to connect to database => ${err}` }
 			}
 			// get the file path of the saved file
-			const validateUser = await DBFile.UserIsOwner(FILE_ID, {
+			const userIsOwner = await DBFile.UserIsOwner(FILE_ID, {
 				USER_ID: USER_ID,
 				TOKEN: TOKEN
 			})
 
-			if (!validateUser)
+			if (!userIsOwner)
 				throw { message: "user is not the owner of the file" }
 
 			const SQL: string = `
@@ -472,11 +480,12 @@ export default abstract class DBFile {
 			const entry = await userResp.entries().next()
 			const allFolders = entry.value[1]
 
-			let folders: IFolderProps = {} as IFolderProps
+      // Translate database query results into JSON
+			let foldersJSON: IFolderProps = {} as IFolderProps
 
 			allFolders.forEach((row: any) => {
 				const pathNames = row.PATH.split("/")
-				let current = folders
+				let current = foldersJSON
 
 				if (!current.CHILDREN)
 					current.CHILDREN = [] as IFolderProps[]
@@ -494,10 +503,12 @@ export default abstract class DBFile {
 				current.COLOR = row.COLOR
 			})
 
-			return folders
+			return foldersJSON
 		} catch (err: any) {
 			Logger.LogErr(`Error getting folders => ${err.message}`)
-		}
+		} finally {
+      connection?.end()
+    }
 
 		return undefined
 	}

@@ -20,7 +20,11 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
   const data = await request.formData()
   const file: File = data.get('file') as File
   if(!file) {
-    return new NextResponse("No file has been sent", { status: 400 } )
+    return NextResponse.json({
+      message: "No file was sent"
+    }, {
+      status: 400
+    })
   }
 
   // get file info
@@ -31,10 +35,11 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 	const USER = await DBAuth.GetUserFromToken(token)
 
 	if(USER === undefined) {
-		return new NextResponse(
-			`User doesnt exist`,
-			{ status: 200 }
-		)
+		return NextResponse.json({
+      message: "User does not exist"
+    }, {
+      status: 400
+    })
 	}
 
 	try {
@@ -47,19 +52,24 @@ async function UploadFile(request: NextRequest): Promise<NextResponse> {
 
 		if(!success) {
 			fs.rm(PATH, () => { return "deleted" })
-			return new NextResponse(
-				"Error saving file to the database", { status: 500 }
-			)
+      throw {message: "Error saving file to the database - deleting file"}
 		}
+    
+    const newFiles = await DBFile.GetFilesOfUser({USER_ID: USER.ID})
+    return NextResponse.json({
+      files: newFiles
+    }, { 
+      status: 200 
+    })
 	} catch(err: any) {
 		Logger.LogErr(`Error saving file ${err.message}`)
 	}
 
-	return NextResponse.json({
-		ID: FILE_ID
-	}, { 
-		status: 200 
-	})
+  return NextResponse.json({
+    message: "Error saving file"
+  }, {
+    status: 500
+  })
 }
 
 
