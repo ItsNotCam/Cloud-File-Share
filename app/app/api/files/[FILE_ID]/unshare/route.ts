@@ -1,3 +1,4 @@
+import DBFile from "@/lib/db/DBFiles";
 import { CreateConnection, QueryGetFirst } from "@/lib/db/DBUtil";
 import Logger from "@/lib/logger";
 import { RowDataPacket } from "mysql2/promise";
@@ -27,7 +28,8 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 		const affectedRows = resp[0].affectedRows;
 		if(affectedRows > 0) {
 			return NextResponse.json({
-				message: "Unsharing Successful"
+				message: "Unsharing Successful",
+				files: await DBFile.GetFilesOfUser({USER_ID: userResp.USER_ID})
 			}, {
 				status: 200
 			})
