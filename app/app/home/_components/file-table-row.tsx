@@ -26,13 +26,13 @@ export default function FileTableRow(props: IFileTablRowProps) {
 	const [isUploading, setIsUploading] = useState<boolean>(false)
 	const [uploadProgress, setUploadProgress] = useState<number>(0)
 
-	
+
 	// initialize an AbortController instance
 	const abortController = new AbortController()
 
 	// on enter, if this is a file that is marked as being one to upload, do it
 	useEffect(() => {
-		if(props.activeUpload && props.file?.file != null) {
+		if (props.activeUpload && props.file?.file != null) {
 			setIsUploading(true)
 			uploadFile(props.file.file)
 		}
@@ -46,17 +46,17 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Enter") {
-      updateFilename()
+			updateFilenameAndHideInput()
 		}
 	}
 
-	const updateFilename = () => {
-		if(props.file.NAME !== filename)
+	const updateFilenameAndHideInput = () => {
+		if (props.file.NAME !== filename)
 			props.updateFilename(filename)
 
 		setEditingFilename(false)
 	}
-	
+
 	const resetFilename = () => {
 		setFilename(props.file.NAME)
 		setEditingFilename(false)
@@ -68,12 +68,23 @@ export default function FileTableRow(props: IFileTablRowProps) {
 		}
 	}
 
+	const trySetEditingFilename = () => {
+		if (isUploading) {
+			setEditingFilename(false)
+		}
+	}
+
+	const trySetSelected = () => {
+		if (!isUploading)
+			props.setSelected()
+	}
+
 	const handleProgressUpdate = (event: AxiosProgressEvent) => {
 		setUploadProgress(event.loaded / (event.total || 9999999) * 100)
 	}
 
 	const uploadFile = (file: File | null) => {
-		if(!file) {
+		if (!file) {
 			return
 		}
 
@@ -85,25 +96,31 @@ export default function FileTableRow(props: IFileTablRowProps) {
 			signal: abortController.signal,
 			onUploadProgress: handleProgressUpdate
 		})
-    .then(resp => {
-			props.setFileUploaded(resp.data.ID)
-		}).catch((e: AxiosError) => {
-			Logger.LogErr(`Failed to upload file\n${e.message}\n${e.response?.data}`)
-		}).finally(() => {
-			setIsUploading(false)
-		})
+			.then(resp => {
+				props.setFileUploaded(resp.data.ID)
+			}).catch((e: AxiosError) => {
+				Logger.LogErr(`Failed to upload file\n${e.message}\n${e.response?.data}`)
+			}).finally(() => {
+				setIsUploading(false)
+			})
 	}
 
-	
+	const onContextMenu = (e: any) => {
+		e.preventDefault()
+		props.setSelected()
+	}
+
+
 	let fileGridRowClasses = ""
-	if(props.isSelected && !props.file.isBeingUploaded )
+	if (props.isSelected && !props.file.isBeingUploaded)
 		fileGridRowClasses = " file-grid__row-selected"
-	if(isUploading)
+	if (isUploading)
 		fileGridRowClasses += " cursor-not-allowed"
 
 	return (
 		<div className={`file-grid__row ${fileGridRowClasses}`}
-			onClick={() => {if (!isUploading ) props.setSelected()}}
+			onClick={trySetSelected}
+			onContextMenu={onContextMenu}
 			draggable={!editingFilename}
 		>
 			{isUploading
@@ -113,29 +130,26 @@ export default function FileTableRow(props: IFileTablRowProps) {
 				: null
 			}
 			<div className="file-grid__col-1 cursor-default">
-				<FileIcon extension={props.file.EXTENSION} onClick={() => {
-					if (isUploading) {
-						setEditingFilename(false)
-					}
-				}} />
+				<FileIcon extension={props.file.EXTENSION} onClick={trySetEditingFilename} />
 				<div className={`${props.isSelected ? "cursor-text w-full" : ""}`}>
 					{editingFilename && props.isSelected && !isUploading
-						? (<div className="file-name-edit-group">
-							<input type="text"
-								className="filename-input"
-								value={filename}
-								onChange={(e) => setFilename(
-									e.target.value.substring(0,64).replaceAll("\'", "\"")
-								)}
-								onKeyDown={handleKeyDown}
-							/>
-							<IconButton size="small" onClick={resetFilename}>
-									<CloseIcon fontSize="small"/>
-							</IconButton>
-							<IconButton size="small" onClick={updateFilename}>
-									<CheckIcon fontSize="small"/>
-							</IconButton>
-						</div>
+						? (
+							<div className="file-name-edit-group">
+								<input type="text"
+									className="filename-input"
+									value={filename}
+									onChange={(e) => setFilename(
+										e.target.value.substring(0, 64).replaceAll("\'", "\"")
+									)}
+									onKeyDown={handleKeyDown}
+								/>
+								<IconButton size="small" onClick={resetFilename}>
+									<CloseIcon fontSize="small" />
+								</IconButton>
+								<IconButton size="small" onClick={updateFilenameAndHideInput}>
+									<CheckIcon fontSize="small" />
+								</IconButton>
+							</div>
 						) : (
 							<span style={{ display: editingFilename && props.isSelected ? "none" : "block" }} onClick={() => tryEditFilename()}>
 								{`${filename}${props.file.EXTENSION}`}
@@ -144,25 +158,16 @@ export default function FileTableRow(props: IFileTablRowProps) {
 					}
 				</div>
 			</div>
-			<div className="file-grid__col-2" 
-				onClick={() => setEditingFilename(false)}
-			>
+			<div className="file-grid__col-2">
 				{props.file.IS_OWNER ? "me" : props.file.OWNER_USERNAME}
 			</div>
-			<div className="file-grid__col-3" 
-				onClick={() => setEditingFilename(false)}
-			>
+			<div className="file-grid__col-3">
 				{toDateString(props.file.UPLOAD_TIME)}
 			</div>
-			<div className="file-grid__col-4" 
-				onClick={() => setEditingFilename(false)}
-			>
+			<div className="file-grid__col-4">
 				{calcFileSize(props.file.SIZE_BYTES)}
 			</div>
-			<div className="file-grid__col-5" 
-				onClick={() => setEditingFilename(false)} 
-				style={{pointerEvents: isUploading ? "none" : "all"}}
-			>
+			<div className="file-grid__col-5" style={{ pointerEvents: isUploading ? "none" : "all" }}>
 				<FileActions file={props.file} />
 			</div>
 		</div>
