@@ -6,6 +6,10 @@ import { IUIFile } from "../page";
 import axios, { AxiosError, AxiosProgressEvent } from "axios";
 import Logger from "@/lib/logger";
 
+import { IconButton } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+
 export interface IFileTablRowProps {
 	file: IUIFile,
 	isSelected: boolean,
@@ -42,11 +46,20 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 	const handleKeyDown = (event: React.KeyboardEvent) => {
 		if (event.key === "Enter") {
-      if(props.file.NAME !== filename)
-        props.updateFilename(filename)
-
-			setEditingFilename(false)
+      updateFilename()
 		}
+	}
+
+	const updateFilename = () => {
+		if(props.file.NAME !== filename)
+			props.updateFilename(filename)
+
+		setEditingFilename(false)
+	}
+	
+	const resetFilename = () => {
+		setFilename(props.file.NAME)
+		setEditingFilename(false)
 	}
 
 	const tryEditFilename = () => {
@@ -81,16 +94,18 @@ export default function FileTableRow(props: IFileTablRowProps) {
 		})
 	}
 
+	
+	let fileGridRowClasses = ""
+	if(props.isSelected && !props.file.isBeingUploaded )
+		fileGridRowClasses = " file-grid__row-selected"
+	if(isUploading)
+		fileGridRowClasses += " cursor-not-allowed"
+
 	return (
-		<div className={`file-grid__row 
-			${props.isSelected && !props.file.isBeingUploaded 
-				? "file-grid__row-selected" 
-				: ""
-			} ${isUploading 
-				? "cursor-not-allowed" 
-				: ""}`
-			}
-			onClick={() => {if (!isUploading ) props.setSelected()}}>
+		<div className={`file-grid__row ${fileGridRowClasses}`}
+			onClick={() => {if (!isUploading ) props.setSelected()}}
+			draggable={!editingFilename}
+		>
 			{isUploading
 				? <div className="uploading-bar">
 					<div className="uploading-bar-progress" id="uploading-bar" style={{ width: `${uploadProgress}%` }} />
@@ -105,18 +120,27 @@ export default function FileTableRow(props: IFileTablRowProps) {
 				}} />
 				<div className={`${props.isSelected ? "cursor-text w-full" : ""}`}>
 					{editingFilename && props.isSelected && !isUploading
-						? <input type="text"
-							className="filename-input"
-							value={filename}
-							onChange={(e) => setFilename(
-                e.target.value.substring(0,64).replaceAll("\'", "\"")
-              )}
-							onBlur={() => setFilename(props.file.NAME)}
-							onKeyDown={handleKeyDown}
-						/>
-						: <span style={{ display: editingFilename && props.isSelected ? "none" : "block" }} onClick={() => tryEditFilename()}>
-							{`${filename}${props.file.EXTENSION}`}
-						</span>
+						? (<div className="file-name-edit-group">
+							<input type="text"
+								className="filename-input"
+								value={filename}
+								onChange={(e) => setFilename(
+									e.target.value.substring(0,64).replaceAll("\'", "\"")
+								)}
+								onKeyDown={handleKeyDown}
+							/>
+							<IconButton size="small" onClick={resetFilename}>
+									<CloseIcon fontSize="small"/>
+							</IconButton>
+							<IconButton size="small" onClick={updateFilename}>
+									<CheckIcon fontSize="small"/>
+							</IconButton>
+						</div>
+						) : (
+							<span style={{ display: editingFilename && props.isSelected ? "none" : "block" }} onClick={() => tryEditFilename()}>
+								{`${filename}${props.file.EXTENSION}`}
+							</span>
+						)
 					}
 				</div>
 			</div>

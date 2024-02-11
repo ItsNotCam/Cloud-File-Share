@@ -263,13 +263,6 @@ export default function Home(): JSX.Element {
 					/>
 				</div>
 				<div className="table-body">
-					<div className="file-grid__row-header">
-						<div className="file-grid__col-1">Name</div>
-						<div className="file-grid__col-2">Owner</div>
-						<div className="file-grid__col-3">Uploaded</div>
-						<div className="file-grid__col-4">File Size</div>
-						<div className="file-grid__col-5"></div>
-					</div>
 					<FileTable 
 						selectedFile={state.selectedFile} 
 						setSelectedFile={setSelectedFile} 

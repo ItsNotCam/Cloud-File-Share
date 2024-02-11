@@ -406,6 +406,7 @@ table {
 	/* width: 50vw; */
 	text-wrap: nowrap;
 	overflow: hidden;
+	align-items: center;
 }
 
 .file-grid__col-5 {
@@ -588,4 +589,10 @@ table {
 .folder-selected,
 .folder-selected:hover {
 	background-color: var(--color-info-light);
+}
+
+.file-name-edit-group {
+	display: flex;
+	flex-direction: row;
+	gap: 0.25rem;
 }
