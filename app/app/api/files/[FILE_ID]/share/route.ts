@@ -41,7 +41,11 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 			const USER_SQL = `SELECT ID FROM USER WHERE USERNAME='${username}'`
 			const SHARE_SQL = `
 				INSERT INTO FILE_INSTANCE VALUES (
-					(${USER_SQL}), '${FILE_ID}', NULL, 0, '${fileInfoResp.NAME}', '${fileInfoResp.DESCRIPTION}' 
+					(${USER_SQL}), '${FILE_ID}', 
+					(SELECT ID FROM DIRECTORY WHERE PARENT_ID IS NULL AND USER_ID=(${USER_SQL})), 
+					0, 
+					'${fileInfoResp.NAME}', 
+					'${fileInfoResp.DESCRIPTION}' 
 				);
 			`
 			const shareResp: RowDataPacket[] = await connection.execute(SHARE_SQL) as RowDataPacket[]
@@ -57,7 +61,7 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 				const sharedUsers = (sharedUsersResp[0] as any).map((user: any) => {
 					return (user as any).USERNAME
 				})
-				
+
 				return NextResponse.json({
 					message: "Shared Success",
 					sharedUsers: sharedUsers

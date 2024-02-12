@@ -285,7 +285,9 @@ export default abstract class DBFile {
 		return []
 	}
 
-	static async UserIsOwner(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string, USERNAME?: string }): Promise<boolean> {
+	static async UserIsOwner(FILE_ID: string, 
+		identifier: { USER_ID?: string, TOKEN?: string, USERNAME?: string }
+	): Promise<boolean> {
 		const { USER_ID, TOKEN, USERNAME } = identifier
 
 		let SQL = `
@@ -293,6 +295,7 @@ export default abstract class DBFile {
       FROM FILE_INSTANCE
       WHERE FILE_ID='${FILE_ID}' AND IS_OWNER=1 AND USER_ID=
     `
+		
 		if (USER_ID) {
 			SQL += `'${USER_ID}'`
 		} else if(TOKEN) {
@@ -478,8 +481,8 @@ export default abstract class DBFile {
 			await connection.query(SQL);
 
 			SQL = `INSERT INTO FILE_INSTANCE VALUES (
-				'${USER_ID}', 
-        '${FILE_ID}', 
+				'${USER_ID}',
+        '${FILE_ID}',
         (SELECT ID FROM DIRECTORY WHERE PARENT_ID IS NULL AND USER_ID='${USER_ID}'), 
         1, 
         '${NAME}', 

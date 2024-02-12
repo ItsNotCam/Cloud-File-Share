@@ -74,7 +74,8 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 						<IconButton onClick={props.deleteOrUnshare}>
 							<DeleteIcon fontSize="inherit" style={{ color: "#545454", fontSize: "1.8rem" }} />
 						</IconButton>
-					</>)
+					</>
+					)
 			}
 			<label htmlFor="files" className="file-upload">
 				<IconButton onClick={openUploadDialog} title="Upload File" >

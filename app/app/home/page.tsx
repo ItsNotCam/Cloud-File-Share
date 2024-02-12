@@ -205,12 +205,13 @@ export default function Home(): JSX.Element {
 		}))
 	}
 
-	const unshareFile = async () => {
+	const unshareFile = async (username?: string) => {
 		const URL = `/api/files/${state.selectedFile.ID}/unshare`
 		const resp = await fetch(URL, { 
 			method: "DELETE", 
 			body: JSON.stringify({
 				token: new Cookies().get("token"),
+				username: username,
 				self: !state.selectedFile.IS_OWNER
 			}) 
 		})
