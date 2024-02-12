@@ -9,6 +9,7 @@ import {useMutex} from 'react-context-mutex'
 import { getFileInfo } from "@/lib/util"
 import { FolderRoot } from "./_components/folders"
 import { IFolderProps } from "@/lib/db/DBFiles"
+import Cookies from 'universal-cookie';
 
 
 const DEFAULT_FILE: IDBFile = {
@@ -185,23 +186,37 @@ export default function Home(): JSX.Element {
     }
   }
 
-	const deleteFile = async() => {
-		let URL = `/api/files/${state.selectedFile.ID}${state.selectedFile.IS_OWNER ? "" : "/unshare"}`
-		let method = state.selectedFile.IS_OWNER ? "DELETE" : "POST"
-		const resp = await fetch(URL, { method: method })
-    const js = await resp.json()
+	const deleteOrUnshareFile = async() => {
+		if(state.selectedFile.IS_OWNER) {
+			deleteFile()
+		} else {
+			unshareFile()
+		}
+	}
 
-    if(js) {
-      setState(prev => ({
-        ...prev,
-        files: js.files
-      }))
-    }
-
+	const deleteFile = async () => {
+		const URL = `/api/files/${state.selectedFile.ID}`
+		const resp = await fetch(URL, { method: "DELETE" })
+		const js = await resp.json()
 		setState(prev => ({
 			...prev,
-			selectedFile: {} as IUIFile,
+			files: js ? js.files : prev.files,
+			selectedFile: {} as IUIFile
 		}))
+	}
+
+	const unshareFile = async () => {
+		const URL = `/api/files/${state.selectedFile.ID}/unshare`
+		const resp = await fetch(URL, { 
+			method: "DELETE", 
+			body: JSON.stringify({
+				token: new Cookies().get("token"),
+				self: !state.selectedFile.IS_OWNER
+			}) 
+		})
+
+		if(resp.status === 200)
+			refreshFiles()
 	}
 
 	const refreshFiles = async() => {
@@ -259,7 +274,7 @@ export default function Home(): JSX.Element {
 						refreshFiles={refreshFiles}
 						files={state.files}
 						addFiles={addFiles} 
-						deleteFile={deleteFile}
+						deleteOrUnshare={deleteOrUnshareFile}
 					/>
 				</div>
 				<div className="table-body">

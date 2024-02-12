@@ -489,7 +489,7 @@ table {
 	/* gap: 1rem; */
 }
 
-.manage-access {
+.darken-background {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -497,21 +497,128 @@ table {
 	height: 100vh;
 	overflow: hidden;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	
+
 	background-color: hsla(0, 0%, 20%, 0.4);
 }
 
-.manage-access > div {
+.manage-access {
+	position: relative;
+	background-color: white;
+	padding: 1.5rem 1rem;
+	border-radius: 10px;
+	width: 500px;
+}
+
+.manage-access h1 {
+	font-size: 1.25rem;
+	margin-bottom: 1rem;
+}
+
+.manage-done-button {
+	/* padding: 1rem 0.2rem; */
+	padding-block: 0.65rem;
+	background-color: var(--color-info-dark);
+	color: white;
+	font-size: 0.95rem;
+	font-weight: 600;
+	margin-top: 1rem;
+	width: 20%;
+	text-align: center;
+	border-radius: 20rem;
+	align-self: flex-end;
+}
+
+.manage-done-button:hover {
+	box-shadow: -1px 1px 0.25rem rgb(79, 79, 79);
+	background-color: #286be0;
+}
+
+.manage-access input[type="text"] {
+	border: 1px solid #535353;
+	border-radius: 5px;
+	resize: none;
+	padding: 0.5rem 1rem;
+	background-color: white !important;
+	width: 100%;
+	font-size: 0.9rem;
+	height: 2.8rem;
+}
+
+.owners li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-inline: 1rem;
+	padding-block: 0.5rem;
+	border-radius: 3px;
+	gap: 0.5rem;
+	background-color: #f1f1f1;
+	margin-top: 0.5rem;
+}
+
+.owners li:first-child {
+	margin-top: 0;
+}
+
+.owners li span {
+	padding-left: 0.5rem;
+}
+
+.access-revoke {
+	/* padding: 1rem 0.2rem; */
+	padding-block: 0.4rem;
+	background-color: #cf0000;
+	color: white;
+	font-size: 0.9rem;
+	font-weight: 600;
+	/* margin-top: 1rem; */
+	width: 20%;
+	text-align: center;
+	border-radius: 20rem;
+}
+
+.access-revoke:hover {
+	box-shadow: -1px 1px 0.25rem rgb(79, 79, 79);
+	background-color: #e00000;
+}
+
+.access-revoke:disabled {
+	background-color: rgb(184, 184, 184);
+	color: gray;
+	cursor: not-allowed;
+}
+
+.manage-access input[type="text"]:focus {
+  outline: none !important;
+  border: 2px solid var(--color-info-dark);/* #719ECE; */
+  box-shadow: 0 0 5px var(--color-info);
+}
+
+.share-with {
+	display: flex;
+}
+
+.owners p {
+	padding-block: 1rem;
+}
+
+.owners li p {
+	padding-block: 5px;
+}
+
+/* .manage-access > div {
 	width: 600px;
 	height: 600px;
+	margin-bottom: 1rem;
 	border-radius: 20px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-}
+} */
 
 .access-list {
 	display: flex;

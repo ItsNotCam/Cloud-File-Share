@@ -34,7 +34,7 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 
 		const fileInfoResp: IOwnershipProps = await QueryGetFirst(connection, SQL)
 		if(fileInfoResp.USERNAME === username)
-			throw "cant share with yourself, idiot"
+			throw {message: "cant share with yourself, idiot"}
 
 		const isOwner = (fileInfoResp.IS_OWNER as any).readInt8() === 1
 		if(isOwner) {
@@ -47,8 +47,20 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 			const shareResp: RowDataPacket[] = await connection.execute(SHARE_SQL) as RowDataPacket[]
 			const affectedRows = shareResp[0].affectedRows;
 			if(affectedRows > 0) {
+				const UPDATED_SQL = `
+					SELECT USERNAME
+					FROM FILE_INSTANCE 
+					INNER JOIN USER ON USER_ID=ID
+					WHERE FILE_ID='${FILE_ID}' 
+				`
+				const sharedUsersResp = await connection.query(UPDATED_SQL)
+				const sharedUsers = (sharedUsersResp[0] as any).map((user: any) => {
+					return (user as any).USERNAME
+				})
+				
 				return NextResponse.json({
-					message: "Shared Success"
+					message: "Shared Success",
+					sharedUsers: sharedUsers
 				}, {
 					status: 200
 				})

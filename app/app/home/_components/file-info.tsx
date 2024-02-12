@@ -64,11 +64,48 @@ export default function FileInfo(props: {
 		["Owner", file.IS_OWNER ? "me" : (file.OWNER_USERNAME || "N/A")],
 		["Uploaded", file.UPLOAD_TIME ? toDateString(file.UPLOAD_TIME) : "N/A"]
 	]
+	
   const shareFile = (username: string) => {
     fetch(`/api/files/${file.ID}/share`, {
       method: "POST",
       body: JSON.stringify({ username: username })
-    }).then(resp => console.log(resp))
+    })
+		.then(resp => {
+			if (resp.status === 200)
+				return resp
+			throw {message: "Request failed"}
+		})
+		.then(resp => resp.json())
+		.then(js => {
+			const newFile = file
+			newFile.SHARED_USERS = js.sharedUsers
+			props.setFileInfo(props.file, newFile)
+			console.log(js)
+		}).catch(err => {
+			console.log(err)
+		})
+  }
+
+  const unshareFile = (username: string) => {
+		console.log("Attempting to unshare file with " + username)
+    fetch(`/api/files/${file.ID}/unshare`, {
+      method: "DELETE",
+      body: JSON.stringify({ username: username })
+    })
+		.then(resp => {
+			if (resp.status === 200)
+				return resp
+			throw {message: "Failed to unshare file"}
+		})
+		.then(resp => resp.json())
+		.then(js => {
+			const newFile = file
+			newFile.SHARED_USERS = js.sharedUsers
+			props.setFileInfo(props.file, newFile)
+			console.log(js)
+		}).catch(err => {
+			console.log(err)
+		})
   }
 	
 	return (<>
@@ -84,6 +121,9 @@ export default function FileInfo(props: {
         ? <ManageAccess 
 						close={() => setManagingAccess(false)} 
 						shareFile={(username) => shareFile(username)}
+						file={file}
+						sharedUsers={file.SHARED_USERS}
+						unshareFile={(username) => unshareFile(username)}
 					/> 
         : null
       }

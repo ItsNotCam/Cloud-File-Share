@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2/promise"
 import { QueryGetFirst } from "../db"
 import Logger from "../logger"
 import { CreateConnection } from "./DBUtil"
@@ -284,8 +285,8 @@ export default abstract class DBFile {
 		return []
 	}
 
-	static async UserIsOwner(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string }): Promise<boolean> {
-		const { USER_ID, TOKEN } = identifier
+	static async UserIsOwner(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string, USERNAME?: string }): Promise<boolean> {
+		const { USER_ID, TOKEN, USERNAME } = identifier
 
 		let SQL = `
       SELECT COUNT(*) AS COUNT
@@ -294,8 +295,10 @@ export default abstract class DBFile {
     `
 		if (USER_ID) {
 			SQL += `'${USER_ID}'`
-		} else {
+		} else if(TOKEN) {
 			SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}' LIMIT 1)`
+		} else if(USERNAME) {
+			SQL += `(SELECT ID FROM USER WHERE USERNAME='${USERNAME}')`
 		}
 
 		let { connection, err } = await CreateConnection()
@@ -374,6 +377,49 @@ export default abstract class DBFile {
 		return undefined;
 	}
 
+	static async Unshare(FILE_ID: string, 
+		identifier: { USER_ID?: string, TOKEN?: string }, 
+		username?: string
+	): Promise<string[] | undefined> {
+		let { connection, err } = await CreateConnection()
+		try {
+			if (connection === null) {
+				throw { message: `Failed to connect to database => ${err}` }
+			}
+
+			const userIsOwner = await DBFile.UserIsOwner(FILE_ID, {USERNAME: username})
+			if(userIsOwner) {
+				throw {message: "User attempted to unshare a file that they owned"}
+			}
+
+			let DEL_SQL = `
+				DELETE FROM FILE_INSTANCE WHERE USER_ID=(
+					SELECT ID FROM USER WHERE USERNAME='${username}'
+				) AND FILE_ID='${FILE_ID}'
+			`
+
+			const resp: RowDataPacket[] = await connection.execute(DEL_SQL) as RowDataPacket[]
+			const affectedRows = resp[0].affectedRows;
+			if(affectedRows > 0) {
+				const UPDATED_SQL = `
+					SELECT USERNAME
+					FROM FILE_INSTANCE 
+					INNER JOIN USER ON USER_ID=ID
+					WHERE FILE_ID='${FILE_ID}' 
+				`
+				const sharedUsersResp = await connection.query(UPDATED_SQL)
+				const sharedUsers = (sharedUsersResp[0] as any).map((user: any) => (user as any).USERNAME)
+				return sharedUsers
+			}
+		} catch (err: any) {
+			Logger.LogErr(`Error deleting file | ${err.message}`)
+		} finally {
+			connection?.end()
+		}
+
+		return undefined
+	}
+
 	static async DeleteFile(FILE_ID: string, identifier: { USER_ID?: string, TOKEN?: string }): Promise<string | undefined> {
 		const { USER_ID, TOKEN } = identifier
 
@@ -387,9 +433,9 @@ export default abstract class DBFile {
 				USER_ID: USER_ID,
 				TOKEN: TOKEN
 			})
-
-			if (!userIsOwner)
-				throw { message: "user is not the owner of the file" }
+			if (!userIsOwner) {
+				throw {message: `User is not the owner of the file`}
+			}
 
 			const SQL: string = `
         SELECT INTERNAL_FILE_PATH 

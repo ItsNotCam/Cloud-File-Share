@@ -22,7 +22,7 @@ interface IFileActionsBarProps {
 	files: IUIFile[],
 	refreshFiles: () => void,
 	addFiles: (file: File[]) => void
-	deleteFile: () => void,
+	deleteOrUnshare: () => void,
 }
 
 export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
@@ -71,7 +71,7 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 								</IconButton>
 							</span>
 						</a>
-						<IconButton onClick={props.deleteFile}>
+						<IconButton onClick={props.deleteOrUnshare}>
 							<DeleteIcon fontSize="inherit" style={{ color: "#545454", fontSize: "1.8rem" }} />
 						</IconButton>
 					</>)
