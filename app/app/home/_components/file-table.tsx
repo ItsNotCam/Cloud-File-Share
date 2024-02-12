@@ -3,6 +3,7 @@
 import React from 'react';
 import FileTableRow from "./file-table-row";
 import { IUIFile } from "../page";
+import { IFolderProps } from '@/lib/db/DBFiles';
 
 
 interface IFileTableProps {
@@ -14,6 +15,7 @@ interface IFileTableProps {
 	files: IUIFile[],
 	uploadingFiles: IUIFile[],
 	selectedFile: IUIFile,
+	selectedFolder: IFolderProps | undefined
 }
 
 export default function FileTable(props: IFileTableProps): React.ReactNode {
@@ -24,13 +26,16 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 				name: name
 			})
 		})
-			.then(resp => {
-				if (resp.status === 200)
-					return resp.json()
-				throw { message: "Updating filename failed" }
-			})
-			.then(js => props.setFileInfo(file, js.file))
-			.catch(err => console.log(err.message))
+		.then(resp => {
+			if (resp.status === 200)
+			return resp.json()
+		throw { message: "Updating filename failed" }
+	})
+	.then(js => {
+			console.log(js)
+			props.setFileInfo(file, js.file)
+		})
+		.catch(err => console.log(err.message))
 	}
 
 	const trySetSelected = (file: IUIFile) => {
@@ -59,6 +64,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 								activeUpload={file.isBeingUploaded}
 								setFileUploaded={(FILE_ID) => props.setFileUploaded(file, FILE_ID)}
 								setFileID={(ID) => props.setFileID(file, ID)}
+								selectedFolder={props.selectedFolder}
 							/>
 						</div>
 					)) : null
@@ -77,6 +83,7 @@ export default function FileTable(props: IFileTableProps): React.ReactNode {
 						<div key={file.ID} onClick={() => trySetSelected(file)}>
 							<FileTableRow
 								file={file}
+								selectedFolder={props.selectedFolder}
 								isSelected={props.selectedFile?.ID === file?.ID}
 								setSelected={() => props.setSelectedFile(file)}
 								updateFilename={(filename) => updateFilename(file, filename)}

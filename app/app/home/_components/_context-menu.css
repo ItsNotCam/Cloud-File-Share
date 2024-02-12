@@ -1,0 +1,130 @@
+.context-wrapper {
+	width: 250px;
+	box-shadow: 0 0 5px rgba(26, 26, 26, 0.442);
+	background-color: #fff;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding-block: 0.75rem;
+	border-radius: 5px;
+
+	top: 50%;
+	left: 70%;
+
+	position: absolute;
+
+	overflow: hidden;
+	height: 0;
+	opacity: 0;
+
+	animation: fold-in ease-in-out 0.35s forwards;
+	z-index: 99;
+}
+
+.context-row {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start; /* This will align the text to the left */
+	padding-inline: 1rem;
+	padding-block: 0.25rem;
+	cursor: pointer;
+	gap: 0.5rem;
+	color: #3f3f3f;
+}
+
+.border {
+	height: 1px;
+	background-color: black;
+}
+
+.context-row:hover {
+	background-color: #f4f4f4;
+}
+
+.context-rename-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	min-width: 100vw;
+	min-height: 100vh;
+	background-color: rgba(43, 43, 43, 0.314);
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	overflow: hidden;
+
+	z-index: 50;
+}
+
+.context-rename {
+	/* width: 500px;
+	height: 300px; */
+	background-color: white;
+	z-index: 9191919;
+	border-radius: 5px;
+	padding: 1rem;
+	width: 40%;
+
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.372);
+}
+
+.context-rename h1 {
+	margin-bottom: 0.5rem;
+	font-size: 1.15rem;
+	font-weight: 500;
+}
+
+.context-rename-actions {
+	display: flex;
+	justify-content: space-evenly;
+	margin-top: 1rem;
+}
+
+.context-rename-actions > * {
+	/* border: 1px solid gray; */
+	padding: 0.35rem 1rem;
+	border-radius: 5px;
+}
+
+.context-rename-actions > *:hover {
+	box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.372);
+}
+
+.context-cancel {
+	background-color: rgb(220, 65, 65);
+	color: white;
+}
+
+.context-apply:hover {
+	background-color: rgb(86, 106, 220);
+	color: white;
+}
+
+.context-cancel:hover {
+	background-color: rgb(228, 80, 80);
+}
+
+.context-apply {
+	background-color: rgb(65, 88, 220);
+	color: white;
+}
+
+.context-rename input[type="text"] {
+	border: 1px solid #535353;
+	border-radius: 5px;
+	resize: none;
+	padding: 0.5rem 1rem;
+	background-color: white !important;
+	width: 100%;
+	font-size: 0.9rem;
+	height: 2.8rem;
+}
+
+
+@keyframes fold-in {
+	0% { opacity: 0; }
+	50% { opacity: 100%; }
+	100% { height: 233px; opacity: 100%; }
+}

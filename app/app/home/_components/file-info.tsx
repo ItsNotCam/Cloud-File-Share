@@ -19,6 +19,7 @@ const DEFAULT_FILE: IDBFile = {
 	UPLOAD_TIME: new Date(Date.now()),
 	SHARED_USERS: [] as string[],
 	PARENT_FOLDER_ID: "000000000000000000000000000000000000",
+	PARENT_FOLDER_NAME: "All Files",
 	OWNER_USERNAME: ""
 }
 
@@ -26,8 +27,9 @@ const MAX_DESCRIPTION_LENGTH: number = 5000;
 
 export default function FileInfo(props: { 
   file: IUIFile, 
-  setFileInfo: (file: IUIFile, newFile: IUIFile) => void }
-): JSX.Element {
+  setFileInfo: (file: IUIFile, newFile: IUIFile) => void ,
+	setSelectedFolder: (FOLDER_ID: string) => void
+}): JSX.Element {
 	let file: IUIFile = props.file === undefined ? (DEFAULT_FILE as IUIFile) : props.file
 	const fileIcon: JSX.Element = FileIcon({ extension: file.EXTENSION })
 
@@ -62,9 +64,9 @@ export default function FileInfo(props: {
 		["Type", file.EXTENSION || "N/A"],
 		["Size", `${calcFileSize(file.SIZE_BYTES || 0)}`],
 		["Owner", file.IS_OWNER ? "me" : (file.OWNER_USERNAME || "N/A")],
-		["Uploaded", file.UPLOAD_TIME ? toDateString(file.UPLOAD_TIME) : "N/A"]
+		["Uploaded", file.UPLOAD_TIME ? toDateString(file.UPLOAD_TIME) : "N/A"],
 	]
-	
+
   const shareFile = (username: string) => {
     fetch(`/api/files/${file.ID}/share`, {
       method: "POST",
@@ -157,6 +159,12 @@ export default function FileInfo(props: {
 							<span className="text-sm">{fi[1]}</span>
 						</p>
 					)}
+					<div className="file-info-location">
+						<span className="font-semibold text-sm">Location</span>
+						<button disabled onClick={() => props.setSelectedFolder(props.file.PARENT_FOLDER_ID)}>
+							{props.file.PARENT_FOLDER_NAME}
+						</button>
+					</div>
 					<div className="file-info-description">
 						<span className="font-semibold text-sm">Description</span>
 						<textarea

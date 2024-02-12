@@ -9,9 +9,11 @@ import Logger from "@/lib/logger";
 import { IconButton } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { IFolderProps } from "@/lib/db/DBFiles";
 
 export interface IFileTablRowProps {
 	file: IUIFile,
+	selectedFolder: IFolderProps | undefined,
 	isSelected: boolean,
 	activeUpload?: boolean,
 	updateFilename: (filename: string) => void,
@@ -90,6 +92,12 @@ export default function FileTableRow(props: IFileTablRowProps) {
 
 		const data: FormData = new FormData()
 		data.set('file', file)
+
+		let folderName = ""
+		if(props.selectedFolder && props.selectedFolder.ID !== "ALL_FILES") {
+			folderName = props.selectedFolder.ID
+		}
+		data.set('folder', folderName)
 
 		axios.post(`/api/files/upload`, data, {
 			headers: { 'Content-Type': 'multipart/form-data' },

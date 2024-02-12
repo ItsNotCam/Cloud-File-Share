@@ -25,6 +25,7 @@ const DEFAULT_FILE: IDBFile = {
 	UPLOAD_TIME: new Date(Date.now()),
 	SHARED_USERS: [] as string[],
 	PARENT_FOLDER_ID: "000000000000000000000000000000000000",
+	PARENT_FOLDER_NAME: "All Files",
 	OWNER_USERNAME: ""
 }
 
@@ -62,6 +63,7 @@ export default function Home(): JSX.Element {
 
 	useEffect(() => {
 		fetchFiles()
+		fetchFolders()
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") {
 				state.selectedFile === {} as IUIFile
@@ -70,14 +72,35 @@ export default function Home(): JSX.Element {
 	}, [])
 
 	const retrieveFiles = async(): Promise<IUIFile[]> => {
-		const js = await fetch("/api/files").then(resp => resp.json())
+		const URL = state.selectedFolder?.ID === "ALL_FILES"
+			? "api/files"
+			: `/api/files?folder=${state.selectedFolder?.ID}`
+		const js = await fetch(URL).then(resp => resp.json())
 		const files: IUIFile[] = js.files as IUIFile[]
 		return files
 	}
 
-	const fetchFiles = () => {
+	const fetchFolders = () => {
+		fetch("/api/folders")
+			.then(resp => resp.json())
+			.then(js => setState({
+				...state,
+				folders: js.folders
+			}))
+	}
+
+	const fetchFiles = (FOLDER_ID?: string) => {
+		let URL = "/api/files"
+		if(FOLDER_ID) {
+			if(FOLDER_ID !== "ALL_FILES") {
+				URL = `/api/files?folder=${FOLDER_ID}`
+			}
+		} else if(state.selectedFolder && state.selectedFolder.ID !== "ALL_FILES") {
+			URL = `/api/files?folder=${state.selectedFolder?.ID}`
+		}
+
 		setState(prev => ({ ...prev, gettingFiles: true }))
-		fetch("/api/files")
+		fetch(URL)
 			.then(resp => resp.json())
 			.then(js => {
 				const newJS = js.files as IUIFile[]
@@ -87,8 +110,7 @@ export default function Home(): JSX.Element {
 				}
 				setState(prev => ({
 					...prev,
-					files: js.files,
-					folders: js.folders
+					files: js.files
 				}))
 			}).finally(() => {
 				setState(prev => ({...prev, gettingFiles: false}))
@@ -197,12 +219,14 @@ export default function Home(): JSX.Element {
 	const deleteFile = async () => {
 		const URL = `/api/files/${state.selectedFile.ID}`
 		const resp = await fetch(URL, { method: "DELETE" })
-		const js = await resp.json()
-		setState(prev => ({
-			...prev,
-			files: js ? js.files : prev.files,
-			selectedFile: {} as IUIFile
-		}))
+		
+		if(resp.status === 200) {
+			setState(prev => ({
+				...prev,
+				selectedFile: {} as IUIFile
+			}))
+			refreshFiles()
+		}
 	}
 
 	const unshareFile = async (username?: string) => {
@@ -216,8 +240,9 @@ export default function Home(): JSX.Element {
 			}) 
 		})
 
-		if(resp.status === 200)
+		if(resp.status === 200) {
 			refreshFiles()
+		}
 	}
 
 	const refreshFiles = async() => {
@@ -247,11 +272,18 @@ export default function Home(): JSX.Element {
 		}))
 	}
 
-	const setSelectedFolder = (id: IFolderProps) => {
+	const setSelectedFolder = (newFolder: IFolderProps) => {
 		setState(prev => ({
 			...prev,
-			selectedFolder: id
+			selectedFolder: newFolder
 		}))
+
+		fetchFiles(newFolder.ID)
+	}
+
+	const setSelectedFolderByID = (FOLDER_ID: string) => {
+		const foundFolder = state.folders.CHILDREN.filter(child => child.ID === FOLDER_ID)[0]
+		setSelectedFolder(foundFolder)
 	}
 
 	const folderName = state.selectedFolder === undefined
@@ -281,6 +313,7 @@ export default function Home(): JSX.Element {
 				<div className="table-body">
 					<FileTable 
 						selectedFile={state.selectedFile} 
+						selectedFolder={state.selectedFolder}
 						setSelectedFile={setSelectedFile} 
             setFileInfo={setFileInfo}
 						refreshFileInfo={refreshFileInfo}
@@ -295,6 +328,7 @@ export default function Home(): JSX.Element {
 				<FileInfo
 					file={state.selectedFile}
 					setFileInfo={setFileInfo}
+					setSelectedFolder={(FOLDER_ID) => setSelectedFolderByID(FOLDER_ID)}
 				/>
 			</div>
 		</div>

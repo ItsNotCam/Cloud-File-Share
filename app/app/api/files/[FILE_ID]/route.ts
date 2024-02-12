@@ -49,10 +49,9 @@ export async function DELETE(request: NextRequest, context: IFileIDContext): Pro
 			if(fs.existsSync(PATH)) {
 				fs.rmSync(PATH)
 
-        const newFiles = await DBFile.GetFilesOfUser({USER_ID: user.ID})
+        // const newFiles = await DBFile.GetFilesOfUser({USER_ID: user.ID})
 				return NextResponse.json({ 
-          message: "file deleted" ,
-          files: newFiles
+          message: "success",
         }, { 
           status: 200 
         })
