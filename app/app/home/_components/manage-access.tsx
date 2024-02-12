@@ -17,7 +17,7 @@ export default function ManageAccess(props: {
 	return (
 		<div className="darken-background">
 			<div className="manage-access">
-				<h1>Share "{props.file.NAME}"</h1>
+				<h1>Share &quot;{props.file.NAME}&quot;</h1>
 				<div className="share-with">
 					<input type="text"
 						placeholder="Username"
@@ -36,7 +36,7 @@ export default function ManageAccess(props: {
 					</p>
 					<ul className="owners">
 						{filteredUsers.map(user => (
-							<li>
+							<li key={user}>
 								<p>
 									{user}
 									<span>{user === props.file.OWNER_USERNAME ? "(you)" : ""}</span>
