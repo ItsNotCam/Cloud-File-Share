@@ -295,7 +295,7 @@ export default abstract class DBFile {
       FROM FILE_INSTANCE
       WHERE FILE_ID='${FILE_ID}' AND IS_OWNER=1 AND USER_ID=
     `
-		
+
 		if (USER_ID) {
 			SQL += `'${USER_ID}'`
 		} else if(TOKEN) {
@@ -483,7 +483,7 @@ export default abstract class DBFile {
 			SQL = `INSERT INTO FILE_INSTANCE VALUES (
 				'${USER_ID}',
         '${FILE_ID}',
-        (SELECT ID FROM DIRECTORY WHERE PARENT_ID IS NULL AND USER_ID='${USER_ID}'), 
+        (SELECT ID FROM DIRECTORY WHERE PARENT_ID IS NULL AND OWNER_ID='${USER_ID}'), 
         1, 
         '${NAME}', 
         ""

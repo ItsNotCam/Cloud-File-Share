@@ -42,7 +42,7 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 			const SHARE_SQL = `
 				INSERT INTO FILE_INSTANCE VALUES (
 					(${USER_SQL}), '${FILE_ID}', 
-					(SELECT ID FROM DIRECTORY WHERE PARENT_ID IS NULL AND USER_ID=(${USER_SQL})), 
+					(SELECT ID FROM DIRECTORY WHERE PARENT_ID IS NULL AND OWNER_ID=(${USER_SQL})), 
 					0, 
 					'${fileInfoResp.NAME}', 
 					'${fileInfoResp.DESCRIPTION}' 
