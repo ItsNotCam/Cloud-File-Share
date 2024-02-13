@@ -8,7 +8,7 @@ import {v4 as uuidv4} from 'uuid'
 import {useMutex} from 'react-context-mutex'
 import { getFileInfo } from "@/lib/util"
 import { FolderRoot } from "./_components/folders"
-import { IFolderProps } from "@/lib/db/DBFiles"
+import { IFolderProps } from "@/lib/db/DBFolders"
 import Cookies from 'universal-cookie';
 
 

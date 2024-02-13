@@ -21,13 +21,6 @@ export interface IDBFile {
 	SHARED_USERS: string[]
 }
 
-export interface IFolderProps {
-	ID: string,
-	NAME: string,
-	COLOR: string,
-	CHILDREN: IFolderProps[]
-}
-
 interface IFileData {
 	FILENAME: string
 	INTERNAL_FILE_PATH: string
@@ -105,7 +98,7 @@ export default abstract class DBFile {
 				throw { message: `Failed to connect to database => ${err}` }
 			}
 
-			let file = await QueryGetFirst(connection, SQL) as IDBFile;
+			let file: IDBFile = await QueryGetFirst(connection, SQL) as IDBFile;
 			if (file === undefined) {
 				throw { message: `User ${USER_ID} failed to retrieve file ${FILE_ID} - no such file exists` }
 			} else {
@@ -508,69 +501,6 @@ export default abstract class DBFile {
 		}
 
 		return false;
-	}
-
-	static async GetFoldersOfUser(identifier: { TOKEN?: string, USER_ID?: string }): Promise<IFolderProps | undefined> {
-		const ID_SQL = identifier.TOKEN !== undefined
-			? `(SELECT USER_ID FROM AUTH WHERE TOKEN='${identifier.TOKEN}')`
-			: `'${identifier.USER_ID}'`
-
-		const RECURSE_SQL = `
-			WITH RECURSIVE TREE (ID, NAME, PATH, PARENT_ID, COLOR, LEVEL) AS (
-				SELECT DIR.ID, DIR.NAME, DIR.NAME, DIR.PARENT_ID, DIR.COLOR, 1 as LEVEL
-				FROM DIRECTORY as DIR
-				WHERE DIR.PARENT_ID IS NULL AND OWNER_ID=${ID_SQL}
-				
-				UNION
-				
-				SELECT D.ID, D.NAME, CONCAT(TREE.PATH, '/', D.NAME), D.PARENT_ID, D.COLOR, TREE.LEVEL+1
-				FROM DIRECTORY D
-				INNER JOIN TREE ON TREE.ID=D.PARENT_ID
-			) 
-			SELECT ID, NAME, COLOR, PATH FROM TREE;
-		`
-
-		let { connection, err } = await CreateConnection()
-		try {
-			if (connection === null) {
-				throw { message: `Failed to connect to database => ${err}` }
-			}
-
-			const userResp = await connection.query(RECURSE_SQL)
-			const entry = await userResp.entries().next()
-			const allFolders = entry.value[1]
-
-      // Translate database query results into JSON
-			let foldersJSON: IFolderProps = {} as IFolderProps
-
-			allFolders.forEach((row: any) => {
-				const pathNames = row.PATH.split("/")
-				let current = foldersJSON
-
-				if (!current.CHILDREN)
-					current.CHILDREN = [] as IFolderProps[]
-
-				pathNames.forEach((pathName: string) => {
-					let found = current.CHILDREN.find((child: IFolderProps) => child.NAME === pathName)
-					if (!found) {
-						found = { NAME: pathName, ID: "", COLOR: "", CHILDREN: [] }
-						current.CHILDREN.push(found)
-					}
-					current = found
-				})
-
-				current.ID = row.ID
-				current.COLOR = row.COLOR
-			})
-
-			return foldersJSON
-		} catch (err: any) {
-			Logger.LogErr(`Error getting folders => ${err.message}`)
-		} finally {
-      connection?.end()
-    }
-
-		return undefined
 	}
 
 	/*

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
-import { IFolderProps } from "@/lib/db/DBFiles";
+import { IFolderProps } from "@/lib/db/DBFolders";
 
 export const FolderRoot = (props: { 
 	folders: IFolderProps, 

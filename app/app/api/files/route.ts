@@ -1,4 +1,4 @@
-import DBFiles from "@/lib/db/DBFiles"
+import DBFiles from "@/lib/db/DBFolders"
 import Logger from "@/lib/logger"
 import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"

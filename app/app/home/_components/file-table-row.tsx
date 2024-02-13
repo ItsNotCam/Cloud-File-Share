@@ -9,7 +9,7 @@ import Logger from "@/lib/logger";
 import { IconButton } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import { IFolderProps } from "@/lib/db/DBFiles";
+import { IFolderProps } from "@/lib/db/DBFolders";
 
 export interface IFileTablRowProps {
 	file: IUIFile,

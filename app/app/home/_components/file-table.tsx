@@ -3,7 +3,7 @@
 import React from 'react';
 import FileTableRow from "./file-table-row";
 import { IUIFile } from "../page";
-import { IFolderProps } from '@/lib/db/DBFiles';
+import { IFolderProps } from '@/lib/db/DBFolders';
 
 
 interface IFileTableProps {

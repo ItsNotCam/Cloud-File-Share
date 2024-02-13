@@ -1,6 +1,7 @@
 // FILE ACTIONS
 import DBAuth from '@/lib/db/DBAuth';
-import DBFile, { IDBFile } from '@/lib/db/DBFiles';
+import { IDBFile } from '@/lib/db/DBFiles';
+import DBFile from "@/lib/db/DBFolders";
 import Logger from '@/lib/logger';
 import fs from 'fs';
 import { cookies } from 'next/headers';

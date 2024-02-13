@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ReadableOptions } from 'stream'
 import { cookies } from 'next/headers'
 import Logger from '@/lib/logger'
-import DBFile from '@/lib/db/DBFiles'
+import DBFile from "@/lib/db/DBFolders"
 
 
 async function DownloadFile(request: NextRequest, context: { params: any }, response: Response): Promise<NextResponse> {

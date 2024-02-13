@@ -39,7 +39,7 @@ export default abstract class DBAuth {
 				throw {message: `Failed to connect to database => ${err}`}
 			}
 			const SQL: string = `SELECT * FROM USER WHERE ID=(SELECT USER_ID FROM AUTH WHERE TOKEN='${token}')`
-			const user: IDBUser = await QueryGetFirst(connection, SQL);
+			const user: IDBUser = await QueryGetFirst<IDBUser>(connection, SQL);
 			if(user !== undefined)
 				return user;
 		} catch(err: any) {
