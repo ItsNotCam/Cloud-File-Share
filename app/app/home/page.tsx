@@ -63,7 +63,7 @@ export default function Home(): JSX.Element {
 
 	useEffect(() => {
 		fetchFiles()
-		fetchFolders()
+		// fetchFolders()
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") {
 				state.selectedFile === {} as IUIFile
@@ -72,9 +72,10 @@ export default function Home(): JSX.Element {
 	}, [])
 
 	const retrieveFiles = async(): Promise<IUIFile[]> => {
-		const URL = state.selectedFolder?.ID === "ALL_FILES"
-			? "api/files"
-			: `/api/files?folder=${state.selectedFolder?.ID}`
+		// const URL = state.selectedFolder?.ID === "ALL_FILES"
+		// 	? "api/files"
+		// 	: `/api/files?folder=${state.selectedFolder?.ID}`
+		const URL = "api/files"
 		const js = await fetch(URL).then(resp => resp.json())
 		const files: IUIFile[] = js.files as IUIFile[]
 		return files
@@ -91,13 +92,13 @@ export default function Home(): JSX.Element {
 
 	const fetchFiles = (FOLDER_ID?: string) => {
 		let URL = "/api/files"
-		if(FOLDER_ID) {
-			if(FOLDER_ID !== "ALL_FILES") {
-				URL = `/api/files?folder=${FOLDER_ID}`
-			}
-		} else if(state.selectedFolder && state.selectedFolder.ID !== "ALL_FILES") {
-			URL = `/api/files?folder=${state.selectedFolder?.ID}`
-		}
+		// if(FOLDER_ID) {
+		// 	if(FOLDER_ID !== "ALL_FILES") {
+		// 		URL = `/api/files?folder=${FOLDER_ID}`
+		// 	}
+		// } else if(state.selectedFolder && state.selectedFolder.ID !== "ALL_FILES") {
+		// 	URL = `/api/files?folder=${state.selectedFolder?.ID}`
+		// }
 
 		setState(prev => ({ ...prev, gettingFiles: true }))
 		fetch(URL)
@@ -292,11 +293,11 @@ export default function Home(): JSX.Element {
 
 	return (
 		<div className={`main-container ${state.showFileInfo ? "" : "gap-0"}`}>
-			<FolderRoot 
+			{/* <FolderRoot 
 				folders={state.folders} 
 				selectedFolder={state.selectedFolder} 
 				setSelectedFolder={setSelectedFolder}
-			/>
+			/> */}
 			<div className="table">
 				<div className="table-header">
 					<h1 className="text-3xl font-semibold text-ellipsis w-full overflow-hidden">

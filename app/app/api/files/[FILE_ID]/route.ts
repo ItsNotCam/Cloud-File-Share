@@ -1,7 +1,6 @@
 // FILE ACTIONS
 import DBAuth from '@/lib/db/DBAuth';
-import { IDBFile } from '@/lib/db/DBFiles';
-import DBFile from "@/lib/db/DBFolders";
+import DBFile, { IDBFile } from '@/lib/db/DBFiles';
 import Logger from '@/lib/logger';
 import fs from 'fs';
 import { cookies } from 'next/headers';
@@ -115,5 +114,5 @@ export async function PATCH(request: NextRequest, context: IFileIDContext): Prom
 		)
 	}
 	
-	return NextResponse.json({ message: "No changes were made" }, { status: 200 })
+	return NextResponse.json({ message: "No changes were made" }, { status: 500 })
 }

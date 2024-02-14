@@ -1,4 +1,4 @@
-import DBFolder, { IFolderProps } from "@/lib/db/DBFolders"
+import DBFolder from "@/lib/db/DBFolders"
 import Logger from "@/lib/logger"
 import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"

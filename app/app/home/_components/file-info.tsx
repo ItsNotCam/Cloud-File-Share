@@ -41,6 +41,9 @@ export default function FileInfo(props: {
 	}, [file.DESCRIPTION])
 
 	const getUnfocus = (e: React.FocusEvent) => {
+		if(file.DESCRIPTION === description)
+			return
+
     fetch(`/api/files/${file.ID}`, {
       method: "PATCH",
       body: JSON.stringify({
@@ -52,7 +55,7 @@ export default function FileInfo(props: {
         return resp.json()
       throw {message: "Action Failed"}
     })
-    .then((js) => props.setFileInfo(file, js.file))
+    .then((js) =>props.setFileInfo(file, js.file))
     .catch(err => console.log(err.message))
 	}
 
@@ -159,12 +162,12 @@ export default function FileInfo(props: {
 							<span className="text-sm">{fi[1]}</span>
 						</p>
 					)}
-					<div className="file-info-location">
+					{/* <div className="file-info-location">
 						<span className="font-semibold text-sm">Location</span>
 						<button disabled onClick={() => props.setSelectedFolder(props.file.PARENT_FOLDER_ID)}>
 							{props.file.PARENT_FOLDER_NAME}
 						</button>
-					</div>
+					</div> */}
 					<div className="file-info-description">
 						<span className="font-semibold text-sm">Description</span>
 						<textarea

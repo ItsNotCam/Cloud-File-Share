@@ -151,7 +151,7 @@ export default abstract class DBFolder {
 			connection?.end()
 		}
 
-		return false;
+		return false; 
 	}
 
 	static async GetFoldersOfUser(identifier: { TOKEN?: string, USER_ID?: string }): Promise<IFolderProps | undefined> {

@@ -90,9 +90,9 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 				ref={inputFile}
 				onChange={uploadFile}
 			/>
-			<IconButton onClick={() => createFolder()} title="Create Folder" >
+			{/* <IconButton onClick={() => createFolder()} title="Create Folder" >
 				<CreateNewFolderRoundedIcon fontSize="inherit" style={{ color: "#545454", fontSize: "1.8rem" }} />
-			</IconButton>
+			</IconButton> */}
 		</div>
 	)
 }
