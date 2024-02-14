@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import DBAuth from "@/lib/db/DBAuth";
 import Logger from "@/lib/logger";
 import { getFileInfo } from "@/lib/util";
-import DBFile from "@/lib/db/DBFolders";
+import DBFile from "@/lib/db/DBFiles";
 
 export interface IFileInfo {
   FILE_ID: string

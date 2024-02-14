@@ -39,7 +39,7 @@ export async function DELETE(request: NextRequest, context: {params: {FOLDER_ID:
 	})
 }
 
-export async function PATCH(request: NextRequest, context: {params: {FOLDER_ID: string}}): Promise<NextResponse> {
+export async function PUT(request: NextRequest, context: {params: {FOLDER_ID: string}}): Promise<NextResponse> {
 	Logger.LogReq(request)
 	const { FOLDER_ID } = context.params
 	const token = cookies().get("token")

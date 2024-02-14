@@ -1,4 +1,4 @@
-import DBFiles from "@/lib/db/DBFolders"
+import DBFile from "@/lib/db/DBFiles"
 import Logger from "@/lib/logger"
 import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, response: NextResponse): Promise
 	}
 
 	let folderID = request.nextUrl.searchParams.get("folder")
-	let files = await DBFiles.GetFilesOfUser({TOKEN: token.value}, folderID)
+	let files = await DBFile.GetFilesOfUser({TOKEN: token.value}, folderID)
 
 	return NextResponse.json({
 		files: files

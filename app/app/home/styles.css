@@ -528,6 +528,7 @@ table {
 .manage-access h1 {
 	font-size: 1.25rem;
 	margin-bottom: 1rem;
+  width: 100%;
 }
 
 .manage-done-button {

@@ -10,6 +10,9 @@ import { getFileInfo } from "@/lib/util"
 import { FolderRoot } from "./_components/folders"
 import { IFolderProps } from "@/lib/db/DBFolders"
 import Cookies from 'universal-cookie';
+import FolderComponent from "./_components/create-folder"
+import { IconButton } from "@mui/material"
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 
 const DEFAULT_FILE: IDBFile = {
@@ -38,7 +41,9 @@ interface IHomeState {
 	files: IUIFile[],
 	folders: IFolderProps,
 	uploadingFiles: IUIFile[],
-	isHoldingCtrl: boolean
+	isHoldingCtrl: boolean,
+  folderName: string,
+  isChangingFolderName: boolean
 }
  
 export interface IUIFile extends IDBFile {
@@ -58,7 +63,9 @@ export default function Home(): JSX.Element {
 		files: [] as IUIFile[],
 		folders: {} as IFolderProps,
 		uploadingFiles: [] as IUIFile[],
-		isHoldingCtrl: false
+		isHoldingCtrl: false,
+    isChangingFolderName: false,
+    folderName: ""
 	})
 
 	useEffect(() => {
@@ -286,6 +293,38 @@ export default function Home(): JSX.Element {
 		setSelectedFolder(foundFolder)
 	}
 
+  const updateFolderName = (name: string) => {
+    if(state.selectedFolder) {
+      let newFolder = state.selectedFolder || {} as IFolderProps
+      newFolder.NAME = name
+      setState(prev => ({
+        ...prev,
+        selectedFolder: newFolder
+      }))
+
+      fetch(`/api/folders/${state.selectedFolder?.ID}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          NAME: name
+        })
+      })
+      .then(data => data.json())
+      .then((js) => {
+        console.log(js)
+      })
+    }
+
+    setEditingFolderName(false)
+    refreshFiles()
+  }
+
+  const setEditingFolderName = (val: boolean) => {
+    setState({
+      ...state,
+      isChangingFolderName: val
+    })
+  }
+
 	const folderName = state.selectedFolder === undefined
 		? "My Files"
 		: state.selectedFolder.NAME;
@@ -299,11 +338,19 @@ export default function Home(): JSX.Element {
 			/>
 			<div className="table">
 				<div className="table-header">
+          <IconButton onClick={() => setEditingFolderName(true)}>
+            <BorderColorIcon fontSize="inherit" style={{ color: "#545454", fontSize: "1.8rem", marginRight: "0.25rem" }} />
+          </IconButton>
 					<h1 className="text-3xl font-semibold text-ellipsis w-full overflow-hidden">
 						{folderName}
 					</h1>
+          {state.isChangingFolderName
+            ? <FolderComponent folder={state.selectedFolder} updateFolderName={(name) => updateFolderName(name)}/>
+            : null
+          }
 					<FileActionsBar 
 						file={state.selectedFile}
+            selectedFolder={state.selectedFolder}
 						refreshFiles={refreshFiles}
 						files={state.files}
 						addFiles={addFiles} 
@@ -332,5 +379,5 @@ export default function Home(): JSX.Element {
 				/>
 			</div>
 		</div>
-	)
+  )
 }

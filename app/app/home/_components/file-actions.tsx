@@ -4,10 +4,10 @@ import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import CreateNewFolderRoundedIcon from '@mui/icons-material/CreateNewFolderRounded';
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { IUIFile } from "../page";
+import { IFolderProps } from "@/lib/db/DBFolders";
 
 export function FileActions(props: { file: IDBFile }): React.ReactNode {
 	return (
@@ -20,6 +20,7 @@ export function FileActions(props: { file: IDBFile }): React.ReactNode {
 interface IFileActionsBarProps {
 	file: IUIFile,
 	files: IUIFile[],
+  selectedFolder: IFolderProps | undefined,
 	refreshFiles: () => void,
 	addFiles: (file: File[]) => void
 	deleteOrUnshare: () => void,
@@ -58,7 +59,8 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 
 	}
 
-	return (
+
+	return (<>
 		<div className="file-action-wrapper">
 			{
 				file === undefined
@@ -90,9 +92,9 @@ export function FileActionsBar(props: IFileActionsBarProps): React.ReactNode {
 				ref={inputFile}
 				onChange={uploadFile}
 			/>
-			<IconButton onClick={() => createFolder()} title="Create Folder" >
+			<IconButton onClick={() => {}} title="Create Folder" >
 				<CreateNewFolderRoundedIcon fontSize="inherit" style={{ color: "#545454", fontSize: "1.8rem" }} />
 			</IconButton>
 		</div>
-	)
+  </>)
 }

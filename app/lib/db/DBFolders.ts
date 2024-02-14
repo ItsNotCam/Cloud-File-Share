@@ -96,14 +96,14 @@ export default abstract class DBFolder {
 			: `'${identifier.USER_ID}'`
 
 		const FOLDER_SQL = `
-				INSERT INTO DIRECTORY VALUES (
-					DEFAULT, 
-					'${PARENT_FOLDER_ID}',
-					'${ID_SQL}',
-					'${FOLDER_NAME}',
-					${COLOR ? `'${COLOR}'` : "DEFAULT"}
-				)
-			`
+      INSERT INTO DIRECTORY VALUES (
+        DEFAULT, 
+        '${PARENT_FOLDER_ID}',
+        '${ID_SQL}',
+        '${FOLDER_NAME}',
+        ${COLOR ? `'${COLOR}'` : "DEFAULT"}
+      )
+    `
 
 		let { connection, err } = await CreateConnection()
 		try {
