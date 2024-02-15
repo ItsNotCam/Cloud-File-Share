@@ -1,5 +1,5 @@
 import Logger from "../logger"
-import { CreateConnection, QueryGetFirst } from "./DBUtil"
+import { CreateConnection, IDtoSQL, QueryGetFirst } from "./DBUtil"
 
 export interface IFolderProps {
 	ID: string,
@@ -46,9 +46,7 @@ export default abstract class DBFolder {
 		COLOR?: string,
 		PARENT_ID?: string
 	): Promise<boolean> {
-		const ID_SQL = identifier.TOKEN !== undefined
-			? `(SELECT USER_ID FROM AUTH WHERE TOKEN='${identifier.TOKEN}')`
-			: `'${identifier.USER_ID}'`
+    
 
 		let updates: string[] = [] as string[]
 		if(FOLDER_NAME) {
@@ -65,7 +63,7 @@ export default abstract class DBFolder {
 			UPDATE DIRECTORY
 			SET ${updates.join(", ")} 
 			WHERE ID='${FOLDER_ID}'
-			AND OWNER_ID=${ID_SQL}
+			AND OWNER_ID=${IDtoSQL(identifier)}
 		`
 
 		let { connection, err } = await CreateConnection()
@@ -91,15 +89,11 @@ export default abstract class DBFolder {
 		FOLDER_NAME: string,
 		COLOR: string | undefined
 	): Promise<boolean> {
-		const ID_SQL = identifier.TOKEN !== undefined
-			? `(SELECT USER_ID FROM AUTH WHERE TOKEN='${identifier.TOKEN}')`
-			: `'${identifier.USER_ID}'`
-
 		const FOLDER_SQL = `
 				INSERT INTO DIRECTORY VALUES (
 					DEFAULT, 
 					'${PARENT_FOLDER_ID}',
-					'${ID_SQL}',
+					'${IDtoSQL(identifier)}',
 					'${FOLDER_NAME}',
 					${COLOR ? `'${COLOR}'` : "DEFAULT"}
 				)
@@ -126,14 +120,10 @@ export default abstract class DBFolder {
 		identifier: { TOKEN?: string, USER_ID?: string },
 		FOLDER_ID: string
 	): Promise<boolean> {
-		const ID_SQL = identifier.TOKEN !== undefined
-			? `(SELECT USER_ID FROM AUTH WHERE TOKEN='${identifier.TOKEN}')`
-			: `'${identifier.USER_ID}'`
-
 		const SQL = `
 			DELETE FROM DIRECTORY
 			WHERE ID='${FOLDER_ID}'
-				AND OWNER_ID=${ID_SQL}
+				AND OWNER_ID=${IDtoSQL(identifier)}
 				AND (SELECT COUNT(*) FROM DIRECTORY WHERE PARENT_ID='${FOLDER_ID}') < 1
 		`
 
@@ -155,15 +145,11 @@ export default abstract class DBFolder {
 	}
 
 	static async GetFoldersOfUser(identifier: { TOKEN?: string, USER_ID?: string }): Promise<IFolderProps | undefined> {
-		const ID_SQL = identifier.TOKEN !== undefined
-			? `(SELECT USER_ID FROM AUTH WHERE TOKEN='${identifier.TOKEN}')`
-			: `'${identifier.USER_ID}'`
-
-		const RECURSE_SQL = `
+			const RECURSE_SQL = `
 			WITH RECURSIVE TREE (ID, NAME, PATH, PARENT_ID, COLOR, LEVEL) AS (
 				SELECT DIR.ID, DIR.NAME, DIR.NAME, DIR.PARENT_ID, DIR.COLOR, 1 as LEVEL
 				FROM DIRECTORY as DIR
-				WHERE DIR.PARENT_ID IS NULL AND OWNER_ID=${ID_SQL}
+				WHERE DIR.PARENT_ID IS NULL AND OWNER_ID=${IDtoSQL(identifier)}
 				
 				UNION
 				

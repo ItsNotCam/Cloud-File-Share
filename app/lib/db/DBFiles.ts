@@ -1,7 +1,6 @@
 import { RowDataPacket } from "mysql2/promise"
-import { QueryGetFirst } from "../db"
 import Logger from "../logger"
-import { CreateConnection } from "./DBUtil"
+import { QueryGetFirst, CreateConnection, IDtoSQL } from "./DBUtil"
 
 export interface IDBFile {
 	ID: string,
@@ -355,13 +354,7 @@ export default abstract class DBFile {
 
 		SQL += ` ${updatedFields.join(",")} 
 			WHERE FILE_ID='${FILE_ID}' 
-			AND USER_ID=`
-
-		if (USER_ID) {
-			SQL += `'${USER_ID}'`
-		} else {
-			SQL += `(SELECT USER_ID FROM AUTH WHERE TOKEN='${TOKEN}')`
-		}
+			AND USER_ID=${IDtoSQL(identifier)}`
 
     /* END GENERATE SQL QUERY */
 

@@ -3,6 +3,18 @@ import Logger from '../logger';
 
 const { DB_HOST, DB_USER, DB_PASS, MYSQL_ROOT_DATABASE: DB_NAME } = process.env;
 
+export function IDtoSQL(identifier: { TOKEN?: string, USER_ID?: string }): string {
+  if(identifier.TOKEN) {
+    return `(SELECT USER_ID FROM AUTH WHERE TOKEN='${identifier.TOKEN}')`
+  }
+
+  if(identifier.USER_ID) {
+    return `'${identifier.USER_ID}'`
+  }
+
+  return ""
+}
+
 export async function CreateConnection(multipleStatements?: boolean): Promise<{connection: mysql.Connection | null, err: string | undefined}> {
 	try {
 		const connection = await mysql.createConnection({
