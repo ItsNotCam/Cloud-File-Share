@@ -143,8 +143,8 @@ export default abstract class DBFolder {
 				throw { message: `Failed to connect to database => ${err}` }
 			}
 
-			const [rows, _] = await connection.execute(SQL) as [{length: number}, any]
-			return rows.length > 0;
+			const [rows, _] = await connection.execute(SQL)
+			return (rows as any).affectedRows > 0;
 		} catch(err: any) {
 			Logger.LogErr(`Error deleting folder => ${err.message}`)
 		} finally {

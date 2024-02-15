@@ -108,7 +108,7 @@ export default abstract class DBFile {
 				let USERS_SQL: string = `
 					SELECT USERNAME, IS_OWNER
 					FROM USER
-					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
+						INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
 					WHERE FILE_INSTANCE.FILE_ID='${file.ID}'
 					ORDER BY IS_OWNER DESC
 				`
@@ -116,12 +116,11 @@ export default abstract class DBFile {
 				file.SHARED_USERS = []
 				const userResp = await connection.query(USERS_SQL)
 				const entry = await userResp.entries().next()
-				entry.value[1].map((v: any) => {
-					file.SHARED_USERS?.push(v["USERNAME"])
-
-					const owner = (v["IS_OWNER"] as any).readInt8()
+				entry.value[1].forEach((v: any) => {
+					file.SHARED_USERS?.push(v.USERNAME)
+					const owner = (v.IS_OWNER as any).readInt8()
 					if (owner === 1) {
-						file.OWNER_USERNAME = v["USERNAME"]
+						file.OWNER_USERNAME = v.USERNAME
 					}
 				})
 
@@ -188,14 +187,14 @@ export default abstract class DBFile {
 					ORDER BY IS_OWNER DESC
 				`
 
-				files[i].SHARED_USERS = []
+				files[i].SHARED_USERS = [] as string[]
 				const userResp = await connection.query(USERS_SQL)
 				const entry = await userResp.entries().next()
-				entry.value[1].map((v: any) => {
-					files[i].SHARED_USERS?.push(v["USERNAME"])
-					const owner = (v["IS_OWNER"] as any).readInt8()
+				entry.value[1].forEach((v: any) => {
+					files[i].SHARED_USERS.push(v.USERNAME)
+					const owner = (v.IS_OWNER as any).readInt8()
 					if (owner === 1) {
-						files[i].OWNER_USERNAME = v["USERNAME"]
+						files[i].OWNER_USERNAME = v.USERNAME
 					}
 				})
 			}
@@ -260,19 +259,19 @@ export default abstract class DBFile {
 				let USERS_SQL: string = `
 					SELECT USERNAME, IS_OWNER
 					FROM USER
-					INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
+						INNER JOIN FILE_INSTANCE ON USER_ID=USER.ID 
 					WHERE FILE_INSTANCE.FILE_ID='${files[i].ID}'
 					ORDER BY IS_OWNER DESC
 				`
 
-				files[i].SHARED_USERS = []
+				files[i].SHARED_USERS = [] as string[]
 				const userResp = await connection.query(USERS_SQL)
 				const entry = await userResp.entries().next()
-				entry.value[1].map((v: any) => {
-					files[i].SHARED_USERS?.push(v["USERNAME"])
-					const owner = (v["IS_OWNER"] as any).readInt8()
+				entry.value[1].forEach((v: any) => {
+					files[i].SHARED_USERS.push(v.USERNAME)
+					const owner = (v.IS_OWNER as any).readInt8()
 					if (owner === 1) {
-						files[i].OWNER_USERNAME = v["USERNAME"]
+						files[i].OWNER_USERNAME = v.USERNAME
 					}
 				})
 			}
@@ -410,7 +409,7 @@ export default abstract class DBFile {
 					SELECT USERNAME
 					FROM FILE_INSTANCE 
 					INNER JOIN USER ON USER_ID=ID
-					WHERE FILE_ID='${FILE_ID}' 
+					WHERE FILE_ID='${FILE_ID}'
 				`
 				const sharedUsersResp = await connection.query(UPDATED_SQL)
 				const sharedUsers = (sharedUsersResp[0] as any).map((user: any) => (user as any).USERNAME)

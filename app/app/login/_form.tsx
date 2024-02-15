@@ -55,19 +55,13 @@ export default function LoginForm(): JSX.Element {
 	}
 
 	return (<>
-		<span className="login-msgs" style={{display: (validating || err) ? "block" : "none"}}>
-			<span className={validating ? "" : "hide"}>
-				Logging In
-			</span>
-			<span className={err ? "" : "hide"}>
-				Failed to Log In
-			</span>
-		</span>
 		<div className="login-form" style={{pointerEvents: validating ? "none" : "all"}}>
 			<form onSubmit={login}>
 				<input className="username" type="text" name="username" placeholder="Username" required />
 				<input className="password" type="password" name="password" placeholder="Password" required />
-				<Link href="/register">Register</Link>
+				<Link href="/register">
+					<span className="hover-underline">Register</span>
+				</Link>
 				<input className="login-submit" type="submit" name="Login" title="Login" value="Login" />
 			</form>
 		</div>

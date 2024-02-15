@@ -59,7 +59,9 @@ export async function POST(request: NextRequest, context: {params: any}): Promis
 				`
 				const sharedUsersResp = await connection.query(UPDATED_SQL)
 				const sharedUsers = (sharedUsersResp[0] as any).map((user: any) => {
-					return (user as any).USERNAME
+					const u = user as any
+					if(!u.IS_OWNER)
+						return (user as any).USERNAME
 				})
 
 				return NextResponse.json({

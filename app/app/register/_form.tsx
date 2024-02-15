@@ -49,15 +49,14 @@ export default function RegisterForm(): JSX.Element {
 		})
 	}
 
-	return (<>
-		<h1 className={`validating ${validating ? "show-valid" : ""}`}>
-			Registering
-		</h1>
+	return (<div className="login-form">
 		<form onSubmit={login}>
 			<input className="username" type="text" name="username" placeholder="Username" required />
 			<input className="password" type="password" name="password" placeholder="Password" required/>
-			<Link href="/login">Login</Link>
-			<input className="submit" type="submit" name="Register" title="Register" value="Register" />
+			<Link href="/login">
+				<span className="hover-underline">Back to login</span>
+			</Link>
+			<input className="login-submit" type="submit" name="Register" title="Register" value="Register" />
 		</form>
-	</>)
+	</div>)
 }

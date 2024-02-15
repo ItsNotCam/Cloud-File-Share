@@ -76,3 +76,7 @@
 .hide {
 	display: none;
 }
+
+.hover-underline:hover {
+	text-decoration: underline;
+}

@@ -198,11 +198,11 @@ const descLengthtoStr = (l: number) => {
 }
 
 function AccessList(props: { owners: string[] }) {
-	const ownersStr = props.owners.slice(1).join(", ")
+	const ownersStr = props.owners.join(", ")
 	return (
 		<div className="access-list">
-			<p className="text-sm">Me</p>
-			{ props.owners.length > 1 && <div className="vertical-line" /> }
+			{/* <p className="text-sm">Me</p> */}
+			{/* { props.owners.length > 0 && <div className="vertical-line" /> } */}
 			<p>{ownersStr}</p>
 		</div>
 	)

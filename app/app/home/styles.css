@@ -482,7 +482,7 @@ table {
 }
 
 .uploading-bar-progress__pending {
-	background-color: hsla(31, 57%, 54%, 0.21);
+	background-color: #5eec975f;
 	/* background-color: hsla(120, 44%, 51%, 0.21); */
 }
 
