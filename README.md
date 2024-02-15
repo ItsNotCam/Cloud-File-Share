@@ -1,6 +1,6 @@
 # Google Drive Clone
 
-![Preview](![image](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/46a04830-0e60-48f0-8cdc-8e71c6c73264))
+![Preview](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/46a04830-0e60-48f0-8cdc-8e71c6c73264)
 
 
 ## Overview
