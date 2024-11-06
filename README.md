@@ -44,3 +44,8 @@ More official API structure documentation coming soon
 The database stores information about **users, file objects, file instances, authentication, and user comments**. The **entity relationsip diagram** is shown below:
 
 ![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/be1532bd-fe9b-4ccd-a184-bca38b93911f)
+
+# Build and Setup
+1. Clone the repository
+2. Open terminal and enter `docker-compose up`
+3. Go to [http://localhost:3000/register](http://localhost:3000/register)
