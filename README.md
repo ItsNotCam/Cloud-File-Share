@@ -46,6 +46,15 @@ The database stores information about **users, file objects, file instances, aut
 ![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/be1532bd-fe9b-4ccd-a184-bca38b93911f)
 
 # Build and Setup
+## Requirements
+* Docker
+
+### Build
 1. Clone the repository
-2. Open terminal and enter `docker-compose up`
+2. Open terminal and run `chmod +x start.sh; ./start.sh`
 3. Go to [http://localhost:3000/register](http://localhost:3000/register)
+
+### Teardown
+1. Go to the project folder
+2. Open terminal
+3. Enter `docker-compose down`
