@@ -27,8 +27,6 @@ The entire application is **containerized using Docker** and can be deployed eas
 
 ## API Structure
 
-More official API structure documentation coming soon
-
 | **Method** | **Route** | **Function** |
 | ------- | ------------------ | ------------- |
 | **POST** | `/api/files/upload` | upload file |
