@@ -46,8 +46,8 @@ The database stores information about **users, file objects, file instances, aut
 ![ERD](https://github.com/ItsNotCam/GoogleDriveClone/assets/46014191/be1532bd-fe9b-4ccd-a184-bca38b93911f)
 
 # Build and Setup
-## Requirements
-* Docker
+### Requirements
+Docker
 
 ### Build
 1. Clone the repository
